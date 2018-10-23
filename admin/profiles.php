@@ -1,0 +1,155 @@
+<?php
+require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_before.php");
+IncludeModuleLangFile(__FILE__);
+global $APPLICATION;
+$sModuleDir = dirname(dirname(__FILE__));
+$sModuleId = basename($sModuleDir);
+
+\Bitrix\Main\Loader::includeModule($sModuleId);
+
+$APPLICATION->SetTitle(GetMessage("ABBYY_CLOUD_PROFILI_PEREVODA"));
+
+$sTableID = "tbl_abbyy_cloud_profiles";
+$oSort = new CAdminSorting($sTableID, "name", "asc");
+$lAdmin = new CAdminList($sTableID, $oSort);
+
+if ($lAdmin->EditAction()) {
+    foreach ($_REQUEST['FIELDS'] as $ID => $arFields) {
+        if (!$lAdmin->IsUpdated($ID)) continue;
+        $arFields['ACTIVE'] = ($arFields['ACTIVE'] == 'Y');
+        \Abbyy\Cloud\ProfileTable::update($ID, $arFields);
+    }
+}
+
+if ($arID = $lAdmin->GroupAction()) {
+    foreach ($arID as $ID) {
+        if (strlen($ID) <= 0) continue;
+        $ID = IntVal($ID);
+        switch ($_REQUEST['action']) {
+            case "delete":
+                \Abbyy\Cloud\ProfileTable::delete($ID);
+                break;
+        }
+    }
+}
+
+$arHeader = array(
+    array(
+        "id" => "ID",
+        "content" => "ID",
+        "default" => true,
+        "sort" => "ID",
+    ),
+    array(
+        "id" => "NAME",
+        "content" => GetMessage("ABBYY_CLOUD_NAZVANIE"),
+        "default" => true,
+        "sort" => "NAME",
+    ),
+    array(
+        "id" => "TYPE",
+        "content" => GetMessage("ABBYY_CLOUD_TIP_PEREVODA"),
+        "default" => true,
+    ),
+    array(
+        "id" => "ACTIVE",
+        "content" => GetMessage("ABBYY_CLOUD_AKTIVNOSTQ"),
+        "default" => true,
+    ),
+    array(
+        "id" => "LANGS",
+        "content" => GetMessage("ABBYY_CLOUD_AZYKI"),
+        "default" => true,
+    ),
+    array(
+        "id" => "TASKS_COUNT",
+        "content" => GetMessage("ABBYY_CLOUD_KOL_VO_ZADANIY"),
+        "default" => true,
+    ),
+);
+
+
+$lAdmin->AddHeaders($arHeader);
+
+$nav = new \Bitrix\Main\UI\AdminPageNavigation("nav-profiles");
+
+$rsItems = \Abbyy\Cloud\ProfileTable::getList(array(
+    'order' => array(strtoupper($by) => $order),
+    'count_total' => true,
+    'offset' => $nav->getOffset(),
+    'limit' => $nav->getLimit(),
+));
+
+$nav->setRecordCount($rsItems->getCount());
+
+$lAdmin->setNavigation($nav, GetMessage("ABBYY_CLOUD_PROFILI"));
+
+$arTypes = \Abbyy\Cloud\ProfileTable::getTypeList();
+
+while ($arItem = $rsItems->fetch()) {
+
+    $arRow = [];
+    $arRow['ID'] = $arItem['ID'];
+    $arRow['NAME'] = $arItem['NAME'];
+    $arRow['ACTIVE'] = $arItem['ACTIVE'];
+
+    $arRow['LANGS'] = [];
+    $arIBlocks = \Abbyy\Cloud\ProfileIblockTable::getList([
+        'filter' => [
+            '=PROFILE_ID' => $arRow['ID'],
+        ]
+    ])->fetchAll();
+
+    foreach ($arIBlocks as $arIBlock) {
+        $arRow['LANGS'][] = $arIBlock['LANG'];
+    }
+    $arRow['LANGS'] = implode(', ', $arRow['LANGS']);
+
+    $arRow['TASKS_COUNT'] = \Abbyy\Cloud\TaskTable::getCount([
+        'PROFILE_ID' => $arRow['ID'],
+    ]);
+
+    $arRow['TYPE'] = $arTypes[$arItem['TYPE']];
+
+    $row = &$lAdmin->AddRow($arRow['ID'], $arRow);
+
+    $row->AddInputField('NAME', Array("size" => "20"));
+    $row->AddCheckField("ACTIVE");
+
+    $arActions = [];
+
+    $arActions[] = array("ICON" => "edit", "TEXT" => GetMessage("ABBYY_CLOUD_REDAKTIROVATQ"), "ACTION" => $lAdmin->ActionRedirect("abbyy.cloud_profile.php?ID=" . urlencode($arRow['ID'])), "DEFAULT" => true);
+
+    $arActions[] = array(
+        "ICON" => "delete",
+        "TEXT" => GetMessage("ABBYY_CLOUD_UDALITQ"),
+        "ACTION" => "if(confirm('".GetMessage("ABBYY_CLOUD_UDALITQ_PROFILQ") . $lAdmin->ActionDoGroup($arRow['ID'], "delete")
+    );
+
+    $row->AddActions($arActions);
+}
+
+$aContext = array(
+    array(
+        "ICON" => "btn_new",
+        "TEXT" => GetMessage("ABBYY_CLOUD_DOBAVITQ_PROFILQ"),
+        "ONCLICK" => "location.href = 'abbyy.cloud_profile.php'",
+        "TITLE" => GetMessage("ABBYY_CLOUD_DOBAVITQ_PROFILQ"),
+    ),
+);
+
+$lAdmin->AddAdminContextMenu($aContext);
+
+$lAdmin->AddGroupActionTable(Array(
+    "delete" => GetMessage("MAIN_ADMIN_LIST_DELETE"),
+));
+
+$lAdmin->CheckListMode();
+
+
+require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_after.php");
+?>
+
+<? $lAdmin->DisplayList(); ?>
+
+<? require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/epilog_admin.php"); ?>

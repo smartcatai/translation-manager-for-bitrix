@@ -1,0 +1,9 @@
+{
+    "require": {
+        "jane/open-api": "^1.2",
+        "php-http/socket-client": "^1.0",
+        "php-http/plugins": "^1.0.1",
+        "php-http/message": "^1.0",
+        "guzzlehttp/psr7": "^1.2"
+    }
+}
