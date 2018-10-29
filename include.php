@@ -1,6 +1,6 @@
 <?php
 
-require_once dirname(__FILE__) . "/lib/ABBYY/vendor/autoload.php";
+require_once dirname(__FILE__) . "/lib/Smarcat/vendor/autoload.php";
 
 /**
  * ������������ ������� �� ����� lib/
@@ -13,21 +13,13 @@ function smartcat_connector_autoload($className)
     $className = ltrim($className, '\\');
     $arParts = explode('\\', $className);
 
-    $isABBYY = $arParts[0] == 'ABBYY';
+    $isSmarcat = $arParts[0] == 'Smarcat';
     $sModuleCheck = strtolower($arParts[0] . '.' . $arParts[1]);
 
-    if (!$isABBYY && $sModuleCheck != $sModuleId)
+    if (!$isSmarcat && $sModuleCheck != $sModuleId)
         return;
 
-
-    $arParts = array_splice($arParts, 2);
-
-    if ($isABBYY) {
-        $arParts = array_merge(array('ABBYY', 'src', 'ABBYY', 'CloudAPI'), $arParts);
-    }
-
-
-    if (!empty($arParts)) {
+    if (!empty($arParts) && !$isSmarcat) {
         $fileName = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, $arParts) . '.php';
         if (file_exists($fileName))
             require_once $fileName;
