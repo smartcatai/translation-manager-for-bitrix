@@ -249,11 +249,7 @@ class LangHelper
      */
     public static function getLanguagesForHT($langFrom, $htType)
     {
-        $apiId = Option::get('smartcat.connector', 'api_id');
-        $apiSecret = Option::get('smartcat.connector', 'api_secret');
-
-
-        $cloudApi = new SmartCAT($apiId, $apiSecret);
+        $cloudApi =  \Smartcat\Connector\Helper\ApiHelper::createApi();
 
         $priceManager = $cloudApi->getPricesManager();
 

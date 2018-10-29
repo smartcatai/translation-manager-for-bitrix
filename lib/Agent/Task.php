@@ -44,9 +44,7 @@ class Task
 
         if ($rsTasks->getSelectedRowsCount() > 0) {
 
-            $apiId = \Bitrix\Main\Config\Option::get('smartcat.connector', 'api_id');
-            $apiSecret = \Bitrix\Main\Config\Option::get('smartcat.connector', 'api_secret');
-            $cloudApi = new \Smartcat\ConnectorAPI\SmartCAT($apiId, $apiSecret);
+            $cloudApi = \Smartcat\Connector\Helper\ApiHelper::createApi();
             $fileManager = $cloudApi->getFileManager();
 
             while ($arTask = $rsTasks->fetch()) {
@@ -90,10 +88,8 @@ class Task
 
         if ($rsTasks->getSelectedRowsCount() > 0) {
 
-            $apiId = \Bitrix\Main\Config\Option::get('smartcat.connector', 'api_id');
-            $apiSecret = \Bitrix\Main\Config\Option::get('smartcat.connector', 'api_secret');
             $notifyEmail = \Bitrix\Main\Config\Option::get('smartcat.connector', 'notify_email');
-            $cloudApi = new \Smartcat\ConnectorAPI\SmartCAT($apiId, $apiSecret);
+            $cloudApi =  \Smartcat\Connector\Helper\ApiHelper::createApi();
             $orderManager = $cloudApi->getOrderManager();
             $fileManager = $cloudApi->getFileManager();
 
@@ -191,9 +187,7 @@ class Task
 
         if ($rsTasks->getSelectedRowsCount() > 0) {
 
-            $apiId = \Bitrix\Main\Config\Option::get('smartcat.connector', 'api_id');
-            $apiSecret = \Bitrix\Main\Config\Option::get('smartcat.connector', 'api_secret');
-            $cloudApi = new \Smartcat\ConnectorAPI\SmartCAT($apiId, $apiSecret);
+            $cloudApi = \Smartcat\Connector\Helper\ApiHelper::createApi();
             $orderManager = $cloudApi->getOrderManager();
             $fileManager = $cloudApi->getFileManager();
 

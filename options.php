@@ -25,11 +25,12 @@ $arAllOptions = Array();
 $arAllOptions[] = GetMessage("SMARTCAT_CONNECTOR_DOSTUP_K");
 $arAllOptions[] = Array("api_id", "App ID", '', Array('text', 100));
 $arAllOptions[] = Array("api_secret", "Api token", '', Array('text', 100));
+$arAllOptions[] = Array("api_server", "Server", \SmartCAT\API\SmartCAT::SC_EUROPE, Array('selectbox', Array(
+    \SmartCAT\API\SmartCAT::SC_ASIA => 'Asia',
+    \SmartCAT\API\SmartCAT::SC_EUROPE => 'Europe',
+    \SmartCAT\API\SmartCAT::SC_USA => 'USA',
+)));
 
-$arAllOptions[] = GetMessage("SMARTCAT_CONNECTOR_DOPOLNITELQNYE_NASTR");
-$arAllOptions[] = Array("wait_linked_elements", GetMessage("SMARTCAT_CONNECTOR_NE_PEREVODITQ_ELEMEN"), '', Array('checkbox'));
-$arAllOptions[] = Array("notify_email", "Email ".GetMessage("SMARTCAT_CONNECTOR_DLA_UVEDOMLENIY"), '', Array('text', 100));
-$arAllOptions[] = Array("add_css", GetMessage("SMARTCAT_CONNECTOR_PUTQ_K_DOPOLNITELQNO"), '', Array('text', 100));
 
 
 $arAllOptions[] = Array("note" => GetMessage("SMARTCAT_CONNECTOR_VERSIA_SHEMY") . $schema->getCurrentVersion() . ' ' . ($schema->needUpgrade() ? '<a href="' . $APPLICATION->GetCurPageParam('db_upgrade=y') . '">'.GetMessage("SMARTCAT_CONNECTOR_OBNOVITQ_DO") . $schema->getLastVersion() . '</a>' : ''));

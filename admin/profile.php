@@ -144,10 +144,8 @@ $arLanguagesTo = [];
  */
 if (!empty($arProfile['LANG'])) {
 
-    $apiId = \Bitrix\Main\Config\Option::get('smartcat.connector', 'api_id');
-    $apiSecret = \Bitrix\Main\Config\Option::get('smartcat.connector', 'api_secret');
 
-    $cloudApi = new \Smartcat\ConnectorAPI\SmartCAT($apiId, $apiSecret);
+    $cloudApi = \Smartcat\Connector\Helper\ApiHelper::createApi();
 
     $priceManager = $cloudApi->getPricesManager();
 
