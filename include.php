@@ -1,6 +1,6 @@
 <?php
 
-require_once dirname(__FILE__) . "/lib/Smarcat/vendor/autoload.php";
+require_once dirname(__FILE__) . "/lib/Smartcat/vendor/autoload.php";
 
 /**
  * ������������ ������� �� ����� lib/
