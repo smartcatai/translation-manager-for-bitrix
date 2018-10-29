@@ -1,33 +1,33 @@
 <?
-$MESS["SMARTCAT_CONNECTOR_NAZVANIE"] = "��������";
-$MESS["SMARTCAT_CONNECTOR_OPISANIE_DLA_ANONSA"] = "�������� ��� ������";
-$MESS["SMARTCAT_CONNECTOR_DETALQNOE_OPISANIE"] = "��������� ��������";
-$MESS["SMARTCAT_CONNECTOR_RAZDEL_INFOBLOKA"] = "������ ���������";
-$MESS["SMARTCAT_CONNECTOR_PROFILQ_NE_NAYDEN"] = "������� �� ������";
-$MESS["SMARTCAT_CONNECTOR_NET_DOSTUPNYH_AZYKOV"] = "��� ��������� ������ ��� ��������";
-$MESS["SMARTCAT_CONNECTOR_NE_UKAZAN_INFOBLOK_D"] = "�� ������ �������� ��� ��������";
-$MESS["SMARTCAT_CONNECTOR_NE_UDALOSQ_NAYTI_INF"] = "�� ������� ����� �������� ��� ��������";
-$MESS["SMARTCAT_CONNECTOR_NE_UDALOSQ_OBNOVITQ"] = "�� ������� �������� �������: ";
-$MESS["SMARTCAT_CONNECTOR_NE_UDALOSQ_SOZDATQ_P"] = "�� ������� ������� �������: ";
-$MESS["SMARTCAT_CONNECTOR_NE_UDALOSQ_NAYTI_INF1"] = "�� ������� ����� �������� \"";
-$MESS["SMARTCAT_CONNECTOR_PROFILI_PEREVODA"] = "������� ��������";
-$MESS["SMARTCAT_CONNECTOR_PROFILQ_PEREVODA"] = "������� ��������";
-$MESS["SMARTCAT_CONNECTOR_INFOBLOK"] = "��������";
-$MESS["SMARTCAT_CONNECTOR_VYBRATQ"] = "�������]";
-$MESS["SMARTCAT_CONNECTOR_AKTIVNOSTQ"] = "����������";
-$MESS["SMARTCAT_CONNECTOR_AZYK"] = "����";
-$MESS["SMARTCAT_CONNECTOR_PARAMETRY_PEREVODA"] = "��������� ��������";
-$MESS["SMARTCAT_CONNECTOR_TIP_PEREVODA"] = "��� ��������";
-$MESS["SMARTCAT_CONNECTOR_PUBLIKOVATQ_PEREVOD"] = "����������� ������� �������������";
-$MESS["SMARTCAT_CONNECTOR_AVTOMATICESKI_PEREVO"] = "������������� ���������� ����� ���������";
-$MESS["SMARTCAT_CONNECTOR_KAKIE_POLA_PEREVODIT"] = "����� ���� ����������?";
-$MESS["SMARTCAT_CONNECTOR_NA_KAKIE_AZYKI_PEREV"] = "�� ����� ����� ����������?";
-$MESS["SMARTCAT_CONNECTOR_SOZDATQ_NOVYY"] = "������� �����]";
-$MESS["SMARTCAT_CONNECTOR_VYBRATQ_AZYK"] = "������� ����]";
-$MESS["SMARTCAT_CONNECTOR_DOBAVITQ_INFOBLOK"] = "�������� ��������";
-$MESS["SMARTCAT_CONNECTOR_NE_UDALOSQ_PODKLUCIT"] = "�� ������� ������������ � smartcat.connector. ��������� ";
-$MESS["SMARTCAT_CONNECTOR_NASTROYKI_DO"] = "���������
-        �������";
-$MESS["SMARTCAT_CONNECTOR_K_SERVISA"] = "� API �������.
+$MESS["SMARTCAT_CONNECTOR_NAZVANIE"] = "Название";
+$MESS["SMARTCAT_CONNECTOR_OPISANIE_DLA_ANONSA"] = "Описание для анонса";
+$MESS["SMARTCAT_CONNECTOR_DETALQNOE_OPISANIE"] = "Детальное описание";
+$MESS["SMARTCAT_CONNECTOR_RAZDEL_INFOBLOKA"] = "Раздел инфоблока";
+$MESS["SMARTCAT_CONNECTOR_PROFILQ_NE_NAYDEN"] = "Профиль не найден";
+$MESS["SMARTCAT_CONNECTOR_NET_DOSTUPNYH_AZYKOV"] = "Нет доступных языков для перевода";
+$MESS["SMARTCAT_CONNECTOR_NE_UKAZAN_INFOBLOK_D"] = "Не указан инфоблок для перевода";
+$MESS["SMARTCAT_CONNECTOR_NE_UDALOSQ_NAYTI_INF"] = "Не удалось найти инфоблок для перевода";
+$MESS["SMARTCAT_CONNECTOR_NE_UDALOSQ_OBNOVITQ"] = "Не удалось обновить профиль: ";
+$MESS["SMARTCAT_CONNECTOR_NE_UDALOSQ_SOZDATQ_P"] = "Не удалось создать профиль: ";
+$MESS["SMARTCAT_CONNECTOR_NE_UDALOSQ_NAYTI_INF1"] = "Не удалось найти инфоблок \"";
+$MESS["SMARTCAT_CONNECTOR_PROFILI_PEREVODA"] = "Профили перевода";
+$MESS["SMARTCAT_CONNECTOR_PROFILQ_PEREVODA"] = "Профиль перевода";
+$MESS["SMARTCAT_CONNECTOR_INFOBLOK"] = "Инфоблок";
+$MESS["SMARTCAT_CONNECTOR_VYBRATQ"] = "Выбрать]";
+$MESS["SMARTCAT_CONNECTOR_AKTIVNOSTQ"] = "Активность";
+$MESS["SMARTCAT_CONNECTOR_AZYK"] = "Язык";
+$MESS["SMARTCAT_CONNECTOR_PARAMETRY_PEREVODA"] = "Параметры перевода";
+$MESS["SMARTCAT_CONNECTOR_TIP_PEREVODA"] = "Тип перевода";
+$MESS["SMARTCAT_CONNECTOR_PUBLIKOVATQ_PEREVOD"] = "Публиковать перевод автоматически";
+$MESS["SMARTCAT_CONNECTOR_AVTOMATICESKI_PEREVO"] = "Автоматически переводить новые материалы";
+$MESS["SMARTCAT_CONNECTOR_KAKIE_POLA_PEREVODIT"] = "Какие поля переводить?";
+$MESS["SMARTCAT_CONNECTOR_NA_KAKIE_AZYKI_PEREV"] = "На какие языки переводить?";
+$MESS["SMARTCAT_CONNECTOR_SOZDATQ_NOVYY"] = "Создать новый]";
+$MESS["SMARTCAT_CONNECTOR_VYBRATQ_AZYK"] = "Выбрать язык]";
+$MESS["SMARTCAT_CONNECTOR_DOBAVITQ_INFOBLOK"] = "Добавить инфоблок";
+$MESS["SMARTCAT_CONNECTOR_NE_UDALOSQ_PODKLUCIT"] = "Не удалось подключиться к Abbyy.cloud. Проверьте ";
+$MESS["SMARTCAT_CONNECTOR_NASTROYKI_DO"] = "настройки
+        доступа";
+$MESS["SMARTCAT_CONNECTOR_K_SERVISA"] = "к API сервиса.
     ";
 ?>
