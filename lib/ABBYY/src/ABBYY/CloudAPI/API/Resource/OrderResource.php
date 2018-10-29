@@ -1,6 +1,6 @@
 <?php
 
-namespace ABBYY\CloudAPI\API\Resource;
+namespace Smartcat\ConnectorAPI\API\Resource;
 
 use Joli\Jane\OpenApi\Client\QueryParam;
 use Joli\Jane\OpenApi\Client\Resource;
@@ -10,13 +10,13 @@ class OrderResource extends Resource
     /**
      *
      *
-     * @param \ABBYY\CloudAPI\API\Model\SubmitOrderModel $model Order creation parameters
+     * @param \Smartcat\ConnectorAPI\API\Model\SubmitOrderModel $model Order creation parameters
      * @param array $parameters List of parameters
      * @param string $fetch Fetch mode (object or response)
      *
-     * @return \Psr\Http\Message\ResponseInterface|\ABBYY\CloudAPI\API\Model\FullOrderViewModel|\ABBYY\CloudAPI\API\Model\BadRequestBodyModel|\ABBYY\CloudAPI\API\Model\ErrorModel
+     * @return \Psr\Http\Message\ResponseInterface|\Smartcat\ConnectorAPI\API\Model\FullOrderViewModel|\Smartcat\ConnectorAPI\API\Model\BadRequestBodyModel|\Smartcat\ConnectorAPI\API\Model\ErrorModel
      */
-    public function orderSubmitOrder(\ABBYY\CloudAPI\API\Model\SubmitOrderModel $model, $parameters = array(), $fetch = self::FETCH_OBJECT)
+    public function orderSubmitOrder(\Smartcat\ConnectorAPI\API\Model\SubmitOrderModel $model, $parameters = array(), $fetch = self::FETCH_OBJECT)
     {
         $queryParam = new QueryParam();
         $url = '/v0/order';
@@ -48,7 +48,7 @@ class OrderResource extends Resource
      * @param array $parameters List of parameters
      * @param string $fetch Fetch mode (object or response)
      *
-     * @return \Psr\Http\Message\ResponseInterface|\ABBYY\CloudAPI\API\Model\ErrorModel
+     * @return \Psr\Http\Message\ResponseInterface|\Smartcat\ConnectorAPI\API\Model\ErrorModel
      */
     public function orderDeleteOrder($id, $parameters = array(), $fetch = self::FETCH_OBJECT)
     {
@@ -75,7 +75,7 @@ class OrderResource extends Resource
      * @param array $parameters List of parameters
      * @param string $fetch Fetch mode (object or response)
      *
-     * @return \Psr\Http\Message\ResponseInterface|\ABBYY\CloudAPI\API\Model\FullOrderViewModel|\ABBYY\CloudAPI\API\Model\ErrorModel
+     * @return \Psr\Http\Message\ResponseInterface|\Smartcat\ConnectorAPI\API\Model\FullOrderViewModel|\Smartcat\ConnectorAPI\API\Model\ErrorModel
      */
     public function orderGetOrder($id, $parameters = array(), $fetch = self::FETCH_OBJECT)
     {
@@ -101,13 +101,13 @@ class OrderResource extends Resource
     /**
      *
      *
-     * @param \ABBYY\CloudAPI\API\Model\GetProposalModel $model Order calculation parameters
+     * @param \Smartcat\ConnectorAPI\API\Model\GetProposalModel $model Order calculation parameters
      * @param array $parameters List of parameters
      * @param string $fetch Fetch mode (object or response)
      *
-     * @return \Psr\Http\Message\ResponseInterface|\ABBYY\CloudAPI\API\Model\ProposalViewModel[]|\ABBYY\CloudAPI\API\Model\BadRequestBodyModel|\ABBYY\CloudAPI\API\Model\ErrorModel
+     * @return \Psr\Http\Message\ResponseInterface|\Smartcat\ConnectorAPI\API\Model\ProposalViewModel[]|\Smartcat\ConnectorAPI\API\Model\BadRequestBodyModel|\Smartcat\ConnectorAPI\API\Model\ErrorModel
      */
-    public function orderGetQuotes(\ABBYY\CloudAPI\API\Model\GetProposalModel $model, $parameters = array(), $fetch = self::FETCH_OBJECT)
+    public function orderGetQuotes(\Smartcat\ConnectorAPI\API\Model\GetProposalModel $model, $parameters = array(), $fetch = self::FETCH_OBJECT)
     {
         $queryParam = new QueryParam();
         $url = '/v0/order/quotes';
@@ -141,13 +141,13 @@ class OrderResource extends Resource
     /**
      *
      *
-     * @param \ABBYY\CloudAPI\API\Model\GetOrdersPageModel $model
+     * @param \Smartcat\ConnectorAPI\API\Model\GetOrdersPageModel $model
      * @param array $parameters List of parameters
      * @param string $fetch Fetch mode (object or response)
      *
-     * @return \Psr\Http\Message\ResponseInterface|\ABBYY\CloudAPI\API\Model\OrdersPageViewModel|\ABBYY\CloudAPI\API\Model\ErrorModel
+     * @return \Psr\Http\Message\ResponseInterface|\Smartcat\ConnectorAPI\API\Model\OrdersPageViewModel|\Smartcat\ConnectorAPI\API\Model\ErrorModel
      */
-    public function orderGetOrders(\ABBYY\CloudAPI\API\Model\GetOrdersPageModel $model, $parameters = array(), $fetch = self::FETCH_OBJECT)
+    public function orderGetOrders(\Smartcat\ConnectorAPI\API\Model\GetOrdersPageModel $model, $parameters = array(), $fetch = self::FETCH_OBJECT)
     {
         $queryParam = new QueryParam();
         $url = '/v0/order/all';

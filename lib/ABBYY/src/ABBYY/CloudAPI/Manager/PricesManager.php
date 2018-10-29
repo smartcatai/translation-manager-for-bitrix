@@ -6,8 +6,8 @@
  * Time: 19:10
  */
 
-namespace ABBYY\CloudAPI\Manager;
-use ABBYY\CloudAPI\API\Resource\PricesResource;
+namespace Smartcat\ConnectorAPI\Manager;
+use Smartcat\ConnectorAPI\API\Resource\PricesResource;
 
 class PricesManager extends PricesResource
 {

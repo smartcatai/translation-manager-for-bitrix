@@ -1,3 +1,3 @@
 <?
-$MESS["ABBYY_CLOUD_NE_UDALATQ_TABLICY"] = "Не удалять таблицы";
+$MESS["SMARTCAT_CONNECTOR_NE_UDALATQ_TABLICY"] = "пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ";
 ?>

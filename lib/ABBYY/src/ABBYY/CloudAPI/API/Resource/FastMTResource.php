@@ -1,6 +1,6 @@
 <?php
 
-namespace ABBYY\CloudAPI\API\Resource;
+namespace Smartcat\ConnectorAPI\API\Resource;
 
 use Joli\Jane\OpenApi\Client\QueryParam;
 use Joli\Jane\OpenApi\Client\Resource;
@@ -9,13 +9,13 @@ class FastMTResource extends Resource
     /**
      * 
      *
-     * @param \ABBYY\CloudAPI\API\Model\TranslateParams $translateParams Machine Translation order creation parameters
+     * @param \Smartcat\ConnectorAPI\API\Model\TranslateParams $translateParams Machine Translation order creation parameters
      * @param array  $parameters List of parameters
      * @param string $fetch      Fetch mode (object or response)
      *
-     * @return \Psr\Http\Message\ResponseInterface|\ABBYY\CloudAPI\API\Model\TranslateResponse|\ABBYY\CloudAPI\API\Model\BadRequestBodyModel|\ABBYY\CloudAPI\API\Model\ErrorModel
+     * @return \Psr\Http\Message\ResponseInterface|\Smartcat\ConnectorAPI\API\Model\TranslateResponse|\Smartcat\ConnectorAPI\API\Model\BadRequestBodyModel|\Smartcat\ConnectorAPI\API\Model\ErrorModel
      */
-    public function fastMTTranslate(\ABBYY\CloudAPI\API\Model\TranslateParams $translateParams, $parameters = array(), $fetch = self::FETCH_OBJECT)
+    public function fastMTTranslate(\Smartcat\ConnectorAPI\API\Model\TranslateParams $translateParams, $parameters = array(), $fetch = self::FETCH_OBJECT)
     {
         $queryParam = new QueryParam();
         $url = '/v0/fastMT';

@@ -1,6 +1,6 @@
 <?php
 
-namespace ABBYY\CloudAPI\API\Resource;
+namespace Smartcat\ConnectorAPI\API\Resource;
 
 use Joli\Jane\OpenApi\Client\QueryParam;
 use Joli\Jane\OpenApi\Client\Resource;
@@ -17,7 +17,7 @@ class PricesResource extends Resource
      * }
      * @param string $fetch Fetch mode (object or response)
      *
-     * @return \Psr\Http\Message\ResponseInterface|\ABBYY\CloudAPI\API\Model\ServicePriceViewModel[]|\ABBYY\CloudAPI\API\Model\ErrorModel
+     * @return \Psr\Http\Message\ResponseInterface|\Smartcat\ConnectorAPI\API\Model\ServicePriceViewModel[]|\Smartcat\ConnectorAPI\API\Model\ErrorModel
      */
     public function pricesGetAccountPrices($parameters = array(), $fetch = self::FETCH_OBJECT)
     {

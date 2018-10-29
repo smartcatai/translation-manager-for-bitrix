@@ -6,8 +6,8 @@
  * Time: 14:34
  */
 
-namespace ABBYY\CloudAPI\Manager;
-use ABBYY\CloudAPI\API\Resource\FileResource;
+namespace Smartcat\ConnectorAPI\Manager;
+use Smartcat\ConnectorAPI\API\Resource\FileResource;
 use Joli\Jane\OpenApi\Client\QueryParam;
 
 class FileManager extends FileResource
@@ -26,7 +26,7 @@ class FileManager extends FileResource
      * }
      * @param string $fetch      Fetch mode (object or response)
      *
-     * @return \Psr\Http\Message\ResponseInterface|\ABBYY\CloudAPI\API\Model\FileInfoViewModel[]|\ABBYY\CloudAPI\API\Model\ErrorModel
+     * @return \Psr\Http\Message\ResponseInterface|\Smartcat\ConnectorAPI\API\Model\FileInfoViewModel[]|\Smartcat\ConnectorAPI\API\Model\ErrorModel
      */
     public function fileUploadFile($parameters = array(), $fetch = self::FETCH_OBJECT)
     {

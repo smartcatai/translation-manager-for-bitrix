@@ -1,15 +1,15 @@
 <?php
 
-namespace Abbyy\Cloud\Agent;
+namespace Smartcat\Connector\Agent;
 
-use Abbyy\Cloud\Helper\IblockHelper;
-use Abbyy\Cloud\Helper\StringHelper;
-use Abbyy\Cloud\ProfileIblockTable;
-use Abbyy\Cloud\ProfileTable;
-use Abbyy\Cloud\TaskFileTable;
-use Abbyy\Cloud\TaskTable;
-use ABBYY\CloudAPI\API\Model\FileInfoViewModel;
-use ABBYY\CloudAPI\API\Model\FullOrderViewModel;
+use Smartcat\Connector\Helper\IblockHelper;
+use Smartcat\Connector\Helper\StringHelper;
+use Smartcat\Connector\ProfileIblockTable;
+use Smartcat\Connector\ProfileTable;
+use Smartcat\Connector\TaskFileTable;
+use Smartcat\Connector\TaskTable;
+use Smartcat\ConnectorAPI\API\Model\FileInfoViewModel;
+use Smartcat\ConnectorAPI\API\Model\FullOrderViewModel;
 use Bitrix\Main\Loader;
 use Bitrix\Main\Type\DateTime;
 
@@ -44,9 +44,9 @@ class Task
 
         if ($rsTasks->getSelectedRowsCount() > 0) {
 
-            $apiId = \Bitrix\Main\Config\Option::get('abbyy.cloud', 'api_id');
-            $apiSecret = \Bitrix\Main\Config\Option::get('abbyy.cloud', 'api_secret');
-            $cloudApi = new \ABBYY\CloudAPI\SmartCAT($apiId, $apiSecret);
+            $apiId = \Bitrix\Main\Config\Option::get('smartcat.connector', 'api_id');
+            $apiSecret = \Bitrix\Main\Config\Option::get('smartcat.connector', 'api_secret');
+            $cloudApi = new \Smartcat\ConnectorAPI\SmartCAT($apiId, $apiSecret);
             $fileManager = $cloudApi->getFileManager();
 
             while ($arTask = $rsTasks->fetch()) {
@@ -90,10 +90,10 @@ class Task
 
         if ($rsTasks->getSelectedRowsCount() > 0) {
 
-            $apiId = \Bitrix\Main\Config\Option::get('abbyy.cloud', 'api_id');
-            $apiSecret = \Bitrix\Main\Config\Option::get('abbyy.cloud', 'api_secret');
-            $notifyEmail = \Bitrix\Main\Config\Option::get('abbyy.cloud', 'notify_email');
-            $cloudApi = new \ABBYY\CloudAPI\SmartCAT($apiId, $apiSecret);
+            $apiId = \Bitrix\Main\Config\Option::get('smartcat.connector', 'api_id');
+            $apiSecret = \Bitrix\Main\Config\Option::get('smartcat.connector', 'api_secret');
+            $notifyEmail = \Bitrix\Main\Config\Option::get('smartcat.connector', 'notify_email');
+            $cloudApi = new \Smartcat\ConnectorAPI\SmartCAT($apiId, $apiSecret);
             $orderManager = $cloudApi->getOrderManager();
             $fileManager = $cloudApi->getFileManager();
 
@@ -123,11 +123,11 @@ class Task
                         $arLangTo[] = $arFile['LANG_TO'];
                     }
 
-                    $file = new \ABBYY\CloudAPI\API\Model\GetFileModel();
+                    $file = new \Smartcat\ConnectorAPI\API\Model\GetFileModel();
                     $file->setId($arTask['FILE_ID']);
                     $file->setToken($arTask['FILE_TOKEN']);
 
-                    $order = new \ABBYY\CloudAPI\API\Model\SubmitOrderModel();
+                    $order = new \Smartcat\ConnectorAPI\API\Model\SubmitOrderModel();
                     $order->setFiles([$file]);
                     $order->setFrom($arProfile['LANG']);
                     $order->setTo($arLangTo);
@@ -191,9 +191,9 @@ class Task
 
         if ($rsTasks->getSelectedRowsCount() > 0) {
 
-            $apiId = \Bitrix\Main\Config\Option::get('abbyy.cloud', 'api_id');
-            $apiSecret = \Bitrix\Main\Config\Option::get('abbyy.cloud', 'api_secret');
-            $cloudApi = new \ABBYY\CloudAPI\SmartCAT($apiId, $apiSecret);
+            $apiId = \Bitrix\Main\Config\Option::get('smartcat.connector', 'api_id');
+            $apiSecret = \Bitrix\Main\Config\Option::get('smartcat.connector', 'api_secret');
+            $cloudApi = new \Smartcat\ConnectorAPI\SmartCAT($apiId, $apiSecret);
             $orderManager = $cloudApi->getOrderManager();
             $fileManager = $cloudApi->getFileManager();
 
@@ -306,8 +306,8 @@ class Task
                                 } catch (\Exception $e) {
 
                                     /**
-                                     * Если один из связанных элементов в свойствах не найден,
-                                     * оставляем таск в статусе PROCESS и ждем, пока все связанные элементы будут переведены
+                                     * пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ,
+                                     * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ PROCESS пїЅ пїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
                                      */
                                     if ($e->getCode() == IblockHelper::ERROR_LINKED_ELEMENT_NOT_FOUND) {
                                         TaskTable::update($arTask['ID'], [
@@ -403,7 +403,7 @@ class Task
 
                         TaskTable::update($arTask['ID'], [
                             'STATUS' => TaskTable::STATUS_FAILED,
-                            'COMMENT' => GetMessage("ABBYY_CLOUD_TREBUETSA_OPLATA"),
+                            'COMMENT' => GetMessage("SMARTCAT_CONNECTOR_TREBUETSA_OPLATA"),
                             'DEADLINE' => $result->getDeadline() instanceof \DateTime ? DateTime::createFromTimestamp($result->getDeadline()->getTimestamp()) : ''
                         ]);
                     } elseif (in_array($result->getStatus(), ['InProgress', 'Paid', 'Submitted', 'New'])) {

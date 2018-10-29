@@ -1,6 +1,6 @@
 <?php
 
-namespace Abbyy\Cloud\Helper;
+namespace Smartcat\Connector\Helper;
 
 
 class ArrayHelper

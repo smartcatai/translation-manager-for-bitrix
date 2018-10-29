@@ -6,13 +6,13 @@
  * Time: 10:36
  */
 
-namespace ABBYY\CloudAPI;
+namespace Smartcat\ConnectorAPI;
 
-use ABBYY\CloudAPI\API\Normalizer\NormalizerFactory;
-use ABBYY\CloudAPI\Manager\FastMTManager;
-use ABBYY\CloudAPI\Manager\FileManager;
-use ABBYY\CloudAPI\Manager\OrderManager;
-use ABBYY\CloudAPI\Manager\PricesManager;
+use Smartcat\ConnectorAPI\API\Normalizer\NormalizerFactory;
+use Smartcat\ConnectorAPI\Manager\FastMTManager;
+use Smartcat\ConnectorAPI\Manager\FileManager;
+use Smartcat\ConnectorAPI\Manager\OrderManager;
+use Smartcat\ConnectorAPI\Manager\PricesManager;
 
 use Http\Client\HttpClient;
 use Http\Message\MessageFactory;
@@ -55,8 +55,8 @@ class SmartCAT
     private $password;
 
     /**
-     * @param string $login логин
-     * @param string $password пароль
+     * @param string $login пїЅпїЅпїЅпїЅпїЅ
+     * @param string $password пїЅпїЅпїЅпїЅпїЅпїЅ
      */
     public function __construct($login, $password)
     {
@@ -101,7 +101,7 @@ class SmartCAT
     private $fileManager;
 
     /**
-     * Интерфейс для работы с файлами
+     * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
      *
      * @return FileManager
      */
@@ -119,7 +119,7 @@ class SmartCAT
     private $fastMTManager;
 
     /**
-     * Интерфейс для работы с машинным переводом
+     * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
      *
      * @return FastMTManager
      */
@@ -137,7 +137,7 @@ class SmartCAT
     private $orderManager;
 
     /**
-     * Интерфейс для работы с экспортом документов
+     * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
      *
      * @return OrderManager
      */
@@ -155,7 +155,7 @@ class SmartCAT
     private $pricesManager;
 
     /**
-     * Интерфейс для работы с документами
+     * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
      *
      * @return PricesManager
      */

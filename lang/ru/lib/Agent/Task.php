@@ -1,3 +1,3 @@
 <?
-$MESS["ABBYY_CLOUD_TREBUETSA_OPLATA"] = "Требуется оплата";
+$MESS["SMARTCAT_CONNECTOR_TREBUETSA_OPLATA"] = "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ";
 ?>

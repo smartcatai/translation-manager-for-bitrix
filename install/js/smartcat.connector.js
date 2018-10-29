@@ -8,8 +8,8 @@ $(function () {
 
     $(document).on('click', '.adm-list-table-footer [name=apply]', function (e) {
         var action = $('select[name=action]').val();
-        if (action.indexOf('abbyy_cloud_translate_') !== -1) {
-            var profile = action.replace('abbyy_cloud_translate_', '');
+        if (action.indexOf('smartcat_connector_translate_') !== -1) {
+            var profile = action.replace('smartcat_connector_translate_', '');
             var existedItems = [];
 
             $('.adm-list-table input[type=checkbox]:checked').each(function () {

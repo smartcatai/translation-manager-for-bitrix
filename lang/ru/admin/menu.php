@@ -1,5 +1,5 @@
 <?
-$MESS["ABBYY_CLOUD_PROFILI_PEREVODA"] = "Профили перевода";
-$MESS["ABBYY_CLOUD_ZAKAZY"] = "Заказы";
-$MESS["ABBYY_CLOUD_ALS"] = "ALS коннектор";
+$MESS["SMARTCAT_CONNECTOR_PROFILI_PEREVODA"] = "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ";
+$MESS["SMARTCAT_CONNECTOR_ZAKAZY"] = "пїЅпїЅпїЅпїЅпїЅпїЅ";
+$MESS["SMARTCAT_CONNECTOR_ALS"] = "ALS пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ";
 ?>

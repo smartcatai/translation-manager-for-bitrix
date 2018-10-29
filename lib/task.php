@@ -1,5 +1,5 @@
 <?php
-namespace Abbyy\Cloud;
+namespace Smartcat\Connector;
 
 use Bitrix\Main,
     Bitrix\Main\Localization\Loc;
@@ -33,12 +33,12 @@ class TaskTable extends Main\Entity\DataManager
     public static function getStatusList()
     {
         return [
-            self::STATUS_NEW => Loc::getMessage('ABBYY_CLOUD_TASK_ENTITY_STATUS_NEW'),
-            self::STATUS_UPLOADED => Loc::getMessage('ABBYY_CLOUD_TASK_ENTITY_STATUS_UPLOADED'),
-            self::STATUS_PROCESS => Loc::getMessage('ABBYY_CLOUD_TASK_ENTITY_STATUS_PROCESS'),
-            self::STATUS_FAILED => Loc::getMessage('ABBYY_CLOUD_TASK_ENTITY_STATUS_FAILED'),
-            self::STATUS_SUCCESS => Loc::getMessage('ABBYY_CLOUD_TASK_ENTITY_STATUS_SUCCESS'),
-            self::STATUS_CANCELED => Loc::getMessage('ABBYY_CLOUD_TASK_ENTITY_STATUS_CANCELED'),
+            self::STATUS_NEW => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_STATUS_NEW'),
+            self::STATUS_UPLOADED => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_STATUS_UPLOADED'),
+            self::STATUS_PROCESS => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_STATUS_PROCESS'),
+            self::STATUS_FAILED => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_STATUS_FAILED'),
+            self::STATUS_SUCCESS => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_STATUS_SUCCESS'),
+            self::STATUS_CANCELED => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_STATUS_CANCELED'),
         ];
     }
 
@@ -49,7 +49,7 @@ class TaskTable extends Main\Entity\DataManager
      */
     public static function getTableName()
     {
-        return 'b_abbyy_cloud_task';
+        return 'b_smartcat_connector_task';
     }
 
     /**
@@ -64,81 +64,81 @@ class TaskTable extends Main\Entity\DataManager
                 'data_type' => 'integer',
                 'primary' => true,
                 'autocomplete' => true,
-                'title' => Loc::getMessage('ABBYY_CLOUD_TASK_ENTITY_ID_FIELD'),
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_ID_FIELD'),
             ),
             'PROFILE_ID' => array(
                 'data_type' => 'integer',
                 'required' => true,
-                'title' => Loc::getMessage('ABBYY_CLOUD_TASK_ENTITY_PROFILE_ID_FIELD'),
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_PROFILE_ID_FIELD'),
             ),
             'ELEMENT_ID' => array(
                 'data_type' => 'integer',
                 'required' => true,
-                'title' => Loc::getMessage('ABBYY_CLOUD_TASK_ENTITY_ELEMENT_ID_FIELD'),
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_ELEMENT_ID_FIELD'),
             ),
             'STATUS' => array(
                 'data_type' => 'string',
                 //'validation' => array(__CLASS__, 'validateStatus'),
-                'title' => Loc::getMessage('ABBYY_CLOUD_TASK_ENTITY_STATUS_FIELD'),
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_STATUS_FIELD'),
                 'default_value' => self::STATUS_NEW,
             ),
             'ORDER_ID' => array(
                 'data_type' => 'string',
                 'validation' => array(__CLASS__, 'validateOrderId'),
-                'title' => Loc::getMessage('ABBYY_CLOUD_TASK_ENTITY_ORDER_ID_FIELD'),
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_ORDER_ID_FIELD'),
             ),
             'ORDER_NUMBER' => array(
                 'data_type' => 'string',
                 'validation' => array(__CLASS__, 'validateOrderNumber'),
-                'title' => Loc::getMessage('ABBYY_CLOUD_TASK_ENTITY_ORDER_NUMBER_FIELD'),
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_ORDER_NUMBER_FIELD'),
             ),
             'DATE_CREATE' => array(
                 'data_type' => 'datetime',
-                'title' => Loc::getMessage('ABBYY_CLOUD_TASK_ENTITY_DATE_CREATE_FIELD'),
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_DATE_CREATE_FIELD'),
                 'default_value' => new Main\Type\DateTime(),
             ),
             'DEADLINE' => array(
                 'data_type' => 'datetime',
-                'title' => Loc::getMessage('ABBYY_CLOUD_TASK_ENTITY_DEADLINE_FIELD'),
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_DEADLINE_FIELD'),
                 'default_value' => new Main\Type\DateTime(),
             ),
             'DATE_UPDATE' => array(
                 'data_type' => 'datetime',
-                'title' => Loc::getMessage('ABBYY_CLOUD_TASK_ENTITY_DATE_UPDATE_FIELD'),
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_DATE_UPDATE_FIELD'),
                 'default_value' => new Main\Type\DateTime(),
             ),
             'CONTENT' => array(
                 'data_type' => 'text',
-                'title' => Loc::getMessage('ABBYY_CLOUD_TASK_ENTITY_CONTENT_FIELD'),
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_CONTENT_FIELD'),
             ),
             'FILE_ID' => array(
                 'data_type' => 'string',
                 'validation' => array(__CLASS__, 'validateFileId'),
-                'title' => Loc::getMessage('ABBYY_CLOUD_TASK_ENTITY_FILE_ID_FIELD'),
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_FILE_ID_FIELD'),
             ),
             'FILE_TOKEN' => array(
                 'data_type' => 'string',
                 'validation' => array(__CLASS__, 'validateFileToken'),
-                'title' => Loc::getMessage('ABBYY_CLOUD_TASK_ENTITY_FILE_TOKEN_FIELD'),
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_FILE_TOKEN_FIELD'),
             ),
             'COMMENT' => array(
                 'data_type' => 'text',
-                'title' => Loc::getMessage('ABBYY_CLOUD_TASK_ENTITY_COMMENT_FIELD'),
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_COMMENT_FIELD'),
             ),
             'AMOUNT' => array(
                 'data_type' => 'float',
-                'title' => Loc::getMessage('ABBYY_CLOUD_TASK_ENTITY_AMOUNT_FIELD'),
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_AMOUNT_FIELD'),
             ),
             'CURRENCY' => array(
                 'data_type' => 'string',
                 'validation' => array(__CLASS__, 'validateCurrency'),
-                'title' => Loc::getMessage('ABBYY_CLOUD_TASK_ENTITY_CURRENCY_FIELD'),
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_CURRENCY_FIELD'),
             ),
             'TYPE' => array(
                 'data_type' => 'string',
                 'required' => true,
                 'validation' => array(__CLASS__, 'validateType'),
-                'title' => Loc::getMessage('ABBYY_CLOUD_TASK_ENTITY_TYPE_FIELD'),
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_TYPE_FIELD'),
             ),
         );
     }

@@ -1,6 +1,6 @@
 <?php
 
-namespace ABBYY\CloudAPI\API\Model;
+namespace Smartcat\ConnectorAPI\API\Model;
 
 class UnitPriceViewModel
 {

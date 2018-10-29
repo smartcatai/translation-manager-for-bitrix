@@ -1,13 +1,13 @@
 <?php
 
-namespace Abbyy\Cloud\Helper;
+namespace Smartcat\Connector\Helper;
 
 
 use Bitrix\Main\Loader;
-use Abbyy\Cloud\ProfileIblockTable;
-use Abbyy\Cloud\ProfileTable;
-use Abbyy\Cloud\TaskFileTable;
-use Abbyy\Cloud\TaskTable;
+use Smartcat\Connector\ProfileIblockTable;
+use Smartcat\Connector\ProfileTable;
+use Smartcat\Connector\TaskFileTable;
+use Smartcat\Connector\TaskTable;
 use Bitrix\Main\Type\DateTime;
 
 class TaskHelper
@@ -119,7 +119,7 @@ class TaskHelper
             }
         }
 
-        $sContent = str_replace('&nbsp;', '', $sContent); // abbyy.cloud bug
+        $sContent = str_replace('&nbsp;', '', $sContent); // smartcat.connector bug
         return $sContent;
     }
 }

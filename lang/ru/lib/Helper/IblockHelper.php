@@ -1,5 +1,5 @@
 <?
-$MESS["ABBYY_CLOUD_NE_UDALOSQ_NAYTI_ISH"] = "Не удалось найти исходный инфоблок";
-$MESS["ABBYY_CLOUD_NE_UDALOSQ_SOZDATQ_T"] = "Не удалось создать тип инфоблока \"";
-$MESS["ABBYY_CLOUD_NE_UDALOSQ_SOZDATQ_I"] = "Не удалось создать инфоблок \"";
+$MESS["SMARTCAT_CONNECTOR_NE_UDALOSQ_NAYTI_ISH"] = "пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ";
+$MESS["SMARTCAT_CONNECTOR_NE_UDALOSQ_SOZDATQ_T"] = "пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ \"";
+$MESS["SMARTCAT_CONNECTOR_NE_UDALOSQ_SOZDATQ_I"] = "пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ \"";
 ?>

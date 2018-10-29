@@ -6,7 +6,7 @@
  * Time: 14:20
  */
 
-namespace ABBYY\CloudAPI\Manager;
+namespace Smartcat\ConnectorAPI\Manager;
 
 
 trait CommonManager

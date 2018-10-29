@@ -3,11 +3,11 @@
 require_once dirname(__FILE__) . "/lib/ABBYY/vendor/autoload.php";
 
 /**
- * Автозагрузка классов из папки lib/
+ * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ lib/
  * PSR-0
  * @param $className
  */
-function abbyy_cloud_autoload($className)
+function smartcat_connector_autoload($className)
 {
     $sModuleId = basename(dirname(__FILE__));
     $className = ltrim($className, '\\');
@@ -34,4 +34,4 @@ function abbyy_cloud_autoload($className)
     }
 }
 
-spl_autoload_register('abbyy_cloud_autoload');
+spl_autoload_register('smartcat_connector_autoload');

@@ -1,4 +1,4 @@
 <?
-$MESS["ABBYY_CLOUD_KONNEKTOR"] = "Translation API от ABBYY LS";
-$MESS["ABBYY_CLOUD_UDALENIE_MODULA"] = "Удаление модуля";
+$MESS["SMARTCAT_CONNECTOR_KONNEKTOR"] = "Smartcat translate connector";
+$MESS["SMARTCAT_CONNECTOR_UDALENIE_MODULA"] = "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ";
 ?>

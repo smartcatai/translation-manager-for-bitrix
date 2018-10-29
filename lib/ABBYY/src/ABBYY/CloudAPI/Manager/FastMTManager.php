@@ -6,8 +6,8 @@
  * Time: 19:10
  */
 
-namespace ABBYY\CloudAPI\Manager;
-use ABBYY\CloudAPI\API\Resource\FastMTResource;
+namespace Smartcat\ConnectorAPI\Manager;
+use Smartcat\ConnectorAPI\API\Resource\FastMTResource;
 
 class FastMTManager extends FastMTResource
 {

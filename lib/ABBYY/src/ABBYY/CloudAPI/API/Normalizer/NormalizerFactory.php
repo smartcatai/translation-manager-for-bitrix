@@ -1,6 +1,6 @@
 <?php
 
-namespace ABBYY\CloudAPI\API\Normalizer;
+namespace Smartcat\ConnectorAPI\API\Normalizer;
 
 use Joli\Jane\Normalizer\ReferenceNormalizer;
 use Joli\Jane\Normalizer\NormalizerArray;

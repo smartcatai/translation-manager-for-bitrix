@@ -4,34 +4,34 @@ IncludeModuleLangFile(__FILE__);
 ?><?
 IncludeModuleLangFile(__FILE__);
 
-$APPLICATION->SetAdditionalCSS('/bitrix/css/abbyy.cloud/abbyy.cloud.css');
+$APPLICATION->SetAdditionalCSS('/bitrix/css/smartcat.connector/smartcat.connector.css');
 
-if ($APPLICATION->GetGroupRight("abbyy.cloud") != "D") {
+if ($APPLICATION->GetGroupRight("smartcat.connector") != "D") {
     $aMenu = array(
         "parent_menu" => "global_menu_services",
-        "section" => "abbyy_cloud",
+        "section" => "smartcat_connector",
         "sort" => 200,
-        "text" => GetMessage("ABBYY_CLOUD_ALS"),
-        "title" => GetMessage("ABBYY_CLOUD_ALS"),
-        "icon" => "abbyy_cloud_menu_icon",
+        "text" => GetMessage("SMARTCAT_CONNECTOR_ALS"),
+        "title" => GetMessage("SMARTCAT_CONNECTOR_ALS"),
+        "icon" => "smartcat_connector_menu_icon",
         "page_icon" => "subscribe_page_icon",
-        "items_id" => "menu_abbyy_cloud",
+        "items_id" => "menu_smartcat_connector",
 
         "items" => Array(
             Array(
-                "url" => "abbyy.cloud_profiles.php?lang=" . LANGUAGE_ID,
-                "text" => GetMessage("ABBYY_CLOUD_PROFILI_PEREVODA"),
-                "title" => GetMessage("ABBYY_CLOUD_PROFILI_PEREVODA"),
+                "url" => "smartcat.connector_profiles.php?lang=" . LANGUAGE_ID,
+                "text" => GetMessage("SMARTCAT_CONNECTOR_PROFILI_PEREVODA"),
+                "title" => GetMessage("SMARTCAT_CONNECTOR_PROFILI_PEREVODA"),
                 "more_url" => Array(
-                    'abbyy.cloud_profile.php',
+                    'smartcat.connector_profile.php',
                 ),
             ),
             Array(
-                "url" => "abbyy.cloud_tasks.php?lang=" . LANGUAGE_ID,
-                "text" => GetMessage("ABBYY_CLOUD_ZAKAZY"),
-                "title" => GetMessage("ABBYY_CLOUD_ZAKAZY"),
+                "url" => "smartcat.connector_tasks.php?lang=" . LANGUAGE_ID,
+                "text" => GetMessage("SMARTCAT_CONNECTOR_ZAKAZY"),
+                "title" => GetMessage("SMARTCAT_CONNECTOR_ZAKAZY"),
                 "more_url" => Array(
-                    'abbyy.cloud_content.php',
+                    'smartcat.connector_content.php',
                 ),
             ),
         )

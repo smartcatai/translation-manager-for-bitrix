@@ -1,5 +1,5 @@
 <?php
-namespace Abbyy\Cloud;
+namespace Smartcat\Connector;
 
 use Bitrix\Main,
     Bitrix\Main\Localization\Loc;
@@ -42,7 +42,7 @@ class TaskFileTable extends Main\Entity\DataManager
      */
     public static function getTableName()
     {
-        return 'b_abbyy_cloud_task_file';
+        return 'b_smartcat_connector_task_file';
     }
 
     /**
@@ -57,49 +57,49 @@ class TaskFileTable extends Main\Entity\DataManager
                 'data_type' => 'integer',
                 'primary' => true,
                 'autocomplete' => true,
-                'title' => Loc::getMessage('ABBYY_CLOUD_TASK_FILE_ENTITY_ID_FIELD'),
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_FILE_ENTITY_ID_FIELD'),
             ),
             'TASK_ID' => array(
                 'data_type' => 'integer',
                 'required' => true,
-                'title' => Loc::getMessage('ABBYY_CLOUD_TASK_FILE_ENTITY_TASK_ID_FIELD'),
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_FILE_ENTITY_TASK_ID_FIELD'),
             ),
             'ELEMENT_ID' => array(
                 'data_type' => 'integer',
-                'title' => Loc::getMessage('ABBYY_CLOUD_TASK_FILE_ENTITY_ELEMENT_ID_FIELD'),
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_FILE_ENTITY_ELEMENT_ID_FIELD'),
             ),
 
             'LANG_FROM' => array(
                 'data_type' => 'string',
                 'required' => true,
                 'validation' => array(__CLASS__, 'validateLangFrom'),
-                'title' => Loc::getMessage('ABBYY_CLOUD_TASK_FILE_ENTITY_LANG_FROM_FIELD'),
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_FILE_ENTITY_LANG_FROM_FIELD'),
             ),
             'LANG_TO' => array(
                 'data_type' => 'string',
                 'required' => true,
                 'validation' => array(__CLASS__, 'validateLangTo'),
-                'title' => Loc::getMessage('ABBYY_CLOUD_TASK_FILE_ENTITY_LANG_TO_FIELD'),
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_FILE_ENTITY_LANG_TO_FIELD'),
             ),
 
             'TRANSLATION' => array(
                 'data_type' => 'text',
-                'title' => Loc::getMessage('ABBYY_CLOUD_TASK_FILE_ENTITY_TRANSLATION_FIELD'),
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_FILE_ENTITY_TRANSLATION_FIELD'),
             ),
             'STATUS' => array(
                 'data_type' => 'string',
                 //'validation' => array(__CLASS__, 'validateStatus'),
-                'title' => Loc::getMessage('ABBYY_CLOUD_TASK_FILE_ENTITY_STATUS_FIELD'),
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_FILE_ENTITY_STATUS_FIELD'),
                 'default_value' => self::STATUS_NEW,
             ),
             'DATE_CREATE' => array(
                 'data_type' => 'datetime',
-                'title' => Loc::getMessage('ABBYY_CLOUD_TASK_FILE_ENTITY_DATE_CREATE_FIELD'),
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_FILE_ENTITY_DATE_CREATE_FIELD'),
                 'default_value' => new Main\Type\DateTime(),
             ),
             'DATE_UPDATE' => array(
                 'data_type' => 'datetime',
-                'title' => Loc::getMessage('ABBYY_CLOUD_TASK_FILE_ENTITY_DATE_UPDATE_FIELD'),
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_FILE_ENTITY_DATE_UPDATE_FIELD'),
                 'default_value' => new Main\Type\DateTime(),
             ),
         );

@@ -1,13 +1,11 @@
 <?php
 
-class abbyy_cloud extends CModule
+class smartcat_connector extends CModule
 {
-    const MODULE_ID = 'abbyy.cloud';
+    const MODULE_ID = 'smartcat.connector';
 
-    public $MODULE_ID = 'abbyy.cloud';
+    public $MODULE_ID = self::MODULE_ID;
 
-    public $PARTNER_NAME = 'ALS';
-    public $PARTNER_URI = 'https://en.als.ltd/';
     public $MODULE_VERSION;
     public $MODULE_VERSION_DATE;
     public $DIR;
@@ -17,11 +15,7 @@ class abbyy_cloud extends CModule
         $arModuleVersion = array();
         include __DIR__ . '/version.php';
 
-        $this->PARTNER_NAME = 'ALS';
-        $this->PARTNER_URI = 'https://en.als.ltd/';
-
-        $this->MODULE_ID = 'abbyy.cloud';
-        $this->MODULE_NAME = GetMessage("ABBYY_CLOUD_KONNEKTOR");
+        $this->MODULE_NAME = GetMessage("SMARTCAT_CONNECTOR_KONNEKTOR");
         $this->MODULE_VERSION = $arModuleVersion['VERSION'];
         $this->MODULE_VERSION_DATE = $arModuleVersion['VERSION_DATE'];
 
@@ -230,8 +224,8 @@ class abbyy_cloud extends CModule
 
     public function UpgradeDB()
     {
-        \Bitrix\Main\Loader::includeModule('abbyy.cloud');
-        $schema = new \Abbyy\Cloud\Schema($_SERVER["DOCUMENT_ROOT"] . "/" . $this->DIR . "/modules/" . self::MODULE_ID . "/install/db/mysql");
+        \Bitrix\Main\Loader::includeModule(self::MODULE_ID);
+        $schema = new \Smartcat\Connector\Schema($_SERVER["DOCUMENT_ROOT"] . "/" . $this->DIR . "/modules/" . self::MODULE_ID . "/install/db/mysql");
 
         if ($schema->needUpgrade()) {
             $schema->upgrade();
@@ -243,16 +237,16 @@ class abbyy_cloud extends CModule
     {
         $obEventManager = \Bitrix\Main\EventManager::getInstance();
         $obEventManager->registerEventHandler('iblock', 'OnAfterIBlockElementAdd', $this->MODULE_ID,
-            '\Abbyy\Cloud\Events\Iblock', 'OnAfterIBlockElementAdd');
+            '\Smartcat\Connector\Events\Iblock', 'OnAfterIBlockElementAdd');
         $obEventManager->registerEventHandler('iblock', 'OnAfterIBlockElementUpdate', $this->MODULE_ID,
-            '\Abbyy\Cloud\Events\Iblock', 'OnAfterIBlockElementUpdate');
+            '\Smartcat\Connector\Events\Iblock', 'OnAfterIBlockElementUpdate');
         $obEventManager->registerEventHandler('iblock', 'OnAfterIBlockElementDelete', $this->MODULE_ID,
-            '\Abbyy\Cloud\Events\Iblock', 'OnAfterIBlockElementDelete');
+            '\Smartcat\Connector\Events\Iblock', 'OnAfterIBlockElementDelete');
 
         $obEventManager->registerEventHandler('main', 'OnAdminListDisplay', $this->MODULE_ID,
-            '\Abbyy\Cloud\Events\Iblock', 'OnAdminListDisplayHandler');
+            '\Smartcat\Connector\Events\Iblock', 'OnAdminListDisplayHandler');
         $obEventManager->registerEventHandler('main', 'OnBeforeProlog', $this->MODULE_ID,
-            '\Abbyy\Cloud\Events\Iblock', 'OnBeforePrologHandler');
+            '\Smartcat\Connector\Events\Iblock', 'OnBeforePrologHandler');
 
         return true;
     }
@@ -261,16 +255,16 @@ class abbyy_cloud extends CModule
     {
         $obEventManager = \Bitrix\Main\EventManager::getInstance();
         $obEventManager->unRegisterEventHandler('iblock', 'OnAfterIBlockElementAdd', $this->MODULE_ID,
-            '\Abbyy\Cloud\Events\Iblock', 'OnAfterIBlockElementAdd');
+            '\Smartcat\Connector\Events\Iblock', 'OnAfterIBlockElementAdd');
         $obEventManager->unRegisterEventHandler('iblock', 'OnAfterIBlockElementUpdate', $this->MODULE_ID,
-            '\Abbyy\Cloud\Events\Iblock', 'OnAfterIBlockElementUpdate');
+            '\Smartcat\Connector\Events\Iblock', 'OnAfterIBlockElementUpdate');
         $obEventManager->unRegisterEventHandler('iblock', 'OnAfterIBlockElementDelete', $this->MODULE_ID,
-            '\Abbyy\Cloud\Events\Iblock', 'OnAfterIBlockElementDelete');
+            '\Smartcat\Connector\Events\Iblock', 'OnAfterIBlockElementDelete');
 
         $obEventManager->unRegisterEventHandler('main', 'OnAdminListDisplay', $this->MODULE_ID,
-            '\Abbyy\Cloud\Events\Iblock', 'OnAdminListDisplayHandler');
+            '\Smartcat\Connector\Events\Iblock', 'OnAdminListDisplayHandler');
         $obEventManager->unRegisterEventHandler('main', 'OnBeforeProlog', $this->MODULE_ID,
-            '\Abbyy\Cloud\Events\Iblock', 'OnBeforePrologHandler');
+            '\Smartcat\Connector\Events\Iblock', 'OnBeforePrologHandler');
 
         return true;
     }
@@ -279,8 +273,8 @@ class abbyy_cloud extends CModule
     {
         $cAgent = new CAgent;
         $res = $cAgent->AddAgent(
-            "\\Abbyy\\Cloud\\Agent\\Task::Check();", // имя функции
-            $this->MODULE_ID, // идентификатор модуля
+            "\\Abbyy\\Cloud\\Agent\\Task::Check();",
+            $this->MODULE_ID,
             "Y",
             60
         );
@@ -311,7 +305,7 @@ class abbyy_cloud extends CModule
         $step = IntVal($step);
 
         if ($step < 2) {
-            $APPLICATION->IncludeAdminFile(GetMessage("ABBYY_CLOUD_UDALENIE_MODULA"), $_SERVER["DOCUMENT_ROOT"] . "/" . $this->DIR . "/modules/" . self::MODULE_ID . "/install/unstep.php");
+            $APPLICATION->IncludeAdminFile(GetMessage("SMARTCAT_CONNECTOR_UDALENIE_MODULA"), $_SERVER["DOCUMENT_ROOT"] . "/" . $this->DIR . "/modules/" . self::MODULE_ID . "/install/unstep.php");
         } else {
             $res = $this->UnInstallDB(array(
                 "save_tables" => $_REQUEST["save_tables"],

@@ -1,9 +1,9 @@
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- ----------------------------
---  Table structure for `b_abbyy_cloud_profile`
+--  Table structure for `b_smartcat_connector_profile`
 -- ----------------------------
-CREATE TABLE IF NOT EXISTS `b_abbyy_cloud_profile` (
+CREATE TABLE IF NOT EXISTS `b_smartcat_connector_profile` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `NAME` varchar(255) NOT NULL,
   `ACTIVE` enum('Y','N') NOT NULL DEFAULT 'N',
@@ -17,9 +17,9 @@ CREATE TABLE IF NOT EXISTS `b_abbyy_cloud_profile` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
---  Table structure for `b_abbyy_cloud_profile_iblock`
+--  Table structure for `b_smartcat_connector_profile_iblock`
 -- ----------------------------
-CREATE TABLE IF NOT EXISTS `b_abbyy_cloud_profile_iblock` (
+CREATE TABLE IF NOT EXISTS `b_smartcat_connector_profile_iblock` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `PROFILE_ID` int(11) NOT NULL,
   `IBLOCK_ID` int(11) NOT NULL,
@@ -28,9 +28,9 @@ CREATE TABLE IF NOT EXISTS `b_abbyy_cloud_profile_iblock` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
---  Table structure for `b_abbyy_cloud_task`
+--  Table structure for `b_smartcat_connector_task`
 -- ----------------------------
-CREATE TABLE IF NOT EXISTS `b_abbyy_cloud_task` (
+CREATE TABLE IF NOT EXISTS `b_smartcat_connector_task` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `PROFILE_ID` int(11) NOT NULL,
   `ELEMENT_ID` int(11) NOT NULL,
@@ -51,9 +51,9 @@ CREATE TABLE IF NOT EXISTS `b_abbyy_cloud_task` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
---  Table structure for `b_abbyy_cloud_task_file`
+--  Table structure for `b_smartcat_connector_task_file`
 -- ----------------------------
-CREATE TABLE IF NOT EXISTS `b_abbyy_cloud_task_file` (
+CREATE TABLE IF NOT EXISTS `b_smartcat_connector_task_file` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `TASK_ID` int(11) NOT NULL,
   `ELEMENT_ID` int(11) DEFAULT NULL,

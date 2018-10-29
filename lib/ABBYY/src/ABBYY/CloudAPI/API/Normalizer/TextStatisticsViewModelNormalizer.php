@@ -1,6 +1,6 @@
 <?php
 
-namespace ABBYY\CloudAPI\API\Normalizer;
+namespace Smartcat\ConnectorAPI\API\Normalizer;
 
 use Joli\Jane\Reference\Reference;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
@@ -17,7 +17,7 @@ class TextStatisticsViewModelNormalizer extends SerializerAwareNormalizer implem
     }
     public function supportsNormalization($data, $format = null)
     {
-        if ($data instanceof \ABBYY\CloudAPI\API\Model\TextStatisticsViewModel) {
+        if ($data instanceof \Smartcat\ConnectorAPI\API\Model\TextStatisticsViewModel) {
             return true;
         }
         return false;
@@ -30,7 +30,7 @@ class TextStatisticsViewModelNormalizer extends SerializerAwareNormalizer implem
         if (isset($data->{'$ref'})) {
             return new Reference($data->{'$ref'}, $context['rootSchema'] ?: null);
         }
-        $object = new \ABBYY\CloudAPI\API\Model\TextStatisticsViewModel();
+        $object = new \Smartcat\ConnectorAPI\API\Model\TextStatisticsViewModel();
         if (!isset($context['rootSchema'])) {
             $context['rootSchema'] = $object;
         }

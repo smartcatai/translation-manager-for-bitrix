@@ -1,11 +1,11 @@
 <?php
 
-namespace Abbyy\Cloud\Events;
+namespace Smartcat\Connector\Events;
 
-use Abbyy\Cloud\Helper\TaskHelper;
-use Abbyy\Cloud\ProfileIblockTable;
-use Abbyy\Cloud\ProfileTable;
-use Abbyy\Cloud\TaskTable;
+use Smartcat\Connector\Helper\TaskHelper;
+use Smartcat\Connector\ProfileIblockTable;
+use Smartcat\Connector\ProfileTable;
+use Smartcat\Connector\TaskTable;
 use Bitrix\Main\Loader;
 use Bitrix\Main\Localization\Loc;
 
@@ -70,7 +70,7 @@ class Iblock
 
         if ($find_el == 'Y') $find_section = '';
 
-        if ($bListPage && Loader::includeModule('iblock') && Loader::includeModule('abbyy.cloud')) {
+        if ($bListPage && Loader::includeModule('iblock') && Loader::includeModule('smartcat.connector')) {
             $iblockID = intval($_REQUEST['IBLOCK_ID']);
 
             $arProfiles = ProfileTable::getList([
@@ -126,26 +126,26 @@ class Iblock
                 foreach ($list->aRows as $id => $row) {
                     foreach ($arProfiles as $arProfile) {
 
-                        $list->arActions['abbyy_cloud_translate_' . $arProfile['ID']] = GetMessage("ABBYY_CLOUD_PEREVOD") . $arTypes[$arProfile['TYPE']] . ' (' . implode(', ', $arProfile['LANGS']) . ')';
+                        $list->arActions['smartcat_connector_translate_' . $arProfile['ID']] = GetMessage("SMARTCAT_CONNECTOR_PEREVOD") . $arTypes[$arProfile['TYPE']] . ' (' . implode(', ', $arProfile['LANGS']) . ')';
 
-                        $sMessage = Loc::getMessage('ABBYY_CLOUD_PROFILE_TASK_EXIST', [
+                        $sMessage = Loc::getMessage('SMARTCAT_CONNECTOR_PROFILE_TASK_EXIST', [
                             '#STATUS#' => TaskTable::getStatusList()[$arTask['STATUS']]
                         ]);
 
                         global $APPLICATION;
-                        $link = \CUtil::AddSlashes($APPLICATION->GetCurPage()) . "?ID=" . \CUtil::AddSlashes($row->id) . "&action_button=abbyy_cloud_translate&lang=" . LANGUAGE_ID . "&" . bitrix_sessid_get() . "&" . \CUtil::AddSlashes('&type=' . urlencode($_REQUEST['type']) . '&lang=' . LANGUAGE_ID . '&IBLOCK_ID=' . $IBLOCK_ID . '&PROFILE_ID=' . $arProfile['ID'] . ($find_section ? '&find_section_section=' . $find_section : '') . '&find_el_y=' . $find_el);
+                        $link = \CUtil::AddSlashes($APPLICATION->GetCurPage()) . "?ID=" . \CUtil::AddSlashes($row->id) . "&action_button=smartcat_connector_translate&lang=" . LANGUAGE_ID . "&" . bitrix_sessid_get() . "&" . \CUtil::AddSlashes('&type=' . urlencode($_REQUEST['type']) . '&lang=' . LANGUAGE_ID . '&IBLOCK_ID=' . $IBLOCK_ID . '&PROFILE_ID=' . $arProfile['ID'] . ($find_section ? '&find_section_section=' . $find_section : '') . '&find_el_y=' . $find_el);
 
                         if ($arTask) {
                             $row->aActions[] = [
                                 //'ICON' => 'copy',
-                                'TEXT' => GetMessage("ABBYY_CLOUD_PEREVOD") . $arTypes[$arProfile['TYPE']] . ' (' . implode(', ', $arProfile['LANGS']) . ')',
+                                'TEXT' => GetMessage("SMARTCAT_CONNECTOR_PEREVOD") . $arTypes[$arProfile['TYPE']] . ' (' . implode(', ', $arProfile['LANGS']) . ')',
                                 'ONCLICK' => 'if(confirm("' . $sMessage . '")) ShowDeadlineDialog("' . $lAdmin->table_id . '", "' . $link . '")'
                             ];
                         } else {
                             $row->aActions[] = [
 
                                 //'ICON' => 'copy',
-                                'TEXT' => GetMessage("ABBYY_CLOUD_PEREVOD") . $arTypes[$arProfile['TYPE']] . ' (' . implode(', ', $arProfile['LANGS']) . ')',
+                                'TEXT' => GetMessage("SMARTCAT_CONNECTOR_PEREVOD") . $arTypes[$arProfile['TYPE']] . ' (' . implode(', ', $arProfile['LANGS']) . ')',
                                 'ACTION' => 'ShowDeadlineDialog("' . $lAdmin->table_id . '", "' . $link . '")',
                             ];
                         }
@@ -154,7 +154,7 @@ class Iblock
 
             }
         }
-        if ($_REQUEST['action_button'] == 'abbyy_cloud_translate') {
+        if ($_REQUEST['action_button'] == 'smartcat_connector_translate') {
             $GLOBALS['APPLICATION']->RestartBuffer();
             die();
         }
@@ -163,23 +163,23 @@ class Iblock
     public static function OnBeforePrologHandler()
     {
         \CUtil::InitJSCore(['jquery']);
-        \Bitrix\Main\Page\Asset::getInstance()->addJs('/bitrix/js/abbyy.cloud/abbyy.cloud.js');
+        \Bitrix\Main\Page\Asset::getInstance()->addJs('/bitrix/js/smartcat.connector/smartcat.connector.js');
 
         $strCurPage = $GLOBALS['APPLICATION']->GetCurPage();
         $bListPage = ($strCurPage == '/bitrix/admin/iblock_element_admin.php' ||
             $strCurPage == '/bitrix/admin/iblock_list_admin.php'
         );
 
-        if (substr($_REQUEST['action'], 0, 22) == 'abbyy_cloud_translate_') {
-            $_REQUEST['PROFILE_ID'] = intval(str_replace('abbyy_cloud_translate_', '', $_REQUEST['action']));
-            $_REQUEST['action'] = 'abbyy_cloud_translate';
+        if (substr($_REQUEST['action'], 0, 22) == 'smartcat_connector_translate_') {
+            $_REQUEST['PROFILE_ID'] = intval(str_replace('smartcat_connector_translate_', '', $_REQUEST['action']));
+            $_REQUEST['action'] = 'smartcat_connector_translate';
         }
 
 
-        if (check_bitrix_sessid() && $bListPage && $_REQUEST['PROFILE_ID'] > 0 && Loader::includeModule('iblock') && Loader::includeModule('abbyy.cloud')) {
+        if (check_bitrix_sessid() && $bListPage && $_REQUEST['PROFILE_ID'] > 0 && Loader::includeModule('iblock') && Loader::includeModule('smartcat.connector')) {
             if (!is_array($_REQUEST['ID'])) $_REQUEST['ID'] = [$_REQUEST['ID']];
 
-            if ($_REQUEST['action'] == 'abbyy_cloud_translate' || $_REQUEST['action_button'] == 'abbyy_cloud_translate') {
+            if ($_REQUEST['action'] == 'smartcat_connector_translate' || $_REQUEST['action_button'] == 'smartcat_connector_translate') {
                 foreach ($_REQUEST['ID'] as $ID) {
                     if ($ID[0] == 'S') continue;
                     if ($ID[0] == 'E') $ID = substr($ID, 1);

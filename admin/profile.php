@@ -12,12 +12,12 @@ $sModuleId = basename($sModuleDir);
 \Bitrix\Main\Loader::includeModule('iblock');
 
 /**
- * Полный справочник Language code
+ * пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ Language code
  */
-$arLanguages = \Abbyy\Cloud\Helper\LangHelper::getLanguages();
+$arLanguages = \Smartcat\Connector\Helper\LangHelper::getLanguages();
 
 /**
- * Справочник языков, загруженных на сайт
+ * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ
  */
 $arLanguagesFrom = [];
 
@@ -29,27 +29,27 @@ while ($arLang = $rsSiteLangs->Fetch()) {
 }
 
 /**
- * Типы ручного перевода
+ * пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
  */
-$arTypes = \Abbyy\Cloud\ProfileTable::getTypeList();
+$arTypes = \Smartcat\Connector\ProfileTable::getTypeList();
 
 /**
- * Поля инфоблока, доступные для перевода
+ * пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
  */
 $arFieldsToTranslate = [
-    'NAME' => GetMessage("ABBYY_CLOUD_NAZVANIE"),
-    'PREVIEW_TEXT' => GetMessage("ABBYY_CLOUD_OPISANIE_DLA_ANONSA"),
-    'DETAIL_TEXT' => GetMessage("ABBYY_CLOUD_DETALQNOE_OPISANIE"),
-    'IBLOCK_SECTION_ID' => GetMessage("ABBYY_CLOUD_RAZDEL_INFOBLOKA"),
+    'NAME' => GetMessage("SMARTCAT_CONNECTOR_NAZVANIE"),
+    'PREVIEW_TEXT' => GetMessage("SMARTCAT_CONNECTOR_OPISANIE_DLA_ANONSA"),
+    'DETAIL_TEXT' => GetMessage("SMARTCAT_CONNECTOR_DETALQNOE_OPISANIE"),
+    'IBLOCK_SECTION_ID' => GetMessage("SMARTCAT_CONNECTOR_RAZDEL_INFOBLOKA"),
 ];
 
 /**
- * Свойства инфоблока, доступные для перевода
+ * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
  */
 $arPropsToTranslate = [];
 
 /**
- * Дерево всех инфоблоков, сгруппированное по типам инфоблока
+ * пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
  */
 $arIblockTree = [];
 
@@ -76,11 +76,11 @@ $ID = intval($_REQUEST['ID']);
 if ($ID > 0) {
 
 
-    $arProfile = \Abbyy\Cloud\ProfileTable::getById($ID)->fetch();
+    $arProfile = \Smartcat\Connector\ProfileTable::getById($ID)->fetch();
     $APPLICATION->SetTitle($arProfile['NAME']);
 
     if ($arProfile) {
-        $arProfileIblock = \Abbyy\Cloud\ProfileIblockTable::getList([
+        $arProfileIblock = \Smartcat\Connector\ProfileIblockTable::getList([
             'filter' => [
                 'PROFILE_ID' => $arProfile['ID'],
             ],
@@ -96,14 +96,14 @@ if ($ID > 0) {
 
     } else {
         require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_after.php");
-        CAdminMessage::ShowMessage(GetMessage("ABBYY_CLOUD_PROFILQ_NE_NAYDEN"));
+        CAdminMessage::ShowMessage(GetMessage("SMARTCAT_CONNECTOR_PROFILQ_NE_NAYDEN"));
         require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/epilog_admin.php");
     }
 
 } else {
 
     /*if ($_REQUEST['IBLOCK_ID'] > 0) {
-        $arProfile = \Abbyy\Cloud\ProfileTable::getList([
+        $arProfile = \Smartcat\Connector\ProfileTable::getList([
             'filter' => [
                 '=IBLOCK_ID' => intval($_REQUEST['IBLOCK_ID']),
             ],
@@ -135,19 +135,19 @@ if (!empty($_REQUEST['LANG']) && array_key_exists($_REQUEST['LANG'], $arLanguage
 if (empty($arProfile['LANG'])) $arProfile['LANG'] = reset(array_keys($arLanguagesFrom));
 
 /**
- * Языки, доступные для перевода из текущего языка
+ * пїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
  */
 $arLanguagesTo = [];
 
 /**
- * Определяем языки, доступные для перевода для текузего аккаунта
+ * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
  */
 if (!empty($arProfile['LANG'])) {
 
-    $apiId = \Bitrix\Main\Config\Option::get('abbyy.cloud', 'api_id');
-    $apiSecret = \Bitrix\Main\Config\Option::get('abbyy.cloud', 'api_secret');
+    $apiId = \Bitrix\Main\Config\Option::get('smartcat.connector', 'api_id');
+    $apiSecret = \Bitrix\Main\Config\Option::get('smartcat.connector', 'api_secret');
 
-    $cloudApi = new \ABBYY\CloudAPI\SmartCAT($apiId, $apiSecret);
+    $cloudApi = new \Smartcat\ConnectorAPI\SmartCAT($apiId, $apiSecret);
 
     $priceManager = $cloudApi->getPricesManager();
 
@@ -183,7 +183,7 @@ if (!empty($arProfile['LANG'])) {
     }
 
     if (empty($arLanguagesTo)) {
-        $arErrors[] = GetMessage("ABBYY_CLOUD_NET_DOSTUPNYH_AZYKOV");
+        $arErrors[] = GetMessage("SMARTCAT_CONNECTOR_NET_DOSTUPNYH_AZYKOV");
     }
 
 }
@@ -209,7 +209,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()) {
     $CIBlockElement = new CIBlockElement();
 
     if ($_REQUEST['IBLOCK_ID'] <= 0) {
-        $arErrors[] = GetMessage("ABBYY_CLOUD_NE_UKAZAN_INFOBLOK_D");
+        $arErrors[] = GetMessage("SMARTCAT_CONNECTOR_NE_UKAZAN_INFOBLOK_D");
     }
 
     $arIblockFrom = null;
@@ -218,7 +218,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()) {
     }
 
     if (!$arIblockFrom) {
-        $arErrors[] = GetMessage("ABBYY_CLOUD_NE_UDALOSQ_NAYTI_INF");
+        $arErrors[] = GetMessage("SMARTCAT_CONNECTOR_NE_UDALOSQ_NAYTI_INF");
     }
 
     $arProfile['NAME'] = $arIblockFrom['NAME'];
@@ -233,18 +233,18 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()) {
 
     if (empty($arErrors)) {
         if ($ID > 0) {
-            $result = \Abbyy\Cloud\ProfileTable::update($ID, $arProfile);
+            $result = \Smartcat\Connector\ProfileTable::update($ID, $arProfile);
             if ($result->isSuccess()) {
                 $arProfile['ID'] = $ID;
             } else {
-                $arErrors[] = GetMessage("ABBYY_CLOUD_NE_UDALOSQ_OBNOVITQ") . implode('<br>', $result->getErrorMessages());
+                $arErrors[] = GetMessage("SMARTCAT_CONNECTOR_NE_UDALOSQ_OBNOVITQ") . implode('<br>', $result->getErrorMessages());
             }
         } else {
-            $result = \Abbyy\Cloud\ProfileTable::add($arProfile);
+            $result = \Smartcat\Connector\ProfileTable::add($arProfile);
             if ($result->isSuccess()) {
                 $arProfile['ID'] = $result->getId();
             } else {
-                $arErrors[] = GetMessage("ABBYY_CLOUD_NE_UDALOSQ_SOZDATQ_P") . implode('<br>', $result->getErrorMessages());
+                $arErrors[] = GetMessage("SMARTCAT_CONNECTOR_NE_UDALOSQ_SOZDATQ_P") . implode('<br>', $result->getErrorMessages());
             }
         }
 
@@ -252,7 +252,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()) {
             $isNew = ($sIBlockID[0] == 'n');
 
             if (!$isNew && $arIblockData['REMOVE'] == 'Y') {
-                \Abbyy\Cloud\ProfileIblockTable::delete($sIBlockID);
+                \Smartcat\Connector\ProfileIblockTable::delete($sIBlockID);
                 continue;
             }
 
@@ -262,20 +262,20 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()) {
 
             if (empty($arIblockData['LANG'])) continue;
 
-            // создаем новый инфоблок, если не указан
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
             if (empty($arIblockData['IBLOCK_ID'])) {
                 try {
-                    $arIblockData['IBLOCK_ID'] = \Abbyy\Cloud\Helper\IblockHelper::createIBForLang($arProfile['IBLOCK_ID'], $arIblockData['LANG']);
+                    $arIblockData['IBLOCK_ID'] = \Smartcat\Connector\Helper\IblockHelper::createIBForLang($arProfile['IBLOCK_ID'], $arIblockData['LANG']);
                 } catch (\Exception $e) {
                     $arErrors[] = $e->getMessage();
                     continue;
                 }
-                \Abbyy\Cloud\Helper\IblockHelper::copyIBlockProps($arProfile['IBLOCK_ID'], $arIblockData['IBLOCK_ID']);
+                \Smartcat\Connector\Helper\IblockHelper::copyIBlockProps($arProfile['IBLOCK_ID'], $arIblockData['IBLOCK_ID']);
 
             } else {
                 $arTargetIBlock = CIBlock::GetByID($arIblockData['IBLOCK_ID'])->Fetch();
                 if (!$arTargetIBlock) {
-                    $arErrors[] = GetMessage("ABBYY_CLOUD_NE_UDALOSQ_NAYTI_INF1") . $arIblockData['IBLOCK_ID'] . '"';
+                    $arErrors[] = GetMessage("SMARTCAT_CONNECTOR_NE_UDALOSQ_NAYTI_INF1") . $arIblockData['IBLOCK_ID'] . '"';
                     continue;
                 }
             }
@@ -285,9 +285,9 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()) {
             $arProfileIblockFields['PROFILE_ID'] = $arProfile['ID'];
 
             if ($isNew) {
-                $res = \Abbyy\Cloud\ProfileIblockTable::add($arProfileIblockFields);
+                $res = \Smartcat\Connector\ProfileIblockTable::add($arProfileIblockFields);
             } else {
-                $res = \Abbyy\Cloud\ProfileIblockTable::update($sIBlockID, $arProfileIblockFields);
+                $res = \Smartcat\Connector\ProfileIblockTable::update($sIBlockID, $arProfileIblockFields);
             }
 
             if (!$res->isSuccess()) {
@@ -305,7 +305,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()) {
         if ($_REQUEST['apply']) {
             LocalRedirect($APPLICATION->GetCurPageParam('ID=' . $arProfile['ID'], ['ID']));
         } else {
-            LocalRedirect('abbyy.cloud_profiles.php');
+            LocalRedirect('smartcat.connector_profiles.php');
         }
         /*} else {
             echo '<pre>' . print_r($arProfile, true) . '</pre>';
@@ -320,9 +320,9 @@ require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_a
 
 $aMenu = array(
     array(
-        "TEXT" => GetMessage("ABBYY_CLOUD_PROFILI_PEREVODA"),
-        "LINK" => "abbyy.cloud_profiles.php?lang=" . LANGUAGE_ID,
-        "TITLE" => GetMessage("ABBYY_CLOUD_PROFILI_PEREVODA"),
+        "TEXT" => GetMessage("SMARTCAT_CONNECTOR_PROFILI_PEREVODA"),
+        "LINK" => "smartcat.connector_profiles.php?lang=" . LANGUAGE_ID,
+        "TITLE" => GetMessage("SMARTCAT_CONNECTOR_PROFILI_PEREVODA"),
     ),
 );
 
@@ -333,9 +333,9 @@ $context->Show();
 $aTabs = array(
     array(
         "DIV" => "edit1",
-        "TAB" => GetMessage("ABBYY_CLOUD_PROFILQ_PEREVODA"),
+        "TAB" => GetMessage("SMARTCAT_CONNECTOR_PROFILQ_PEREVODA"),
         "ICON" => "site_edit",
-        "TITLE" => GetMessage("ABBYY_CLOUD_PROFILQ_PEREVODA"),
+        "TITLE" => GetMessage("SMARTCAT_CONNECTOR_PROFILQ_PEREVODA"),
     ),
 );
 $tabControl = new CAdminTabControl("tabControl", $aTabs);
@@ -367,10 +367,10 @@ if (!empty($arErrors)): ?>
         ?>
 
         <tr>
-            <th><?= GetMessage("ABBYY_CLOUD_INFOBLOK") ?></th>
+            <th><?= GetMessage("SMARTCAT_CONNECTOR_INFOBLOK") ?></th>
             <td>
                 <select name="IBLOCK_ID" required class="js-select-iblock">
-                    <option value="">[<?= GetMessage("ABBYY_CLOUD_VYBRATQ") ?></option>
+                    <option value="">[<?= GetMessage("SMARTCAT_CONNECTOR_VYBRATQ") ?></option>
                     <? foreach ($arIblockTree as $arType): ?>
                         <optgroup label="<?= $arType['NAME']; ?>">
                             <? foreach ($arType['IBLOCK'] as $iIblockID => $sIblockName): ?>
@@ -388,13 +388,13 @@ if (!empty($arErrors)): ?>
         </tr>
 
         <tr>
-            <td><?= GetMessage("ABBYY_CLOUD_AKTIVNOSTQ") ?></td>
+            <td><?= GetMessage("SMARTCAT_CONNECTOR_AKTIVNOSTQ") ?></td>
             <td><input type="checkbox" name="ACTIVE" value="Y" <?= ($arProfile['ACTIVE'] == 'Y' ? 'checked' : ''); ?>>
             </td>
         </tr>
 
         <tr>
-            <td><?= GetMessage("ABBYY_CLOUD_AZYK") ?></td>
+            <td><?= GetMessage("SMARTCAT_CONNECTOR_AZYK") ?></td>
 
             <td>
                 <select name="LANG" class="js-select-lang">
@@ -410,11 +410,11 @@ if (!empty($arErrors)): ?>
             </td>
         </tr>
         <tr class="heading">
-            <td colspan="2"><?= GetMessage("ABBYY_CLOUD_PARAMETRY_PEREVODA") ?></td>
+            <td colspan="2"><?= GetMessage("SMARTCAT_CONNECTOR_PARAMETRY_PEREVODA") ?></td>
         </tr>
 
         <tr>
-            <td><?= GetMessage("ABBYY_CLOUD_TIP_PEREVODA") ?></td>
+            <td><?= GetMessage("SMARTCAT_CONNECTOR_TIP_PEREVODA") ?></td>
 
             <td>
                 <select name="TYPE">
@@ -429,20 +429,20 @@ if (!empty($arErrors)): ?>
         </tr>
 
         <tr>
-            <td><?= GetMessage("ABBYY_CLOUD_PUBLIKOVATQ_PEREVOD") ?></td>
+            <td><?= GetMessage("SMARTCAT_CONNECTOR_PUBLIKOVATQ_PEREVOD") ?></td>
             <td><input type="checkbox" name="PUBLISH" value="Y" <?= ($arProfile['PUBLISH'] == 'Y' ? 'checked' : ''); ?>>
             </td>
         </tr>
 
         <tr>
-            <td><?= GetMessage("ABBYY_CLOUD_AVTOMATICESKI_PEREVO") ?></td>
+            <td><?= GetMessage("SMARTCAT_CONNECTOR_AVTOMATICESKI_PEREVO") ?></td>
             <td><input type="checkbox" name="AUTO_ORDER"
                        value="Y" <?= ($arProfile['AUTO_ORDER'] == 'Y' ? 'checked' : ''); ?>>
             </td>
         </tr>
 
         <tr class="heading">
-            <td colspan="2"><?= GetMessage("ABBYY_CLOUD_KAKIE_POLA_PEREVODIT") ?></td>
+            <td colspan="2"><?= GetMessage("SMARTCAT_CONNECTOR_KAKIE_POLA_PEREVODIT") ?></td>
         </tr>
 
         <? foreach ($arFieldsToTranslate as $sFieldCode => $sFieldTitle): ?>
@@ -472,7 +472,7 @@ if (!empty($arErrors)): ?>
         <? endforeach; ?>
 
         <tr class="heading">
-            <td colspan="2"><?= GetMessage("ABBYY_CLOUD_NA_KAKIE_AZYKI_PEREV") ?></td>
+            <td colspan="2"><?= GetMessage("SMARTCAT_CONNECTOR_NA_KAKIE_AZYKI_PEREV") ?></td>
         </tr>
 
         <tr>
@@ -480,8 +480,8 @@ if (!empty($arErrors)): ?>
                 <table class="adm-detail-content-table list-table adm-profile-iblock-table js-iblock-table">
                     <thead>
                     <tr class="heading">
-                        <td><?= GetMessage("ABBYY_CLOUD_AZYK") ?></td>
-                        <td><?= GetMessage("ABBYY_CLOUD_INFOBLOK") ?></td>
+                        <td><?= GetMessage("SMARTCAT_CONNECTOR_AZYK") ?></td>
+                        <td><?= GetMessage("SMARTCAT_CONNECTOR_INFOBLOK") ?></td>
                         <td>&nbsp;</td>
                     </tr>
                     </thead>
@@ -500,7 +500,7 @@ if (!empty($arErrors)): ?>
                             </td>
                             <td>
                                 <select name="IBLOCKS[<?= $arIBlock['ID']; ?>][IBLOCK_ID]">
-                                    <option value="">[<?= GetMessage("ABBYY_CLOUD_SOZDATQ_NOVYY") ?></option>
+                                    <option value="">[<?= GetMessage("SMARTCAT_CONNECTOR_SOZDATQ_NOVYY") ?></option>
                                     <? foreach ($arIblockTree as $arType): ?>
                                         <optgroup label="<?= $arType['NAME']; ?>">
                                             <? foreach ($arType['IBLOCK'] as $iIblockID => $sIblockName): ?>
@@ -526,7 +526,7 @@ if (!empty($arErrors)): ?>
                     <tr class="js-iblock-row">
                         <td>
                             <select name="IBLOCKS[n0][LANG]">
-                                <option value="">[<?= GetMessage("ABBYY_CLOUD_VYBRATQ_AZYK") ?></option>
+                                <option value="">[<?= GetMessage("SMARTCAT_CONNECTOR_VYBRATQ_AZYK") ?></option>
                                 <? foreach ($arLanguagesTo as $sLang => $sLangName): ?>
                                     <option value="<?= $sLang; ?>">
                                         <?= $sLangName; ?> [<?= $sLang; ?>]
@@ -536,7 +536,7 @@ if (!empty($arErrors)): ?>
                         </td>
                         <td>
                             <select name="IBLOCKS[n0][IBLOCK_ID]">
-                                <option value="">[<?= GetMessage("ABBYY_CLOUD_SOZDATQ_NOVYY") ?></option>
+                                <option value="">[<?= GetMessage("SMARTCAT_CONNECTOR_SOZDATQ_NOVYY") ?></option>
                                 <? foreach ($arIblockTree as $arType): ?>
                                     <optgroup label="<?= $arType['NAME']; ?>">
                                         <? foreach ($arType['IBLOCK'] as $iIblockID => $sIblockName): ?>
@@ -564,12 +564,12 @@ if (!empty($arErrors)): ?>
             <td colspan="2" align="center">
                 <br>
                 <a href="#" class="adm-btn adm-btn-add"
-                   id="js_iblock_row_add"><?= GetMessage("ABBYY_CLOUD_DOBAVITQ_INFOBLOK") ?></a>
+                   id="js_iblock_row_add"><?= GetMessage("SMARTCAT_CONNECTOR_DOBAVITQ_INFOBLOK") ?></a>
             </td>
         </tr>
 
         <?
-        $tabControl->Buttons(array("back_url" => "abbyy.cloud_profiles.php?lang=" . LANGUAGE_ID));
+        $tabControl->Buttons(array("back_url" => "smartcat.connector_profiles.php?lang=" . LANGUAGE_ID));
         $tabControl->End();
         $tabControl->ShowWarnings("bform", $message);
         ?>
@@ -667,9 +667,9 @@ if (!empty($arErrors)): ?>
     </style>
 <? else: ?>
     <? echo BeginNote(); ?>
-    <?= GetMessage("ABBYY_CLOUD_NE_UDALOSQ_PODKLUCIT") ?>
+    <?= GetMessage("SMARTCAT_CONNECTOR_NE_UDALOSQ_PODKLUCIT") ?>
     <a
-            href="/bitrix/admin/settings.php?lang=<?= LANGUAGE_ID; ?>&mid=abbyy.cloud&mid_menu=1"><?= GetMessage("ABBYY_CLOUD_NASTROYKI_DO") ?></a> <?= GetMessage("ABBYY_CLOUD_K_SERVISA") ?><? echo EndNote(); ?>
+            href="/bitrix/admin/settings.php?lang=<?= LANGUAGE_ID; ?>&mid=smartcat.connector&mid_menu=1"><?= GetMessage("SMARTCAT_CONNECTOR_NASTROYKI_DO") ?></a> <?= GetMessage("SMARTCAT_CONNECTOR_K_SERVISA") ?><? echo EndNote(); ?>
 <? endif; ?>
 
 <? require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/epilog_admin.php"); ?>
