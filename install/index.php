@@ -273,7 +273,7 @@ class smartcat_connector extends CModule
     {
         $cAgent = new CAgent;
         $res = $cAgent->AddAgent(
-            "\\Abbyy\\Cloud\\Agent\\Task::Check();",
+            "\\Smartcat\\Connector\\Agent\\Task::Check();",
             $this->MODULE_ID,
             "Y",
             60
