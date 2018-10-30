@@ -55,6 +55,11 @@ if ($REQUEST_METHOD == 'POST' && strlen($Update) > 0 && check_bitrix_sessid()) {
     }
     LocalRedirect($APPLICATION->GetCurPageParam());
 }
+$arAllOptions[] = GetMessage("SMARTCAT_CONNECTOR_ACCOUNT");
+$acc_info = \Smartcat\Connector\Helper\ApiHelper::getAccount();
+if($acc_info){
+    $arAllOptions[] = Array('note' => $acc_info->getName());
+}
 
 foreach ($arErrors as $strError)
     CAdminMessage::ShowMessage($strError);
