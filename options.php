@@ -1,4 +1,6 @@
 <?
+use PhpParser\Node\Expr\Array_;
+
 //if (!$USER->IsAdmin())
 //    return;
 IncludeModuleLangFile($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/options.php");
@@ -25,10 +27,10 @@ $arAllOptions = Array();
 $arAllOptions[] = GetMessage("SMARTCAT_CONNECTOR_DOSTUP_K");
 $arAllOptions[] = Array("api_id", "App ID", '', Array('text', 100));
 $arAllOptions[] = Array("api_secret", "Api token", '', Array('text', 100));
-$arAllOptions[] = Array("api_server", "Server", \SmartCAT\API\SmartCAT::SC_EUROPE, Array('selectbox', Array(
-    \SmartCAT\API\SmartCAT::SC_ASIA => 'Asia',
-    \SmartCAT\API\SmartCAT::SC_EUROPE => 'Europe',
-    \SmartCAT\API\SmartCAT::SC_USA => 'USA',
+$arAllOptions[] = Array("api_server", "Server", \SmartCat\Client\SmartCat::SC_EUROPE, Array('selectbox', Array(
+    \SmartCat\Client\SmartCat::SC_ASIA => 'Asia',
+    \SmartCat\Client\SmartCat::SC_EUROPE => 'Europe',
+    \SmartCat\Client\SmartCat::SC_USA => 'USA',
 )));
 
 
@@ -53,7 +55,6 @@ if ($REQUEST_METHOD == 'POST' && strlen($Update) > 0 && check_bitrix_sessid()) {
     }
     LocalRedirect($APPLICATION->GetCurPageParam());
 }
-
 
 foreach ($arErrors as $strError)
     CAdminMessage::ShowMessage($strError);

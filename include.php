@@ -13,7 +13,7 @@ function smartcat_connector_autoload($className)
     $className = ltrim($className, '\\');
     $arParts = explode('\\', $className);
 
-    $isSmarcat = $arParts[0] == 'Smarcat';
+    $isSmarcat = $arParts[0] == 'SmartCat';
     $sModuleCheck = strtolower($arParts[0] . '.' . $arParts[1]);
 
     if (!$isSmarcat && $sModuleCheck != $sModuleId)
