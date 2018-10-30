@@ -9,6 +9,10 @@ class ApiHelper
         $apiSecret = \Bitrix\Main\Config\Option::get('smartcat.connector', 'api_secret');
         $apiServer = \Bitrix\Main\Config\Option::get('smartcat.connector', 'api_server');
     
-        return new \SmartCAT\API\SmartCAT($apiId, $apiSecret,$apiServer);
+        return new \SmartCat\Client\SmartCat($apiId, $apiSecret, $apiServer);
+    }
+
+    public static function getAccount(){
+        return self::createApi()->getAccountManager()->accountGetAccountInfo();
     }
 }
