@@ -24,34 +24,24 @@ class ApiHelper
         return self::createApi()->getAccountManager()->accountGetAccountInfo();
     }
 
-    public static function getDirectory($type)
-    {
-        return self::createApi()->getDirectoriesManager()->directoriesGet(['type'=>$type]);
-    } 
-
     public static function getLanguages()
     {
-        return self::getDirectory('language')->getItems();
+        return ApiDirectoryHelper::getDirectory('language')->getItems();
     }
 
     public static function getServiceTypes()
     {
-        $types = [];
-        $items = self::getDirectory('lspServiceType')->getItems();
-        foreach ($items as $type){
-            $types[$type->getId()] = $type->getName();
-        }
-        return $types;
+        return ApiDirectoryHelper::getItemsAsArray('lspServiceType');
     }
 
     public static function getVendor()
     {
-        $vendors = [];
-        $items = self::getDirectory('vendor')->getItems();
-        foreach ($items as $vendor){
-            $vendors[$vendor->getId()] = $vendor->getName();
-        }
-        return $vendors;
+        return ApiDirectoryHelper::getItemsAsArray('vendor');
+    }
+
+    public static function getProjectStatus()
+    {
+        return ApiDirectoryHelper::getItemsAsArray('projectStatus');
     }
 
     public static function getWorkflowStages()
