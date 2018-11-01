@@ -12,7 +12,8 @@ CREATE TABLE IF NOT EXISTS `b_smartcat_connector_profile` (
   `IBLOCK_ID` int(11) NOT NULL,
   `LANG` varchar(5) NOT NULL,
   `FIELDS` text,
-  `TYPE` varchar(20) NOT NULL,
+  `WORKFLOW` varchar(100) NOT NULL,
+  `VENDOR` text,
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 

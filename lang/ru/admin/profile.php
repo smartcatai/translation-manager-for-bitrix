@@ -17,7 +17,7 @@ $MESS["SMARTCAT_CONNECTOR_VYBRATQ"] = "Выбрать]";
 $MESS["SMARTCAT_CONNECTOR_AKTIVNOSTQ"] = "Активность";
 $MESS["SMARTCAT_CONNECTOR_AZYK"] = "Язык";
 $MESS["SMARTCAT_CONNECTOR_PARAMETRY_PEREVODA"] = "Параметры перевода";
-$MESS["SMARTCAT_CONNECTOR_TIP_PEREVODA"] = "Тип перевода";
+$MESS["SMARTCAT_CONNECTOR_TIP_PEREVODA"] = "Этапы перевода";
 $MESS["SMARTCAT_CONNECTOR_PUBLIKOVATQ_PEREVOD"] = "Публиковать перевод автоматически";
 $MESS["SMARTCAT_CONNECTOR_AVTOMATICESKI_PEREVO"] = "Автоматически переводить новые материалы";
 $MESS["SMARTCAT_CONNECTOR_KAKIE_POLA_PEREVODIT"] = "Какие поля переводить?";
@@ -30,4 +30,5 @@ $MESS["SMARTCAT_CONNECTOR_NASTROYKI_DO"] = "настройки
         доступа";
 $MESS["SMARTCAT_CONNECTOR_K_SERVISA"] = "к API сервиса.
     ";
+$MESS["SMARTCAT_CONNECTOR_VENDOR"] = "Вендор";
 ?>

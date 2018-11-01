@@ -1,5 +1,8 @@
 <?php
 require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_before.php");
+
+use \Smartcat\Connector\Helper\ApiHelper;
+
 IncludeModuleLangFile(__FILE__);
 global $APPLICATION;
 
@@ -12,13 +15,10 @@ $sModuleId = basename($sModuleDir);
 \Bitrix\Main\Loader::includeModule('iblock');
 
 /**
- * ������ ���������� Language code
+ *  Language code
  */
 $arLanguages = \Smartcat\Connector\Helper\LangHelper::getLanguages();
 
-/**
- * ���������� ������, ����������� �� ����
- */
 $arLanguagesFrom = [];
 
 $rsSiteLangs = CLanguage::GetList(($by = 'id'), ($sort = 'asc'));
@@ -28,14 +28,9 @@ while ($arLang = $rsSiteLangs->Fetch()) {
     }
 }
 
-/**
- * ���� ������� ��������
- */
-$arTypes = \Smartcat\Connector\ProfileTable::getTypeList();
+$arWorflowStages = ApiHelper::getWorkflowStages();
+$arVendors = ApiHelper::getVendor();
 
-/**
- * ���� ���������, ��������� ��� ��������
- */
 $arFieldsToTranslate = [
     'NAME' => GetMessage("SMARTCAT_CONNECTOR_NAZVANIE"),
     'PREVIEW_TEXT' => GetMessage("SMARTCAT_CONNECTOR_OPISANIE_DLA_ANONSA"),
@@ -43,14 +38,8 @@ $arFieldsToTranslate = [
     'IBLOCK_SECTION_ID' => GetMessage("SMARTCAT_CONNECTOR_RAZDEL_INFOBLOKA"),
 ];
 
-/**
- * �������� ���������, ��������� ��� ��������
- */
 $arPropsToTranslate = [];
 
-/**
- * ������ ���� ����������, ��������������� �� ����� ���������
- */
 $arIblockTree = [];
 
 $rsTypes = CIBlockType::GetList(['name' => 'asc']);
@@ -134,50 +123,22 @@ if (!empty($_REQUEST['LANG']) && array_key_exists($_REQUEST['LANG'], $arLanguage
 
 if (empty($arProfile['LANG'])) $arProfile['LANG'] = reset(array_keys($arLanguagesFrom));
 
-/**
- * �����, ��������� ��� �������� �� �������� �����
- */
 $arLanguagesTo = [];
 
-/**
- * ���������� �����, ��������� ��� �������� ��� �������� ��������
- */
 if (!empty($arProfile['LANG'])) {
 
 
-    $cloudApi = \Smartcat\Connector\Helper\ApiHelper::createApi();
-
-    $priceManager = $cloudApi->getPricesManager();
+    $langs = \Smartcat\Connector\Helper\ApiHelper::getLanguages();
 
     $arLang = [];
 
-    $offset = 0;
-    $limit = 100;
-    while (true) {
-        try {
-            $result = $priceManager->pricesGetAccountPrices([
-                'skip' => $offset,
-                'take' => $limit,
-                'from' => $arProfile['LANG'],
-                'type' => 'mt',
-            ]);
-        } catch (\Exception $e) {
-            $arErrors[] = $e->getMessage();
-        }
-
-        if (is_array($result)) {
-            foreach ($result as $price) {
-                $langTo = $price->getTo();
-                if (array_key_exists($langTo, $arLanguages)) {
-                    $arLanguagesTo[$langTo] = $arLanguages[$langTo];
-                }
+    if (is_array($langs)) {
+        foreach ($langs as $lang) {
+            $langTo = $lang->getName();
+            if (array_key_exists($langTo, $arLanguages)) {
+                $arLanguagesTo[$langTo] = $arLanguages[$langTo];
             }
         }
-
-        if (empty($result) || count($result) < $limit) {
-            break;
-        }
-        $offset += $limit;
     }
 
     if (empty($arLanguagesTo)) {
@@ -219,6 +180,15 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()) {
         $arErrors[] = GetMessage("SMARTCAT_CONNECTOR_NE_UDALOSQ_NAYTI_INF");
     }
 
+    if($_REQUEST['WORKFLOW']){
+        $workflow = $_REQUEST['WORKFLOW'];
+        foreach($workflow as $id=>$stage){
+            if(!in_array($stage, $arWorflowStages)){
+                array_splice($workflow, $id, 1);
+            }
+        }
+    }
+
     $arProfile['NAME'] = $arIblockFrom['NAME'];
     $arProfile['ACTIVE'] = ($_REQUEST['ACTIVE'] == 'Y');
     $arProfile['PUBLISH'] = ($_REQUEST['PUBLISH'] == 'Y');
@@ -226,8 +196,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()) {
     $arProfile['IBLOCK_ID'] = intval($_REQUEST['IBLOCK_ID']);
     $arProfile['LANG'] = trim($_REQUEST['LANG']);
     $arProfile['FIELDS'] = $_REQUEST['FIELDS'];
-    $arProfile['TYPE'] = array_key_exists($_REQUEST['TYPE'], $arTypes) ? $_REQUEST['TYPE'] : '';
-
+    $arProfile['WORKFLOW'] = $workflow ? implode(',',$workflow) : '';
+    $arProfile['VENDOR'] = $_REQUEST['VENDOR'];
 
     if (empty($arErrors)) {
         if ($ID > 0) {
@@ -260,7 +230,6 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()) {
 
             if (empty($arIblockData['LANG'])) continue;
 
-            // ������� ����� ��������, ���� �� ������
             if (empty($arIblockData['IBLOCK_ID'])) {
                 try {
                     $arIblockData['IBLOCK_ID'] = \Smartcat\Connector\Helper\IblockHelper::createIBForLang($arProfile['IBLOCK_ID'], $arIblockData['LANG']);
@@ -412,17 +381,30 @@ if (!empty($arErrors)): ?>
         </tr>
 
         <tr>
-            <td><?= GetMessage("SMARTCAT_CONNECTOR_TIP_PEREVODA") ?></td>
-
+            <td><?= GetMessage("SMARTCAT_CONNECTOR_VENDOR") ?></td>
             <td>
-                <select name="TYPE">
-                    <? foreach ($arTypes as $sType => $sTypeName): ?>
-                        <option
-                                value="<?= $sType; ?>" <?= ($arProfile['TYPE'] == $sType ? 'selected' : ''); ?>>
-                            <?= $sTypeName; ?>
+                <select name="VENDOR" class="js-select-lang">
+                        <option value="" <?= ($arProfile['VENDOR'] == '' ? 'selected' : ''); ?>>
+                            Без вендора
+                        </option>
+                    <? foreach ($arVendors as $id=> $name): ?>
+                        <option value="<?= $id . '|' . $name; ?>" <?= (strpos($arProfile['VENDOR'],$id) !== false ? 'selected' : ''); ?> >
+                            <?= $name; ?>
                         </option>
                     <? endforeach; ?>
                 </select>
+            </td>
+        </tr>
+
+        <tr>
+            <td><?= GetMessage("SMARTCAT_CONNECTOR_TIP_PEREVODA") ?></td>
+            <td>
+                    <? foreach ($arWorflowStages as $stage): ?>
+                        <label>
+                            <input type="checkbox" name="WORKFLOW[]" value="<?= $stage; ?>" <?= (strpos($arProfile['WORKFLOW'],$stage) !== false ? 'checked' : ''); ?>>
+                            <?= $stage; ?>
+                        </label><br>
+                    <? endforeach; ?>
             </td>
         </tr>
 

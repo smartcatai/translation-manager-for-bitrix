@@ -92,11 +92,16 @@ class ProfileTable extends Main\Entity\DataManager
                 'serialized' => true,
                 'title' => Loc::getMessage('SMARTCAT_CONNECTOR_PROFILE_IBLOCK_ENTITY_FIELDS_FIELD'),
             ),
-            'TYPE' => array(
+            'WORKFLOW' => array(
                 'data_type' => 'string',
                 'required' => true,
                 'validation' => array(__CLASS__, 'validateType'),
-                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_PROFILE_ENTITY_TYPE_FIELD'),
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_PROFILE_ENTITY_WORKFLOW_FIELD'),
+            ),
+            'VENDOR' => array(
+                'data_type' => 'text',
+                'required' => true,
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_PROFILE_ENTITY_VENDOR_FIELD'),
             ),
         );
     }
@@ -133,7 +138,7 @@ class ProfileTable extends Main\Entity\DataManager
     public static function validateType()
     {
         return array(
-            new Main\Entity\Validator\Length(null, 20),
+            new Main\Entity\Validator\Length(null, 100),
         );
     }
 

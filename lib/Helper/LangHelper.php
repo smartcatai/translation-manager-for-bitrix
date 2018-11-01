@@ -245,7 +245,7 @@ class LangHelper
     }
 
     /**
-     * ���������� ������ ��������� ������ ��� ������� ��������
+     * 
      */
     public static function getLanguagesForHT($langFrom, $htType)
     {

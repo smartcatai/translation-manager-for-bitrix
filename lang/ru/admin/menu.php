@@ -1,5 +1,5 @@
 <?
 $MESS["SMARTCAT_CONNECTOR_PROFILI_PEREVODA"] = "Профили перевода";
-$MESS["SMARTCAT_CONNECTOR_ZAKAZY"] = "Заказы";
-$MESS["SMARTCAT_CONNECTOR_ALS"] = "ALS коннектор";
+$MESS["SMARTCAT_CONNECTOR_ZAKAZY"] = "Проекты";
+$MESS["SMARTCAT_CONNECTOR_ALS"] = "SmartCat коннектор";
 ?>

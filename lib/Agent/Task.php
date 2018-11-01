@@ -21,13 +21,13 @@ class Task
         self::log("Start Check");
 
         self::log("Start CheckNewTasks");
-        self::CheckNewTasks();
+        //self::CheckNewTasks();
 
         self::log("Start CheckUploadedTasks");
-        self::CheckUploadedTasks();
+        //self::CheckUploadedTasks();
 
         self::log("Start CheckInProgressTasks");
-        self::CheckInProgressTasks();
+        //self::CheckInProgressTasks();
 
         self::log("Done");
         return '\\' . __METHOD__ . '();';

@@ -47,13 +47,13 @@ $arHeader = array(
         "sort" => "NAME",
     ),
     array(
-        "id" => "TYPE",
-        "content" => GetMessage("SMARTCAT_CONNECTOR_TIP_PEREVODA"),
+        "id" => "VENDOR",
+        "content" => GetMessage("SMARTCAT_CONNECTOR_VENDOR"),
         "default" => true,
     ),
     array(
-        "id" => "ACTIVE",
-        "content" => GetMessage("SMARTCAT_CONNECTOR_AKTIVNOSTQ"),
+        "id" => "LANG",
+        "content" => GetMessage("SMARTCAT_CONNECTOR_AZYK_ORIG"),
         "default" => true,
     ),
     array(
@@ -62,8 +62,8 @@ $arHeader = array(
         "default" => true,
     ),
     array(
-        "id" => "TASKS_COUNT",
-        "content" => GetMessage("SMARTCAT_CONNECTOR_KOL_VO_ZADANIY"),
+        "id" => "ACTIVE",
+        "content" => GetMessage("SMARTCAT_CONNECTOR_AKTIVNOSTQ"),
         "default" => true,
     ),
 );
@@ -93,6 +93,7 @@ while ($arItem = $rsItems->fetch()) {
     $arRow['NAME'] = $arItem['NAME'];
     $arRow['ACTIVE'] = $arItem['ACTIVE'];
 
+    $arRow['LANG'] = $arItem['LANG'];
     $arRow['LANGS'] = [];
     $arIBlocks = \Smartcat\Connector\ProfileIblockTable::getList([
         'filter' => [
@@ -105,11 +106,11 @@ while ($arItem = $rsItems->fetch()) {
     }
     $arRow['LANGS'] = implode(', ', $arRow['LANGS']);
 
-    $arRow['TASKS_COUNT'] = \Smartcat\Connector\TaskTable::getCount([
-        'PROFILE_ID' => $arRow['ID'],
-    ]);
+    // $arRow['TASKS_COUNT'] = \Smartcat\Connector\TaskTable::getCount([
+    //     'PROFILE_ID' => $arRow['ID'],
+    // ]);
 
-    $arRow['TYPE'] = $arTypes[$arItem['TYPE']];
+    $arRow['VENDOR'] = explode('|', $arItem['VENDOR'])[1];
 
     $row = &$lAdmin->AddRow($arRow['ID'], $arRow);
 

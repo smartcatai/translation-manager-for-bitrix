@@ -420,6 +420,7 @@ class IblockHelper
 
             if (!$arPropCopy) {
                 $arPropCopy = $arProp;
+                unset($arPropCopy['TIMESTAMP_X']);
                 $arPropCopy['IBLOCK_ID'] = $iblockIDTo;
                 $arPropCopy['ID'] = $CIBLockProperty->Add($arPropCopy);
             }
