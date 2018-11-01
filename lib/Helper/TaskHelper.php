@@ -42,7 +42,7 @@ class TaskHelper
             $arTask = [
                 'PROFILE_ID' => $arProfile['ID'],
                 'ELEMENT_ID' => $ID,
-                'TYPE' => $arProfile['TYPE'],
+                'VENDOR' => $arProfile['VENDOR'],
                 'DEADLINE' => $deadline ? DateTime::createFromTimestamp(MakeTimeStamp($deadline)) : '',
                 'STATUS' => TaskTable::STATUS_NEW,
                 'CONTENT' => self::prepareElementContent($ID, $arProfile['FIELDS']),
@@ -53,6 +53,8 @@ class TaskHelper
             $result = TaskTable::add($arTask);
             if ($result->isSuccess()) {
                 $taskID = $result->getId();
+            }else{
+                echo '<pre>' . print_r($result->getErrorMessages(), true) . '</pre>';
             }
 
             if ($taskID > 0) {
@@ -72,7 +74,12 @@ class TaskHelper
                         'LANG_TO' => $arIBlock['LANG'],
                     ];
 
-                    TaskFileTable::add($arTaskFile);
+                    $res = TaskFileTable::add($arTaskFile);
+
+                    if (!$res->isSuccess()) {
+                        echo '<pre>' . print_r($res->getErrorMessages(), true) . '</pre>';
+                        die();
+                    }
                 }
             }
 

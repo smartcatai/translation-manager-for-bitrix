@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS `b_smartcat_connector_task` (
   `COMMENT` varchar(255) DEFAULT NULL,
   `AMOUNT` float(11,2) DEFAULT NULL,
   `CURRENCY` varchar(5) DEFAULT NULL,
-  `TYPE` varchar(20) NOT NULL,
+  `VENDOR` varchar(100) NOT NULL,
   `DEADLINE` datetime DEFAULT NULL,
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;

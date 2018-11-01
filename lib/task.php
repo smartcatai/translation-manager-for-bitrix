@@ -134,10 +134,10 @@ class TaskTable extends Main\Entity\DataManager
                 'validation' => array(__CLASS__, 'validateCurrency'),
                 'title' => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_CURRENCY_FIELD'),
             ),
-            'TYPE' => array(
+            'VENDOR' => array(
                 'data_type' => 'string',
                 'required' => true,
-                'validation' => array(__CLASS__, 'validateType'),
+                'validation' => array(__CLASS__, 'validateVendor'),
                 'title' => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_TYPE_FIELD'),
             ),
         );
@@ -255,10 +255,10 @@ class TaskTable extends Main\Entity\DataManager
      *
      * @return array
      */
-    public static function validateType()
+    public static function validateVendor()
     {
         return array(
-            new Main\Entity\Validator\Length(null, 20),
+            new Main\Entity\Validator\Length(null, 100),
         );
     }
 }
