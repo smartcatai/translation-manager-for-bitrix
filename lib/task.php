@@ -42,6 +42,14 @@ class TaskTable extends Main\Entity\DataManager
         ];
     }
 
+    public static function getAccessibleStatusList()
+    {
+        return [
+            self::STATUS_NEW => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_STATUS_NEW'),
+            self::STATUS_UPLOADED => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_STATUS_UPLOADED'),
+        ];
+    }
+
     /**
      * Returns DB table name for entity.
      *

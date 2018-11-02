@@ -11,7 +11,7 @@ $sModuleId = basename($sModuleDir);
 $APPLICATION->SetTitle(GetMessage("SMARTCAT_CONNECTOR_ZAKAZY"));
 
 
-$arStatus = \Smartcat\Connector\TaskTable::getStatusList();
+$arStatus = \Smartcat\Connector\TaskTable::getAccessibleStatusList();
 
 $arProfiles = \Smartcat\Connector\ProfileTable::getList([
     'order' => ['NAME' => 'asc'],
@@ -42,7 +42,7 @@ if ($arID = $lAdmin->GroupAction()) {
                 if (array_key_exists($_REQUEST['status_to_move'], $arStatus)) {
 
                     $arTask = \Smartcat\Connector\TaskTable::getById($ID)->fetch();
-                    if ($arTask) {
+                    if ($arTask && $arTask['STATUS'] !== $_REQUEST['status_to_move']) {
                         \Smartcat\Connector\TaskTable::update($ID, [
                             'STATUS' => $_REQUEST['status_to_move'],
                         ]);
@@ -121,11 +121,6 @@ $arHeader = array(
         "default" => true,
     ),
     array(
-        "id" => "AMOUNT",
-        "content" => GetMessage("SMARTCAT_CONNECTOR_STOIMOSTQ"),
-        "default" => true,
-    ),
-    array(
         "id" => "DEADLINE",
         "content" => GetMessage("SMARTCAT_CONNECTOR_DEDLAYN"),
         "default" => true,
@@ -182,7 +177,6 @@ while ($arItem = $rsItems->fetch()) {
     $arRow['ID'] = $arItem['ID'];
     $arRow['COMMENT'] = $arItem['COMMENT'];
     $arRow['DEADLINE'] = $arItem['DEADLINE'] ? date('Y-m-d\\TH:i:s.0\\Z', $arItem['DEADLINE']->getTimestamp()) : '-';//$arItem['DEADLINE'];
-    $arRow['AMOUNT'] = $arItem['AMOUNT'] . $arItem['CURRENY'];
     $arRow['STATUS'] = $arStatus[$arItem['STATUS']];
     $arRow['ORDER_NUMBER'] = $arItem['ORDER_NUMBER'] ?: '&mdash;';
 
@@ -213,27 +207,30 @@ while ($arItem = $rsItems->fetch()) {
         }
         $arLang[] = $sLangRow;
     }
-    $sType = $arTypes[$arItem['TYPE']];
+    $sVendor = explode('|',$arItem['VENDOR'])[1];
 
-    $arRow['LANGUAGES'] = $sType . ':<br>' . implode("<br>", $arLang);
+    $arRow['LANGUAGES'] = $sVendor . ':<br>' . implode("<br>", $arLang);
 
     $row = &$lAdmin->AddRow($arRow['ID'], $arRow);
 
     $row->AddViewField('ELEMENT', $arRow['ELEMENT']);
     $row->AddViewField('LANGUAGES', $arRow['LANGUAGES']);
     $row->AddViewField('PROFILE', $arRow['PROFILE']);
-    //$row->AddInputField('NAME', Array("size" => "20"));
-    //$row->AddCheckField("ACTIVE");
 
     $arActions = [];
 
-    //$arActions[] = array("ICON" => "edit", "TEXT" => "�������������", "ACTION" => $lAdmin->ActionRedirect("smartcat.connector.php?ID=" . urlencode($arRow['ID'])), "DEFAULT" => true);
-
     foreach ($arStatus as $sStatus => $sLabel) {
         if ($sStatus == $arItem['STATUS']) continue;
+
+        if($arItem['STATUS'] === \Smartcat\Connector\TaskTable::STATUS_UPLOADED){
+            $text = GetMessage("SMARTCAT_CONNECTOR_OTMENIT_OTPRAVKU");
+        }
+        if($arItem['STATUS'] === \Smartcat\Connector\TaskTable::STATUS_NEW){
+            $text = GetMessage("SMARTCAT_CONNECTOR_IZMENITQ_STATUS");
+        }
         $arActions[] = array(
             "ICON" => "edit",
-            "TEXT" => GetMessage("SMARTCAT_CONNECTOR_V_STATUS") . $sLabel . '"',
+            "TEXT" => $text,
             "ACTION" => $lAdmin->ActionDoGroup($arRow['ID'], "status", "status_to_move={$sStatus}"),
         );
     }
@@ -254,16 +251,13 @@ $arActions = array(
 );
 $arParams = array();
 
-$statuses = '<div id="status_to_move" style="display:none"><select name="status_to_move">';
-foreach ($arStatus as $sStatus => $sLabel) {
-    $statuses .= '<option value="' . $sStatus . '">' . $sLabel . '</option>';
-}
-$statuses .= '</select></div>';
+$status_inp = '<input type="hidden" name="status_to_move" id="status_to_move"> <input type="hidden" name="action" value="status">';
 
-$arActions["status"] = GetMessage("SMARTCAT_CONNECTOR_IZMENITQ_STATUS");
-$arActions["status_chooser"] = array("type" => "html", "value" => $statuses);
+$arActions["status_upload"] = GetMessage("SMARTCAT_CONNECTOR_IZMENITQ_STATUS");
+$arActions["status_new"] = GetMessage("SMARTCAT_CONNECTOR_OTMENIT_OTPRAVKU");
+$arActions["status_action"] = array("type" => "html", "value" => $status_inp);
 
-$arParams["select_onchange"] = "BX('status_to_move').style.display = (this.value == 'status' ? 'block':'none');";
+$arParams["select_onchange"] = "BX('status_to_move').value = (this.value == 'status_upload' ? '" .\Smartcat\Connector\TaskTable::STATUS_UPLOADED. "': (this.value == 'status_new' ? '" . \Smartcat\Connector\TaskTable::STATUS_NEW . "' : '' ));";
 
 $lAdmin->AddGroupActionTable($arActions, $arParams);
 
