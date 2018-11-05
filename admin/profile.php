@@ -31,6 +31,8 @@ while ($arLang = $rsSiteLangs->Fetch()) {
 $arWorflowStages = ApiHelper::getWorkflowStages();
 $arVendors = ApiHelper::getVendor();
 
+$arVendors[0] = GetMessage("SMARTCAT_CONNECTOR_WITHOUT_VENDOR");
+
 $arFieldsToTranslate = [
     'NAME' => GetMessage("SMARTCAT_CONNECTOR_NAZVANIE"),
     'PREVIEW_TEXT' => GetMessage("SMARTCAT_CONNECTOR_OPISANIE_DLA_ANONSA"),
@@ -384,11 +386,9 @@ if (!empty($arErrors)): ?>
             <td><?= GetMessage("SMARTCAT_CONNECTOR_VENDOR") ?></td>
             <td>
                 <select name="VENDOR" class="js-select-lang">
-                        <option value="" <?= ($arProfile['VENDOR'] == '' ? 'selected' : ''); ?>>
-                            Без вендора
-                        </option>
                     <? foreach ($arVendors as $id=> $name): ?>
-                        <option value="<?= $id . '|' . $name; ?>" <?= (strpos($arProfile['VENDOR'],$id) !== false ? 'selected' : ''); ?> >
+                        <? $vendorFull = $id . '|' . $name; ?>
+                        <option value="<?= $vendorFull; ?>" <?= ($arProfile['VENDOR'] === $vendorFull ? 'selected' : ''); ?> >
                             <?= $name; ?>
                         </option>
                     <? endforeach; ?>
