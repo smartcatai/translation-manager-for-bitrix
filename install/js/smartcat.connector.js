@@ -42,34 +42,24 @@ $(function () {
 
         today = dd + '.' + mm + '.' + yyyy;
 
-        var content = '<table><tr><td>';
-        content = content + 'Укажите дедлайн: ';
-        content = content + '</td><td>';
-        content = content + '<input id="DEADLINE" type="text" value="" name="date" onclick="BX.calendar({node: this, field: this, bTime: true, bHideTime: false});">';
-        content = content + '</td></td></table>';
+        var content = '<table><tr><td>'
+                    + 'Контент отправлен на перевод';
+                    + '</td></tr></table>';
 
         deadlineDialog = new BX.CDialog({
-            title: 'Создание заказа',
+            title: 'Создание перевода',
             content: content,
             height: 80,
             width: 350,
             resizable: false,
             buttons: [
                 {
-                    title: 'Создать',
+                    title: 'Ок',
                     className: 'adm-btn-save',
                     action: function () {
-                        var action = deadlineAction;
-                        action += '&deadline=' + document.getElementById('DEADLINE').value;
-                        BX.ajax({
-                            url: action,
-                            method: 'GET'
-                        });
                         this.parentWindow.Close();
                     }
-
-                },
-                BX.CAdminDialog.btnCancel
+                }
             ]
         })
     }
@@ -77,7 +67,11 @@ $(function () {
 
 function ShowDeadlineDialog(list, action) {
     deadlineList = list;
-    deadlineAction = action;
+    action += '&deadline=1';
+    BX.ajax({
+        url: action,
+        method: 'GET'
+    });
 
     deadlineDialog.Show();
 }
