@@ -192,8 +192,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()) {
     }
 
     $arProfile['NAME'] = $arIblockFrom['NAME'];
-    $arProfile['ACTIVE'] = ($_REQUEST['ACTIVE'] == 'Y');
-    $arProfile['PUBLISH'] = ($_REQUEST['PUBLISH'] == 'Y');
+    $arProfile['ACTIVE'] = (isset($_REQUEST['ACTIVE']) && $_REQUEST['ACTIVE'] == 'Y');
+    $arProfile['PUBLISH'] = (isset($_REQUEST['PUBLISH']) && $_REQUEST['PUBLISH'] == 'Y');
     $arProfile['AUTO_ORDER'] = ($_REQUEST['AUTO_ORDER'] == 'Y');
     $arProfile['IBLOCK_ID'] = intval($_REQUEST['IBLOCK_ID']);
     $arProfile['LANG'] = trim($_REQUEST['LANG']);

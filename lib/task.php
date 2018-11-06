@@ -90,15 +90,15 @@ class TaskTable extends Main\Entity\DataManager
                 'title' => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_STATUS_FIELD'),
                 'default_value' => self::STATUS_NEW,
             ),
-            'ORDER_ID' => array(
+            'PROJECT_ID' => array(
                 'data_type' => 'string',
-                'validation' => array(__CLASS__, 'validateOrderId'),
-                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_ORDER_ID_FIELD'),
+                'validation' => array(__CLASS__, 'validateProjectId'),
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_PROJECT_ID_FIELD'),
             ),
-            'ORDER_NUMBER' => array(
+            'PROJECT_NAME' => array(
                 'data_type' => 'string',
-                'validation' => array(__CLASS__, 'validateOrderNumber'),
-                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_ORDER_NUMBER_FIELD'),
+                'validation' => array(__CLASS__, 'validateProjectName'),
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_PROJECT_NAME_FIELD'),
             ),
             'DATE_CREATE' => array(
                 'data_type' => 'datetime',
@@ -199,11 +199,11 @@ class TaskTable extends Main\Entity\DataManager
     }
 
     /**
-     * Returns validators for ORDER_ID field.
+     * Returns validators for PROJECT_ID field.
      *
      * @return array
      */
-    public static function validateOrderId()
+    public static function validateProjectId()
     {
         return array(
             new Main\Entity\Validator\Length(null, 100),
@@ -211,11 +211,11 @@ class TaskTable extends Main\Entity\DataManager
     }
 
     /**
-     * Returns validators for ORDER_NUMBER field.
+     * Returns validators for PROJECT_NAME field.
      *
      * @return array
      */
-    public static function validateOrderNumber()
+    public static function validateProjectName()
     {
         return array(
             new Main\Entity\Validator\Length(null, 100),
