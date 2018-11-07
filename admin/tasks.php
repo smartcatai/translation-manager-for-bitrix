@@ -111,8 +111,8 @@ $arHeader = array(
         "default" => true,
     ),
     array(
-        "id" => "ORDER_NUMBER",
-        "content" => GetMessage("SMARTCAT_CONNECTOR_ZAKAZA"),
+        "id" => "PROJECT_NAME",
+        "content" => GetMessage("SMARTCAT_CONNECTOR_PROJECT"),
         "default" => true,
     ),
     array(
@@ -178,7 +178,7 @@ while ($arItem = $rsItems->fetch()) {
     $arRow['COMMENT'] = $arItem['COMMENT'];
     $arRow['DEADLINE'] = $arItem['DEADLINE'] ? date('Y-m-d\\TH:i:s.0\\Z', $arItem['DEADLINE']->getTimestamp()) : '-';//$arItem['DEADLINE'];
     $arRow['STATUS'] = $arStatus[$arItem['STATUS']];
-    $arRow['ORDER_NUMBER'] = $arItem['ORDER_NUMBER'] ?: '&mdash;';
+    $arRow['PROJECT_NAME'] = $arItem['PROJECT_NAME'] ?: '&mdash;';
 
     $arProfile = \Smartcat\Connector\ProfileTable::getById($arItem['PROFILE_ID'])->fetch();
     $sProfileLink = '/bitrix/admin/smartcat.connector_profile.php?ID=' . $arProfile['ID'] . '&lang=ru';

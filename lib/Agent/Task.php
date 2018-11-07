@@ -2,14 +2,14 @@
 
 namespace Smartcat\Connector\Agent;
 
+use SmartCat\Client\Model\ProjectModel;
 use Smartcat\Connector\Helper\IblockHelper;
 use Smartcat\Connector\Helper\StringHelper;
+use Smartcat\Connector\Helper\ProjectHelper;
 use Smartcat\Connector\ProfileIblockTable;
 use Smartcat\Connector\ProfileTable;
 use Smartcat\Connector\TaskFileTable;
 use Smartcat\Connector\TaskTable;
-use Smartcat\ConnectorAPI\API\Model\FileInfoViewModel;
-use Smartcat\ConnectorAPI\API\Model\FullOrderViewModel;
 use Bitrix\Main\Loader;
 use Bitrix\Main\Type\DateTime;
 
@@ -21,10 +21,10 @@ class Task
         self::log("Start Check");
 
         self::log("Start CheckNewTasks");
-        //self::CheckNewTasks();
+        self::CheckNewTasks();
 
         self::log("Start CheckUploadedTasks");
-        //self::CheckUploadedTasks();
+        self::CheckUploadedTasks();
 
         self::log("Start CheckInProgressTasks");
         //self::CheckInProgressTasks();
@@ -42,38 +42,73 @@ class Task
             ]
         ]);
 
-        if ($rsTasks->getSelectedRowsCount() > 0) {
+        if ($rsTasks->getSelectedRowsCount() === 0) {
+            return;
+        }
 
-            $cloudApi = \Smartcat\Connector\Helper\ApiHelper::createApi();
-            $fileManager = $cloudApi->getFileManager();
+        $api = \Smartcat\Connector\Helper\ApiHelper::createApi();
+        $projectManager = $api->getProjectManager();
 
-            while ($arTask = $rsTasks->fetch()) {
+        while ($arTask = $rsTasks->fetch()) {
 
-                $arProfile = ProfileTable::getById($arTask['PROFILE_ID'])->fetch();
+            $arProfile = ProfileTable::getById($arTask['PROFILE_ID'])->fetch();
+            $obElement = \CIBlockElement::GetByID($arTask['ELEMENT_ID'])->GetNextElement(true, false);
+            $newProject = ProjectHelper::createProject($arProfile, $arTask, $obElement);
 
-                $sFilePath = tempnam(sys_get_temp_dir(), 'TRANSLATE-');
-
-                file_put_contents($sFilePath, '<html><head></head><body>' . $arTask['CONTENT'] . '</body></html>');
-
-                try {
-                    $result = $fileManager->fileUploadFile([
-                        'fileName' => $arProfile['ID'] . '_' . $arTask['ID'] . '.html',
-                        'filePath' => $sFilePath,
-                    ]);
-                } catch (\Exception $e) {
-                    self::log($e->getMessage() . ' ' . $e->getResponse()->getBody()->getContents(), __METHOD__, __LINE__);
-                }
-
-                if (!empty($result) && is_array($result)) {
-                    $result = reset($result);
-                    TaskTable::update($arTask['ID'], [
-                        'FILE_ID' => $result->getId(),
-                        'FILE_TOKEN' => $result->getToken(),
-                        'STATUS' => TaskTable::STATUS_UPLOADED,
-                    ]);
-                }
-
+            try {
+                $project = $projectManager->projectCreateProject($newProject);
+            }catch(\Exception $e){
+                self::log("SmartCat error add project: {$e->getMessage()}");
+                return;
             }
+
+            if($project === null){
+                return;
+            }
+
+            $sFilePath = tempnam(sys_get_temp_dir(), 'TRANSLATE-');
+
+            file_put_contents($sFilePath, '<html><head></head><body>' . $arTask['CONTENT'] . '</body></html>');
+
+            $documentModel = ProjectHelper::createDocumentFromFile($sFilePath, $arProfile['ID'] . '_' . $arTask['ID'] . '.html');
+
+            try{
+                $documents = $projectManager->projectAddDocument([
+                    'documentModel' => [$documentModel],
+                    'projectId' => $project->getId(),
+                ]);
+            }catch(\Exception $e){
+                self::log("SmartCat error add documents: {$e->getMessage()}");
+                return;
+            }
+
+            $vendorId = substr($arProfile[VENDOR], 0, strpos('|'));
+
+            if($vendorId != 0){
+                $projectChanges = ProjectHelper::createVendorChange($vendorId);
+                try{ 
+                    $projectManager->projectUpdateProject($project->getId(), $projectChanges);
+                }catch(\Exception $e){
+                    self::log("SmartCat error add vendor {$vendorId}: {$e->getMessage()}");
+                }
+            }
+
+            try{
+                $projectManager->projectBuildStatistics($project->getId());
+            }catch(\Exception $e){
+                self::log("SmartCat error Build Statistics: {$e->getMessage()}");
+            }
+
+            if (!empty($documents)) {
+                $document = current($documents);
+                TaskTable::update($arTask['ID'], [
+                    'PROJECT_ID' => $project->getId(),
+                    'PROJECT_NAME' => $project->getName(),
+                    'FILE_ID' => $document->getId(),
+                    'STATUS' => TaskTable::STATUS_UPLOADED,
+                ]);
+            }
+            
         }
     }
 
@@ -85,81 +120,26 @@ class Task
                 '=STATUS' => TaskTable::STATUS_UPLOADED,
             ]
         ]);
+        $api = \Smartcat\Connector\Helper\ApiHelper::createApi();
+        $projectManager = $api->getProjectManager();
 
         if ($rsTasks->getSelectedRowsCount() > 0) {
 
-            $notifyEmail = \Bitrix\Main\Config\Option::get('smartcat.connector', 'notify_email');
-            $cloudApi =  \Smartcat\Connector\Helper\ApiHelper::createApi();
-            $orderManager = $cloudApi->getOrderManager();
-            $fileManager = $cloudApi->getFileManager();
-
-            if (empty($notifyEmail)) {
-                $notifyEmail = \Bitrix\Main\Config\Option::get('main', 'email_from');
-            }
-
             while ($arTask = $rsTasks->fetch()) {
-
                 try {
-                    $result = $fileManager->fileGetFileInfo($arTask['FILE_ID'], $arTask['FILE_TOKEN']);
+                    $project = $projectManager->projectGet($arTask['PROJECT_ID']);
                 } catch (\Exception $e) {
-                    self::log($e->getMessage() . ' ' . $e->getResponse()->getBody()->getContents(), __METHOD__, __LINE__);
+                    self::log($e->getMessage() , __METHOD__, __LINE__);
                 }
-                if ($result && $result instanceof FileInfoViewModel && $result->getReadingStatus() == 'Done') {
 
-                    $arProfile = ProfileTable::getById($arTask['PROFILE_ID'])->fetch();
-
-                    $rsFiles = TaskFileTable::getList([
-                        'filter' => [
-                            '=TASK_ID' => $arTask['ID'],
-                        ],
+                if ($project && $project instanceof ProjectModel && $project->getStatus() === 'inprogress') {
+                    TaskTable::update($arTask['ID'], [
+                        'STATUS' => TaskTable::STATUS_PROCESS,
+                        'AMOUNT' => $project->getAmount(),
+                        'CURRENCY' => $project->getCurrency(),
+                        'DEADLINE' => $project->getDeadline() instanceof \DateTime ? DateTime::createFromTimestamp($project->getDeadline()->getTimestamp()) : ''
                     ]);
-
-                    $arLangTo = [];
-                    while ($arFile = $rsFiles->fetch()) {
-                        $arLangTo[] = $arFile['LANG_TO'];
-                    }
-
-                    $file = new \Smartcat\ConnectorAPI\API\Model\GetFileModel();
-                    $file->setId($arTask['FILE_ID']);
-                    $file->setToken($arTask['FILE_TOKEN']);
-
-                    $order = new \Smartcat\ConnectorAPI\API\Model\SubmitOrderModel();
-                    $order->setFiles([$file]);
-                    $order->setFrom($arProfile['LANG']);
-                    $order->setTo($arLangTo);
-                    $order->setCostType('Default');
-                    $order->setUnitType('Words');
-                    $order->setCurrency('RUB');
-                    $order->setEmail($notifyEmail);
-                    $order->setApprovalRequired(false);
-                    $order->setIsManualEstimation(false);
-                    if ($arTask['DEADLINE'] instanceof DateTime) {
-                        $timestamp = $arTask['DEADLINE']->getTimestamp();
-                        if (($timestamp - time()) < 2 * 3600) $timestamp = time() + 2 * 3600 + 20;
-                        $order->setDeadline(date('Y-m-d\\TH:i:s.0\\Z', $timestamp));
-                    }
-
-                    $order->setType($arTask['TYPE']);
-
-                    try {
-                        $result = $orderManager->orderSubmitOrder($order);
-                    } catch (\Exception $e) {
-                        self::log($e->getMessage() . ' ' . $e->getResponse()->getBody()->getContents(), __METHOD__, __LINE__);
-                    }
-
-                    if ($result && $result instanceof FullOrderViewModel) {
-                        TaskTable::update($arTask['ID'], [
-                            'STATUS' => TaskTable::STATUS_PROCESS,
-                            'ORDER_ID' => $result->getId(),
-                            'ORDER_NUMBER' => $result->getNumber(),
-                            'AMOUNT' => $result->getAmount(),
-                            'CURRENCY' => $result->getCurrency(),
-                            'DEADLINE' => $result->getDeadline() instanceof \DateTime ? DateTime::createFromTimestamp($result->getDeadline()->getTimestamp()) : ''
-                        ]);
-                    }
-
                 }
-
             }
         }
     }
@@ -447,7 +427,7 @@ class Task
             $arOutput[] = $mess;
         }
         $mess = implode(', ', $arOutput) . PHP_EOL;
-        //echo date('d.m.Y H:i:s') . ': ' . $mess;
+        echo date('d.m.Y H:i:s') . ': ' . $mess;
         //fwrite(STDERR, date('d.m.Y H:i:s') . ': ' . $mess);
         //file_put_contents($_SERVER['DOCUMENT_ROOT'] . '/task_log.txt', date('d.m.Y H:i:s') . ': ' . $mess . "\n", FILE_APPEND);
     }
