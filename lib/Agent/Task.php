@@ -93,12 +93,6 @@ class Task
                 }
             }
 
-            try{
-                $projectManager->projectBuildStatistics($project->getId());
-            }catch(\Exception $e){
-                self::log("SmartCat error Build Statistics: {$e->getMessage()}");
-            }
-
             if (!empty($documents)) {
                 $document = current($documents);
                 TaskTable::update($arTask['ID'], [
@@ -130,6 +124,22 @@ class Task
                     $project = $projectManager->projectGet($arTask['PROJECT_ID']);
                 } catch (\Exception $e) {
                     self::log($e->getMessage() , __METHOD__, __LINE__);
+                }
+
+                $disasemblingSuccess = true;
+                foreach($project->getDocuments() as $document){
+                    if($document->getDocumentDisassemblingStatus() != 'success'){
+                        $disasemblingSuccess = false;
+                        break;
+                    }
+                }
+
+                if($disasemblingSuccess){
+                    try{
+                        $projectManager->projectBuildStatistics($project->getId());
+                    }catch(\Exception $e){
+                        self::log("SmartCat error Build Statistics: {$e->getMessage()}");
+                    }
                 }
 
                 if ($project && $project instanceof ProjectModel && $project->getStatus() === 'inprogress') {
