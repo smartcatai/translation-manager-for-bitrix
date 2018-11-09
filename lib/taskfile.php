@@ -81,7 +81,16 @@ class TaskFileTable extends Main\Entity\DataManager
                 'validation' => array(__CLASS__, 'validateLangTo'),
                 'title' => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_FILE_ENTITY_LANG_TO_FIELD'),
             ),
-
+            'DOCUMENT_ID' => array(
+                'data_type' => 'string',
+                'validation' => array(__CLASS__, 'validateDocumentId'),
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_FILE_ID_FIELD'),
+            ),
+            'EXPORT_TASK_ID' => array(
+                'data_type' => 'string',
+                'validation' => array(__CLASS__, 'validateExportTaskId'),
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_FILE_TOKEN_FIELD'),
+            ),
             'TRANSLATION' => array(
                 'data_type' => 'text',
                 'title' => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_FILE_ENTITY_TRANSLATION_FIELD'),
@@ -115,8 +124,6 @@ class TaskFileTable extends Main\Entity\DataManager
 
         return $result;
     }
-
-
 
     /**
      * Returns validators for LANG_FROM field.
@@ -156,6 +163,30 @@ class TaskFileTable extends Main\Entity\DataManager
     {
         return array(
             new Main\Entity\Validator\Length(null, 10),
+        );
+    }
+
+    /**
+     * Returns validators for FILE_ID field.
+     *
+     * @return array
+     */
+    public static function validateDocumentId()
+    {
+        return array(
+            new Main\Entity\Validator\Length(null, 255),
+        );
+    }
+
+    /**
+     * Returns validators for FILE_TOKEN field.
+     *
+     * @return array
+     */
+    public static function validateExportTaskId()
+    {
+        return array(
+            new Main\Entity\Validator\Length(null, 255),
         );
     }
 }

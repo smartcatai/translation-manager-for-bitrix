@@ -119,16 +119,6 @@ class TaskTable extends Main\Entity\DataManager
                 'data_type' => 'text',
                 'title' => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_CONTENT_FIELD'),
             ),
-            'FILE_ID' => array(
-                'data_type' => 'string',
-                'validation' => array(__CLASS__, 'validateFileId'),
-                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_FILE_ID_FIELD'),
-            ),
-            'FILE_TOKEN' => array(
-                'data_type' => 'string',
-                'validation' => array(__CLASS__, 'validateFileToken'),
-                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_FILE_TOKEN_FIELD'),
-            ),
             'COMMENT' => array(
                 'data_type' => 'text',
                 'title' => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_COMMENT_FIELD'),
@@ -219,30 +209,6 @@ class TaskTable extends Main\Entity\DataManager
     {
         return array(
             new Main\Entity\Validator\Length(null, 100),
-        );
-    }
-
-    /**
-     * Returns validators for FILE_ID field.
-     *
-     * @return array
-     */
-    public static function validateFileId()
-    {
-        return array(
-            new Main\Entity\Validator\Length(null, 255),
-        );
-    }
-
-    /**
-     * Returns validators for FILE_TOKEN field.
-     *
-     * @return array
-     */
-    public static function validateFileToken()
-    {
-        return array(
-            new Main\Entity\Validator\Length(null, 255),
         );
     }
 
