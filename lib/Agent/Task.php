@@ -88,10 +88,13 @@ class Task
                 return;
             }
 
-            $vendorId = substr($arProfile[VENDOR], 0, strpos('|'));
-
-            if($vendorId != 0){
-                $projectChanges = ProjectHelper::createVendorChange($vendorId);
+            //strstr('0|Без вендора','|',true)
+            if(strstr($arProfile[VENDOR], '|', true)!=='0'){
+                $projectChanges = ProjectHelper::createVendorChange($arProfile[VENDOR]);
+                $projectChanges
+                    ->setName($project->getName())
+                    ->setDescription($project->getDescription())
+                    ->setDeadline($project->getDeadline());
                 try{ 
                     $projectManager->projectUpdateProject($project->getId(), $projectChanges);
                 }catch(\Exception $e){
@@ -163,7 +166,7 @@ class Task
                     }
                 }
 
-                if ($project && $project instanceof ProjectModel && $project->getStatus() === 'inprogress') {
+                if ($project && $project->getStatus() == 'inprogress') {
                     TaskTable::update($arTask['ID'], [
                         'STATUS' => TaskTable::STATUS_PROCESS,
                         'DEADLINE' => $project->getDeadline() instanceof \DateTime ? DateTime::createFromTimestamp($project->getDeadline()->getTimestamp()) : ''
@@ -199,8 +202,6 @@ class Task
         $api = \Smartcat\Connector\Helper\ApiHelper::createApi();
         $documentManager = $api->getDocumentManager();
         $documentExportManager = $api->getDocumentExportManager();
-
-        $CIBlockElement = new \CIBlockElement();
 
         while ($arTaskFile = $rsTaskFiles->fetch()) {
             self::log("Task", $arTaskFile['DOCUMENT_ID']);
@@ -240,14 +241,44 @@ class Task
 
         $api = \Smartcat\Connector\Helper\ApiHelper::createApi();
         $documentExportManager = $api->getDocumentExportManager();
+        $exportUnpacked = [];
 
         while ($arTaskFile = $rsTaskFiles->fetch()) {
-            $response = $documentExportManager->documentExportDownloadExportResult($arTaskFile['EXPORT_TASK_ID']);
-            $sFilePath = tempnam(sys_get_temp_dir(), "EXPORT-{$arTaskFile['EXPORT_TASK_ID']}-");
-            file_put_contents($sFilePath, $response->getBody());
+            if(in_array($arTaskFile['EXPORT_TASK_ID'], $exportUnpacked )){
+                continue;
+            }
+            array_push($exportUnpacked, $arTaskFile['EXPORT_TASK_ID']);
+            try{
+                $response = $documentExportManager->documentExportDownloadExportResult($arTaskFile['EXPORT_TASK_ID']);
+            }catch(\Exception $e){
+                self::log("SmartCat error Download Export {$arTaskFile['EXPORT_TASK_ID']}: {$e->getMessage()}");
+                TaskFileTable::update($arTaskFile['ID'], [
+                    'STATUS' => TaskFileTable::STATUS_UPLOADED,
+                ]);
+                return;
+            }
+            if(!$response){
+                return;
+            }
+            $mimeType = $response->getHeaderLine('Content-Type');
+            if($response->getStatusCode() === 204){
+                continue;
+            }
+            self::log($response->getStatusCode(),$mimeType);
+            if($mimeType==='text/html'){
+                $name = sys_get_temp_dir() . '/TRANSLATED-' . $arTaskFile['TASK_ID'] . '(' . $arTaskFile['LANG_TO'] . ').html';
+                self::log('File name', $name );
+                file_put_contents( $name , $response->getBody()->getContents());
+                TaskFileTable::update($arTaskFile['ID'], [
+                    'STATUS' => TaskFileTable::STATUS_SUCCESS,
+                ]);
+                continue;
+            }
 
+            $sFilePath = tempnam(sys_get_temp_dir(), "EXPORT-{$arTaskFile['EXPORT_TASK_ID']}-") . '.zip';
+            file_put_contents($sFilePath, $response->getBody()->getContents());
 
-			$arc = CBXArchive::GetArchive($sFilePath);
+			$arc = \CBXArchive::GetArchive($sFilePath);
 
 			if ($arc instanceof IBXArchive)
             {
@@ -264,14 +295,16 @@ class Task
 
                 $uRes = $arc->Unpack(sys_get_temp_dir());
 
-                if (!$uRes)
-                {
+                if (!$uRes){
                     self::log($arc->GetErrors());
+                }else{
+                    TaskFileTable::update($arTaskFile['ID'], [
+                        'STATUS' => TaskFileTable::STATUS_SUCCESS,
+                    ]);
                 }
+            }else{
+                self::log(get_class($arc));
             }
-            TaskFileTable::update($arTaskFile['ID'], [
-                'STATUS' => TaskFileTable::STATUS_SUCCESS,
-            ]);
         }
     }
 
@@ -286,12 +319,15 @@ class Task
         if ($rsTaskFiles->getSelectedRowsCount() === 0) {
             return ;
         }
+
+        $CIBlockElement = new \CIBlockElement();
     
         while ($arTaskFile = $rsTaskFiles->fetch()) {
-            $name = 'TRANSLATED-'.$arTaskFile['TASK_ID'].'('.$arTaskFile['LANG_TO'].').html';
-            $translateText = file_get_contents(sys_get_temp_dir() .'/'. $name);
+            $name = sys_get_temp_dir() .'/TRANSLATED-'.$arTaskFile['TASK_ID'].'('.$arTaskFile['LANG_TO'].').html';
+            self::log('File name', $name );
+            $translateText = file_get_contents($name);
 
-            self::log("Parse file content");
+            self::log("Parse file content", $translateText);
             preg_match_all('/<field id="(.+?)">(.*?)<\/field>/is', $translateText, $matches);
             $arFields = [];
             $arProps = [];
@@ -313,6 +349,7 @@ class Task
                     '=ID' => $arTaskFile['TASK_ID'],
                 ]
             ])->fetch();
+            self::log("task ID",$arTask['ID']);
 
             $arProfileIblock = ProfileIblockTable::getList([
                 'filter' => [
@@ -320,12 +357,14 @@ class Task
                     '=LANG' => $arTaskFile['LANG_TO'],
                 ],
             ])->fetch();
+            self::log("profile iblock ID",$arProfileIblock['ID']);
 
             $arProfile = ProfileTable::getList([
                 'filter' => [
-                    '=PROFILE_ID' => $arTask['PROFILE_ID'],
+                    '=ID' => $arTask['PROFILE_ID'],
                 ],
             ])->fetch();
+            self::log("Profile ID", $arProfile['ID']);
 
             $arElement = [
                 'IBLOCK_ID' => $arProfileIblock['IBLOCK_ID'],
@@ -350,6 +389,7 @@ class Task
                 $sErrorComment = $e->getMessage();
                 $bHasErrors = true;
             }
+            self::log($elementID);
             foreach ($arProfile['FIELDS']['FIELDS'] as $sField) {
                 $arElement[$sField] = $arFields[$sField];
             }
@@ -358,15 +398,22 @@ class Task
                 unset($arElement['ACTIVE']);
                 $CIBlockElement->Update($elementID, $arElement);
             } else {
-                //$elementID = $CIBlockElement->Add($arElement);
+                $elementID = $CIBlockElement->Add($arElement);
             }
+            self::log($elementID);
             if ($CIBlockElement->LAST_ERROR) {
                 self::log('IB Error', $CIBlockElement->LAST_ERROR, $arElement);
-                $bHasErrors = true;
-                $sErrorComment .= ' ' . $CIBlockElement->LAST_ERROR;
             }
             self::log("New element ID", $elementID);
             if ($elementID > 0) {
+                TaskFileTable::update($arTaskFile['ID'], [
+                    'TRANSLATION' => $translateText,
+                    'STATUS' => TaskFileTable::STATUS_DONE,
+                    'ELEMENT_ID' => $elementID,
+                ]);
+                TaskTable::update($arTask['ID'], [
+                    'STATUS' => TaskFileTable::STATUS_SUCCESS,
+                ]);
                 \CIBlockElement::SetPropertyValuesEx($elementID, $arElement['IBLOCK_ID'], $arProps);
                 if (!empty($arSections)) {
                     $CIBlockSection = new \CIBlockSection();
@@ -381,8 +428,6 @@ class Task
                                     'NAME' => trim($arSections[$i]),
                                 ]);
                                 if (!$res) {
-                                    $sErrorComment .= ' ' . $CIBlockSection->LAST_ERROR;
-                                    $bHasErrors = true;
                                     self::log($CIBlockSection->LAST_ERROR, __LINE__);
                                 }
                             }
@@ -390,17 +435,10 @@ class Task
                         }
                     }
                 }
-                TaskFileTable::update($arFile['ID'], [
-                    'TRANSLATION' => $translateText,
-                    'STATUS' => TaskFileTable::STATUS_SUCCESS,
-                    'ELEMENT_ID' => $elementID,
-                ]);
             } else {
-                TaskFileTable::update($arFile['ID'], [
+                TaskFileTable::update($arTaskFile['ID'], [
                     'STATUS' => TaskFileTable::STATUS_FAILED,
                 ]);
-                $bHasErrors = true;
-                //$sErrorComment = $CIBlockElement->LAST_ERROR;
             }
         }
     }
@@ -414,7 +452,7 @@ class Task
             $arOutput[] = $mess;
         }
         $mess = implode(', ', $arOutput) . PHP_EOL;
-        echo date('d.m.Y H:i:s') . ': ' . $mess;
+        //echo date('d.m.Y H:i:s') . ': ' . $mess;
         //fwrite(STDERR, date('d.m.Y H:i:s') . ': ' . $mess);
         //file_put_contents($_SERVER['DOCUMENT_ROOT'] . '/task_log.txt', date('d.m.Y H:i:s') . ': ' . $mess . "\n", FILE_APPEND);
     }

@@ -32,6 +32,7 @@ $arAllOptions[] = Array("api_server", "Server", \SmartCat\Client\SmartCat::SC_EU
     \SmartCat\Client\SmartCat::SC_EUROPE => 'Europe',
     \SmartCat\Client\SmartCat::SC_USA => 'USA',
 )));
+$arAllOptions[] = Array("api_test", "Test mode", '', Array('checkbox', false));
 
 
 

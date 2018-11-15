@@ -12,6 +12,7 @@ $APPLICATION->SetTitle(GetMessage("SMARTCAT_CONNECTOR_ZAKAZY"));
 
 
 $arStatus = \Smartcat\Connector\TaskTable::getAccessibleStatusList();
+$arStatusAll = \Smartcat\Connector\TaskTable::getStatusList();
 
 $arProfiles = \Smartcat\Connector\ProfileTable::getList([
     'order' => ['NAME' => 'asc'],
@@ -177,7 +178,7 @@ while ($arItem = $rsItems->fetch()) {
     $arRow['ID'] = $arItem['ID'];
     $arRow['COMMENT'] = $arItem['COMMENT'];
     $arRow['DEADLINE'] = $arItem['DEADLINE'] ? date('Y-m-d\\TH:i:s.0\\Z', $arItem['DEADLINE']->getTimestamp()) : '-';//$arItem['DEADLINE'];
-    $arRow['STATUS'] = $arStatus[$arItem['STATUS']];
+    $arRow['STATUS'] = $arStatusAll[$arItem['STATUS']];
     $arRow['PROJECT_NAME'] = $arItem['PROJECT_NAME'] ?: '&mdash;';
 
     $arProfile = \Smartcat\Connector\ProfileTable::getById($arItem['PROFILE_ID'])->fetch();

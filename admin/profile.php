@@ -403,7 +403,7 @@ if (!empty($arErrors)): ?>
                         <label>
                             <input type="checkbox" name="WORKFLOW[]" value="<?= $stage; ?>" <?= (strpos($arProfile['WORKFLOW'],$stage) !== false ? 'checked' : ''); ?>>
                             <?= $stage; ?>
-                        </label><br>
+                        </label><br><br>
                     <? endforeach; ?>
             </td>
         </tr>

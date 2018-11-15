@@ -31,9 +31,11 @@ class TaskFileTable extends Main\Entity\DataManager
 {
 
     const STATUS_NEW = 'N';
+    const STATUS_UPLOADED = 'U';
     const STATUS_PROCESS = 'P';
     const STATUS_FAILED = 'F';
     const STATUS_SUCCESS = 'S';
+    const STATUS_DONE = 'D';
 
     /**
      * Returns DB table name for entity.

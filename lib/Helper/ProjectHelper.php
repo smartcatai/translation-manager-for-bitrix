@@ -34,14 +34,16 @@ class ProjectHelper
         foreach ($arIBlocks as $arIBlock) {
             $arLangs[] = $arIBlock['LANG'];
         }
-        $name = $arElement['NAME'] ;//. '['. $arProfile['LANG'] .']:['.implode(',',$arLangs).']';
+        $name = $arElement['NAME'] ;
+        $test = \Bitrix\Main\Config\Option::get('smartcat.connector', 'api_test');
 
         return Array(
             'name' => $name,
-            'desc' => 'test description',
+            'desc' => 'Content from bitrix module',
             'source_lang' => $arProfile['LANG'],
             'target_langs' => $arLangs,
             'stages' => explode(',', $arProfile['WORKFLOW']),
+            'test' => $test === 'Y' ? true: false,
         );
     }
 
@@ -60,7 +62,7 @@ class ProjectHelper
             ->setPretranslate(false)
             ->setWorkflowStages($params['stages'])
             ->setAssignToVendor(false)
-            ->setIsForTesting(true)
+            ->setIsForTesting($params['test'])
             ->attacheFile(fopen($arFile['path']),$arFile['name']);
 
         return $project;
@@ -80,7 +82,7 @@ class ProjectHelper
             ->setPretranslate(false)
             ->setWorkflowStages($params['stages'])
             ->setAssignToVendor(false)
-            ->setIsForTesting(true);
+            ->setIsForTesting($params['test']);
     }
 
     public static function getFileImportSettings()
@@ -99,9 +101,10 @@ class ProjectHelper
         return $documentModel;
     }
 
-    public static function createVendorChange($vendorId)
+    public static function createVendorChange($vendor)
     {
-        $projectChanges = (new ProjectChangesModel())
-                ->setVendorAccountId($vendorId);
+        $vendorId = strstr($vendor, '|', true);
+        return (new ProjectChangesModel())
+            ->setVendorAccountId($vendorId);
     }
 }
