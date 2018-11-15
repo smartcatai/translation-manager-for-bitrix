@@ -20,7 +20,8 @@ Loc::loadMessages(__FILE__);
  **/
 class ProfileTable extends Main\Entity\DataManager
 {
-
+    const LEFT_TO_RIGHT = 'Y';
+    const RIGHT_TO_LEFT = 'N';
     public static function getTypeList()
     {
         return [
@@ -64,16 +65,19 @@ class ProfileTable extends Main\Entity\DataManager
             'ACTIVE' => array(
                 'data_type' => 'boolean',
                 'required' => true,
+                'values' => array(self::RIGHT_TO_LEFT, self::LEFT_TO_RIGHT),
                 'title' => Loc::getMessage('SMARTCAT_CONNECTOR_PROFILE_ENTITY_ACTIVE_FIELD'),
             ),
             'PUBLISH' => array(
                 'data_type' => 'boolean',
                 'required' => true,
+                'values' => array(self::RIGHT_TO_LEFT, self::LEFT_TO_RIGHT),
                 'title' => Loc::getMessage('SMARTCAT_CONNECTOR_PROFILE_ENTITY_PUBLISH_FIELD'),
             ),
             'AUTO_ORDER' => array(
                 'data_type' => 'boolean',
                 'required' => true,
+                'values' => array(self::RIGHT_TO_LEFT, self::LEFT_TO_RIGHT),
                 'title' => Loc::getMessage('SMARTCAT_CONNECTOR_PROFILE_ENTITY_AUTO_ORDER_FIELD'),
             ),
             'IBLOCK_ID' => array(

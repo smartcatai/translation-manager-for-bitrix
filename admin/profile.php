@@ -194,7 +194,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()) {
     $arProfile['NAME'] = $arIblockFrom['NAME'];
     $arProfile['ACTIVE'] = (isset($_REQUEST['ACTIVE']) && $_REQUEST['ACTIVE'] == 'Y');
     $arProfile['PUBLISH'] = (isset($_REQUEST['PUBLISH']) && $_REQUEST['PUBLISH'] == 'Y');
-    $arProfile['AUTO_ORDER'] = ($_REQUEST['AUTO_ORDER'] == 'Y');
+    $arProfile['AUTO_ORDER'] = (isset($_REQUEST['AUTO_ORDER']) && $_REQUEST['AUTO_ORDER'] == 'Y');
     $arProfile['IBLOCK_ID'] = intval($_REQUEST['IBLOCK_ID']);
     $arProfile['LANG'] = trim($_REQUEST['LANG']);
     $arProfile['FIELDS'] = $_REQUEST['FIELDS'];
@@ -252,6 +252,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()) {
 
             $arProfileIblockFields = $arIblockData;
             $arProfileIblockFields['PROFILE_ID'] = $arProfile['ID'];
+            var_dump($arProfile['ID'],$arErrors);
 
             if ($isNew) {
                 $res = \Smartcat\Connector\ProfileIblockTable::add($arProfileIblockFields);
