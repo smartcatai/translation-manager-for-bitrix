@@ -58,6 +58,9 @@ class Task
         while ($arTask = $rsTasks->fetch()) {
 
             $arProfile = ProfileTable::getById($arTask['PROFILE_ID'])->fetch();
+            if($arProfile['AUTO_ORDER'] === 'N'){
+                continue;
+            }
             $obElement = \CIBlockElement::GetByID($arTask['ELEMENT_ID'])->GetNextElement(true, false);
             $newProject = ProjectHelper::createProject($arProfile, $arTask, $obElement);
 
