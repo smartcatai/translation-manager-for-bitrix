@@ -44,6 +44,7 @@ class ProjectHelper
             'target_langs' => $arLangs,
             'stages' => explode(',', $arProfile['WORKFLOW']),
             'test' => $test === 'Y' ? true: false,
+            'deadline' => $arTask['DEADLINE'],
         );
     }
 
@@ -55,7 +56,7 @@ class ProjectHelper
         $project
             ->setName($params['name'])
             ->setDescription($params['desc'])
-            ->setDeadline((new \DateTime('now'))->modify(' + 1 day'))
+            ->setDeadline($params['deadline'])
             ->setSourceLanguage($params['source_lang'])
             ->setTargetLanguages($params['target_langs'])
             ->setUseMT(false)
@@ -75,7 +76,7 @@ class ProjectHelper
         return (new CreateProjectModel())
             ->setName($params['name'])
             ->setDescription($params['desc'])
-            ->setDeadline((new \DateTime('now'))->modify(' + 1 day'))
+            ->setDeadline($params['deadline'])
             ->setSourceLanguage($params['source_lang'])
             ->setTargetLanguages($params['target_langs'])
             ->setUseMT(false)

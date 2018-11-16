@@ -43,7 +43,7 @@ class TaskHelper
                 'PROFILE_ID' => $arProfile['ID'],
                 'ELEMENT_ID' => $ID,
                 'VENDOR' => $arProfile['VENDOR'],
-                'DEADLINE' => $deadline ? DateTime::createFromTimestamp(MakeTimeStamp($deadline)) : '',
+                'DEADLINE' => (new \DateTime('now'))->modify(' + 1 day'),
                 'STATUS' => TaskTable::STATUS_NEW,
                 'CONTENT' => self::prepareElementContent($ID, $arProfile['FIELDS']),
             ];
