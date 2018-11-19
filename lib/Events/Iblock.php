@@ -146,7 +146,7 @@ class Iblock
 
                                 //'ICON' => 'copy',
                                 'TEXT' => GetMessage("SMARTCAT_CONNECTOR_PEREVOD") . $arTypes[$arProfile['TYPE']] . ' (' . implode(', ', $arProfile['LANGS']) . ')',
-                                'ACTION' => 'ShowDeadlineDialog("' . $lAdmin->table_id . '", "' . $link . '")',
+                                'ONCLICK' => 'ShowDeadlineDialog("' . $lAdmin->table_id . '", "' . $link . '")',
                             ];
                         }
                     }
