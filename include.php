@@ -23,6 +23,8 @@ function smartcat_connector_autoload($className)
     if (!$isSmarcat && $sModuleCheck != $sModuleId)
         return;
 
+    unset($arParts[0] , $arParts[1]);
+
     if (!empty($arParts) && !$isSmarcat) {
         $fileName = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, $arParts) . '.php';
         if (file_exists($fileName))
