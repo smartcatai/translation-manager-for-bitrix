@@ -175,8 +175,6 @@ class Task
                     'STATUS' => TaskTable::STATUS_PROCESS,
                     'DEADLINE' => $project->getDeadline() instanceof \DateTime ? DateTime::createFromTimestamp($project->getDeadline()->getTimestamp()) : ''
                 ]);
-            }else{
-                self::log("CheckUploadedTasks status: " . $progect->getStatus());
             }
         }
         
