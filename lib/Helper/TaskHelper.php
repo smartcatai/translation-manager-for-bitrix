@@ -38,13 +38,15 @@ class TaskHelper
             'filter' => $arProfileFilter,
         ]);
 
+        $datatime = (new \DateTime('now'))->modify(' + 1 day');
+
         while ($arProfile = $rsProfiles->fetch()) {
             $arTask = [
                 'PROFILE_ID' => $arProfile['ID'],
                 'ELEMENT_ID' => $ID,
                 'VENDOR' => $arProfile['VENDOR'],
-                'DEADLINE' => (new \DateTime('now'))->modify(' + 1 day'),
-                'STATUS' => TaskTable::STATUS_NEW,
+                'DEADLINE' =>  $datatime ? DateTime::createFromTimestamp($datatime->getTimestamp()) : '',
+                'STATUS' => $arProfile['AUTO_ORDER'] === 'Y' ? TaskTable::STATUS_READY_UPLOAD : TaskTable::STATUS_NEW,
                 'CONTENT' => self::prepareElementContent($ID, $arProfile['FIELDS']),
             ];
 

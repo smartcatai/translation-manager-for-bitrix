@@ -258,7 +258,7 @@ $arActions["status_upload"] = GetMessage("SMARTCAT_CONNECTOR_IZMENITQ_STATUS");
 $arActions["status_new"] = GetMessage("SMARTCAT_CONNECTOR_OTMENIT_OTPRAVKU");
 $arActions["status_action"] = array("type" => "html", "value" => $status_inp);
 
-$arParams["select_onchange"] = "BX('status_to_move').value = (this.value == 'status_upload' ? '" .\Smartcat\Connector\TaskTable::STATUS_UPLOADED. "': (this.value == 'status_new' ? '" . \Smartcat\Connector\TaskTable::STATUS_NEW . "' : '' ));";
+$arParams["select_onchange"] = "BX('status_to_move').value = (this.value == 'status_upload' ? '" .\Smartcat\Connector\TaskTable::STATUS_READY_UPLOAD. "': (this.value == 'status_new' ? '" . \Smartcat\Connector\TaskTable::STATUS_NEW . "' : '' ));";
 
 $lAdmin->AddGroupActionTable($arActions, $arParams);
 

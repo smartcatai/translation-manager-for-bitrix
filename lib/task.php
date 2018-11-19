@@ -24,6 +24,7 @@ class TaskTable extends Main\Entity\DataManager
 {
 
     const STATUS_NEW = 'N';
+    const STATUS_READY_UPLOAD = 'R';
     const STATUS_UPLOADED = 'U';
     const STATUS_PROCESS = 'P';
     const STATUS_FAILED = 'F';
@@ -34,6 +35,7 @@ class TaskTable extends Main\Entity\DataManager
     {
         return [
             self::STATUS_NEW => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_STATUS_NEW'),
+            self::STATUS_READY_UPLOAD => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_STATUS_READY_UPLOAD'),
             self::STATUS_UPLOADED => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_STATUS_UPLOADED'),
             self::STATUS_PROCESS => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_STATUS_PROCESS'),
             self::STATUS_FAILED => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_STATUS_FAILED'),
@@ -46,7 +48,7 @@ class TaskTable extends Main\Entity\DataManager
     {
         return [
             self::STATUS_NEW => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_STATUS_NEW'),
-            self::STATUS_UPLOADED => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_STATUS_UPLOADED'),
+            self::STATUS_READY_UPLOAD => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_STATUS_READY_UPLOAD'),
         ];
     }
 

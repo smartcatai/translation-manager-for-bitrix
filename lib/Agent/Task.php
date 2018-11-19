@@ -20,8 +20,8 @@ class Task
     {
         self::log("Start Check");
 
-        self::log("Start CheckNewTasks");
-        self::CheckNewTasks();
+        self::log("Start CheckReadyTasks");
+        self::CheckReadyTasks();
 
         self::log("Start CheckUploadedTasks");
         self::CheckUploadedTasks();
@@ -39,16 +39,17 @@ class Task
         return '\\' . __METHOD__ . '();';
     }
 
-    public static function CheckNewTasks()
+    public static function CheckReadyTasks()
     {
         $rsTasks = TaskTable::getList([
             'order' => ['ID' => 'asc'],
             'filter' => [
-                '=STATUS' => TaskTable::STATUS_NEW,
+                '=STATUS' => TaskTable::STATUS_READY_UPLOAD,
             ]
         ]);
 
         if ($rsTasks->getSelectedRowsCount() === 0) {
+            self::log("End CheckReadyTasks 0");
             return;
         }
 
@@ -58,9 +59,6 @@ class Task
         while ($arTask = $rsTasks->fetch()) {
 
             $arProfile = ProfileTable::getById($arTask['PROFILE_ID'])->fetch();
-            if($arProfile['AUTO_ORDER'] === 'N'){
-                continue;
-            }
             $obElement = \CIBlockElement::GetByID($arTask['ELEMENT_ID'])->GetNextElement(true, false);
             $newProject = ProjectHelper::createProject($arProfile, $arTask, $obElement);
 
@@ -144,39 +142,44 @@ class Task
         $api = \Smartcat\Connector\Helper\ApiHelper::createApi();
         $projectManager = $api->getProjectManager();
 
-        if ($rsTasks->getSelectedRowsCount() > 0) {
+        if ($rsTasks->getSelectedRowsCount() === 0) {
+            self::log("End CheckUploadedTasks 0");
+            retrun;
+        }
 
-            while ($arTask = $rsTasks->fetch()) {
-                try {
-                    $project = $projectManager->projectGet($arTask['PROJECT_ID']);
-                } catch (\Exception $e) {
-                    self::log($e->getMessage() , __METHOD__, __LINE__);
-                }
+        while ($arTask = $rsTasks->fetch()) {
+            try {
+                $project = $projectManager->projectGet($arTask['PROJECT_ID']);
+            } catch (\Exception $e) {
+                self::log($e->getMessage() , __METHOD__, __LINE__);
+            }
 
-                $disasemblingSuccess = true;
-                foreach($project->getDocuments() as $document){
-                    if($document->getDocumentDisassemblingStatus() != 'success'){
-                        $disasemblingSuccess = false;
-                        break;
-                    }
-                }
-
-                if($disasemblingSuccess){
-                    try{
-                        $projectManager->projectBuildStatistics($project->getId());
-                    }catch(\Exception $e){
-                        self::log("SmartCat error Build Statistics: {$e->getMessage()}");
-                    }
-                }
-
-                if ($project && $project->getStatus() == 'inprogress') {
-                    TaskTable::update($arTask['ID'], [
-                        'STATUS' => TaskTable::STATUS_PROCESS,
-                        'DEADLINE' => $project->getDeadline() instanceof \DateTime ? DateTime::createFromTimestamp($project->getDeadline()->getTimestamp()) : ''
-                    ]);
+            $disasemblingSuccess = true;
+            foreach($project->getDocuments() as $document){
+                if($document->getDocumentDisassemblingStatus() != 'success'){
+                    $disasemblingSuccess = false;
+                    break;
                 }
             }
+
+            if($disasemblingSuccess){
+                try{
+                    $projectManager->projectBuildStatistics($project->getId());
+                }catch(\Exception $e){
+                    self::log("SmartCat error Build Statistics: {$e->getMessage()}");
+                }
+            }
+
+            if ($project && $project->getStatus() == 'inprogress') {
+                TaskTable::update($arTask['ID'], [
+                    'STATUS' => TaskTable::STATUS_PROCESS,
+                    'DEADLINE' => $project->getDeadline() instanceof \DateTime ? DateTime::createFromTimestamp($project->getDeadline()->getTimestamp()) : ''
+                ]);
+            }else{
+                self::log("CheckUploadedTasks status: " . $progect->getStatus());
+            }
         }
+        
     }
 
     public static function CheckWaitingTasks()
@@ -198,7 +201,9 @@ class Task
             ]
         ]);
 
+        self::log("End CheckDocumentStatus ", $rsTaskFiles->getSelectedRowsCount());
         if ($rsTaskFiles->getSelectedRowsCount() === 0) {
+            self::log("End CheckDocumentStatus 0");
             return ;
         }
 

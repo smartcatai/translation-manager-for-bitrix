@@ -44,7 +44,7 @@ class ProjectHelper
             'target_langs' => $arLangs,
             'stages' => explode(',', $arProfile['WORKFLOW']),
             'test' => $test === 'Y' ? true: false,
-            'deadline' => $arTask['DEADLINE'],
+            'deadline' => (new \DateTime('now'))->modify(' +1 day'), //(string)$arTask['DEADLINE']
         );
     }
 
