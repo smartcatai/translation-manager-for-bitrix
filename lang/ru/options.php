@@ -8,4 +8,5 @@ $MESS["SMARTCAT_CONNECTOR_VERSIA_SHEMY"] = "Версия схемы: ";
 $MESS["SMARTCAT_CONNECTOR_OBNOVITQ_DO"] = "Обновить до ";
 $MESS["SMARTCAT_CONNECTOR_NASTROYKI_MODULA"] = "Настройки модуля";
 $MESS["SMARTCAT_CONNECTOR_ACCOUNT"] = "Аккаунт";
+$MESS["SMARTCAT_CONNECTOR_ACCOUNT_ERROR"] = "Ошибка подключения к аккаунту";
 ?>

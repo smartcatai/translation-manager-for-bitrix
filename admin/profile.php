@@ -14,6 +14,14 @@ $sModuleId = basename($sModuleDir);
 \Bitrix\Main\Loader::includeModule($sModuleId);
 \Bitrix\Main\Loader::includeModule('iblock');
 
+try{
+    $acc_info = \Smartcat\Connector\Helper\ApiHelper::getAccount();
+}catch(\Exception $e){
+    require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_after.php");
+    CAdminMessage::ShowMessage(GetMessage("SMARTCAT_CONNECTOR_ACCOUNT_ERROR") .': '. $e->getMessage() . '<br>' .GetMessage("SMARTCAT_CONNECTOR_ACCOUNT_ERROR_EXPLAIN")  );
+    require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/epilog_admin.php");
+}
+
 /**
  *  Language code
  */
