@@ -23,20 +23,15 @@ if ($schema->needUpgrade() && $_REQUEST['db_upgrade'] == 'y') {
 
 $arAllOptions = Array();
 
-
 $arAllOptions[] = GetMessage("SMARTCAT_CONNECTOR_DOSTUP_K");
-$arAllOptions[] = Array("api_id", "App ID", '', Array('text', 100));
-$arAllOptions[] = Array("api_secret", "Api token", '', Array('text', 100));
-$arAllOptions[] = Array("api_server", "Server", \SmartCat\Client\SmartCat::SC_EUROPE, Array('selectbox', Array(
-    \SmartCat\Client\SmartCat::SC_ASIA => 'Asia',
-    \SmartCat\Client\SmartCat::SC_EUROPE => 'Europe',
-    \SmartCat\Client\SmartCat::SC_USA => 'USA',
+$arAllOptions[] = Array("api_id", GetMessage("SMARTCAT_CONNECTOR_API_ID"), '', Array('text', 100));
+$arAllOptions[] = Array("api_secret", GetMessage("SMARTCAT_CONNECTOR_API_SECRET"), '', Array('text', 100));
+$arAllOptions[] = Array("api_server", GetMessage("SMARTCAT_CONNECTOR_API_SERVER"), \SmartCat\Client\SmartCat::SC_EUROPE, Array('selectbox', Array(
+    \SmartCat\Client\SmartCat::SC_ASIA => GetMessage("SMARTCAT_CONNECTOR_SC_ASIA"),
+    \SmartCat\Client\SmartCat::SC_EUROPE => GetMessage("SMARTCAT_CONNECTOR_SC_EUROPE"),
+    \SmartCat\Client\SmartCat::SC_USA => GetMessage("SMARTCAT_CONNECTOR_SC_USA"),
 )));
-$arAllOptions[] = Array("api_test", "Test mode", '', Array('checkbox', false));
-
-
-
-$arAllOptions[] = Array("note" => GetMessage("SMARTCAT_CONNECTOR_VERSIA_SHEMY") . $schema->getCurrentVersion() . ' ' . ($schema->needUpgrade() ? '<a href="' . $APPLICATION->GetCurPageParam('db_upgrade=y') . '">'.GetMessage("SMARTCAT_CONNECTOR_OBNOVITQ_DO") . $schema->getLastVersion() . '</a>' : ''));
+$arAllOptions[] = Array("api_test", GetMessage("SMARTCAT_CONNECTOR_API_TEST"), '', Array('checkbox', false));
 
 if ($REQUEST_METHOD == 'POST' && strlen($Update) > 0 && check_bitrix_sessid()) {
     $arOptions = $arAllOptions;
@@ -56,11 +51,12 @@ if ($REQUEST_METHOD == 'POST' && strlen($Update) > 0 && check_bitrix_sessid()) {
     }
     LocalRedirect($APPLICATION->GetCurPageParam());
 }
-$arAllOptions[] = GetMessage("SMARTCAT_CONNECTOR_ACCOUNT");
+
+$arInfo = Array();
 try{
     $acc_info = \Smartcat\Connector\Helper\ApiHelper::getAccount();
     if($acc_info){
-        $arAllOptions[] = Array('note' => $acc_info->getName());
+        $arInfo[] = GetMessage("SMARTCAT_CONNECTOR_ACCOUNT") . ': ' . $acc_info->getName();
     }
 }catch(\Exception $e){
     $apiId = \Bitrix\Main\Config\Option::get('smartcat.connector', 'api_id');
@@ -68,7 +64,12 @@ try{
     if(!empty($apiId) || !empty($apiSecret) ){
         CAdminMessage::ShowMessage(GetMessage("SMARTCAT_CONNECTOR_ACCOUNT_ERROR") .': '. $e->getMessage());
     }
+    $arInfo[] = GetMessage("SMARTCAT_CONNECTOR_ACCOUNT_NEED_SETTINGS");
 }
+
+$arInfo[] =  GetMessage("SMARTCAT_CONNECTOR_VERSIA_SHEMY") 
+                .$schema->getCurrentVersion() . ' '
+                .($schema->needUpgrade() ? '<a href="' . $APPLICATION->GetCurPageParam('db_upgrade=y') . '">'.GetMessage("SMARTCAT_CONNECTOR_OBNOVITQ_DO") . $schema->getLastVersion() . '</a>' : '');
 
 foreach ($arErrors as $strError)
     CAdminMessage::ShowMessage($strError);
@@ -91,6 +92,14 @@ $tabControl->Begin();
     <? $tabControl->BeginNextTab(); ?>
 
     <? __AdmSettingsDrawList($module_id, $arAllOptions); ?>
+
+    <? foreach($arInfo as $info):?>
+    <tr>
+        <td colspan="2" align="center">
+            <?=$info;?>
+        </td>
+    </tr>
+    <? endforeach ?>
 
 
     <? $tabControl->Buttons(); ?>
