@@ -19,7 +19,7 @@ $MESS["SMARTCAT_CONNECTOR_VYBRATQ"] = "Выбрать]";
 $MESS["SMARTCAT_CONNECTOR_AKTIVNOSTQ"] = "Активность";
 $MESS["SMARTCAT_CONNECTOR_AZYK"] = "Язык";
 $MESS["SMARTCAT_CONNECTOR_PARAMETRY_PEREVODA"] = "Параметры перевода";
-$MESS["SMARTCAT_CONNECTOR_TIP_PEREVODA"] = "Этапы перевода";
+$MESS["SMARTCAT_CONNECTOR_TIP_PEREVODA"] = "Этапы рабочего процесса";
 $MESS["SMARTCAT_CONNECTOR_PUBLIKOVATQ_PEREVOD"] = "Публиковать перевод автоматически";
 $MESS["SMARTCAT_CONNECTOR_AVTOMATICESKI_PEREVO"] = "Автоматически переводить новые материалы";
 $MESS["SMARTCAT_CONNECTOR_KAKIE_POLA_PEREVODIT"] = "Какие поля переводить?";
@@ -27,7 +27,7 @@ $MESS["SMARTCAT_CONNECTOR_NA_KAKIE_AZYKI_PEREV"] = "На какие языки �
 $MESS["SMARTCAT_CONNECTOR_SOZDATQ_NOVYY"] = "Создать новый]";
 $MESS["SMARTCAT_CONNECTOR_VYBRATQ_AZYK"] = "Выбрать язык]";
 $MESS["SMARTCAT_CONNECTOR_DOBAVITQ_INFOBLOK"] = "Добавить инфоблок";
-$MESS["SMARTCAT_CONNECTOR_NE_UDALOSQ_PODKLUCIT"] = "Не удалось подключиться к Abbyy.cloud. Проверьте ";
+$MESS["SMARTCAT_CONNECTOR_NE_UDALOSQ_PODKLUCIT"] = "Не удалось подключиться к Smartcat. Проверьте ";
 $MESS["SMARTCAT_CONNECTOR_NASTROYKI_DO"] = "настройки
         доступа";
 $MESS["SMARTCAT_CONNECTOR_K_SERVISA"] = "к API сервиса.

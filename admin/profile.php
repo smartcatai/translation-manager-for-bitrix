@@ -408,10 +408,10 @@ if (!empty($arErrors)): ?>
         <tr>
             <td><?= GetMessage("SMARTCAT_CONNECTOR_TIP_PEREVODA") ?></td>
             <td>
-                    <? foreach ($arWorflowStages as $stage): ?>
+                    <? foreach ($arWorflowStages as $stage=>$label): ?>
                         <label>
                             <input type="checkbox" name="WORKFLOW[]" value="<?= $stage; ?>" <?= (strpos($arProfile['WORKFLOW'],$stage) !== false ? 'checked' : ''); ?>>
-                            <?= $stage; ?>
+                            <?= $label; ?>
                         </label><br><br>
                     <? endforeach; ?>
             </td>

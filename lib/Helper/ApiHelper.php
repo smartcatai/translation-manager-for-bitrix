@@ -46,7 +46,11 @@ class ApiHelper
 
     public static function getWorkflowStages()
     {
-        return Array("translation","editing","proofreading","postediting");
+        return Array(
+            "translation"=>GetMessage("SMARTCAT_CONNECTOR_STAGE_TRANSLATION"),
+            "editing"=>GetMessage("SMARTCAT_CONNECTOR_STAGE_EDITING"),
+            "proofreading"=>GetMessage("SMARTCAT_CONNECTOR_STAGE_PROOFREADING"),
+            "postediting"=>GetMessage("SMARTCAT_CONNECTOR_STAGE_POSTEDITING"));
     }
 
 }
