@@ -172,6 +172,8 @@ $lAdmin->setNavigation($nav, GetMessage("SMARTCAT_CONNECTOR_ZADANIA"));
 
 $arTypes = \Smartcat\Connector\ProfileTable::getTypeList();
 
+$apiServer = \Bitrix\Main\Config\Option::get('smartcat.connector', 'api_server');
+
 while ($arItem = $rsItems->fetch()) {
 
     $arRow = [];
@@ -179,7 +181,13 @@ while ($arItem = $rsItems->fetch()) {
     $arRow['COMMENT'] = $arItem['COMMENT'];
     $arRow['DEADLINE'] = $arItem['DEADLINE'] ? date('Y-m-d\\TH:i:s.0\\Z', $arItem['DEADLINE']->getTimestamp()) : '-';//$arItem['DEADLINE'];
     $arRow['STATUS'] = $arStatusAll[$arItem['STATUS']];
-    $arRow['PROJECT_NAME'] = $arItem['PROJECT_NAME'] ?: '&mdash;';
+
+    if(!empty($arItem['PROJECT_NAME'])){
+        $projectLink = "<a href=\"//$apiServer/projects/{$arItem['PROJECT_ID']}\" target=\"blank\" >";
+        $arRow['PROJECT_NAME'] = $projectLink . $arItem['PROJECT_NAME'] . '</a>';
+    }else{
+        $arRow['PROJECT_NAME'] = '&mdash;';
+    }
 
     $arProfile = \Smartcat\Connector\ProfileTable::getById($arItem['PROFILE_ID'])->fetch();
     $sProfileLink = '/bitrix/admin/smartcat.connector_profile.php?ID=' . $arProfile['ID'] . '&lang=ru';
@@ -217,6 +225,7 @@ while ($arItem = $rsItems->fetch()) {
     $row->AddViewField('ELEMENT', $arRow['ELEMENT']);
     $row->AddViewField('LANGUAGES', $arRow['LANGUAGES']);
     $row->AddViewField('PROFILE', $arRow['PROFILE']);
+    $row->AddViewField('PROJECT_NAME', $arRow['PROJECT_NAME']);
 
     $arActions = [];
 
