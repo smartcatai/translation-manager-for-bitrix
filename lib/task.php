@@ -1,5 +1,5 @@
 <?php
-namespace Abbyy\Cloud;
+namespace Smartcat\Connector;
 
 use Bitrix\Main,
     Bitrix\Main\Localization\Loc;
@@ -24,6 +24,7 @@ class TaskTable extends Main\Entity\DataManager
 {
 
     const STATUS_NEW = 'N';
+    const STATUS_READY_UPLOAD = 'R';
     const STATUS_UPLOADED = 'U';
     const STATUS_PROCESS = 'P';
     const STATUS_FAILED = 'F';
@@ -33,12 +34,21 @@ class TaskTable extends Main\Entity\DataManager
     public static function getStatusList()
     {
         return [
-            self::STATUS_NEW => Loc::getMessage('ABBYY_CLOUD_TASK_ENTITY_STATUS_NEW'),
-            self::STATUS_UPLOADED => Loc::getMessage('ABBYY_CLOUD_TASK_ENTITY_STATUS_UPLOADED'),
-            self::STATUS_PROCESS => Loc::getMessage('ABBYY_CLOUD_TASK_ENTITY_STATUS_PROCESS'),
-            self::STATUS_FAILED => Loc::getMessage('ABBYY_CLOUD_TASK_ENTITY_STATUS_FAILED'),
-            self::STATUS_SUCCESS => Loc::getMessage('ABBYY_CLOUD_TASK_ENTITY_STATUS_SUCCESS'),
-            self::STATUS_CANCELED => Loc::getMessage('ABBYY_CLOUD_TASK_ENTITY_STATUS_CANCELED'),
+            self::STATUS_NEW => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_STATUS_NEW'),
+            self::STATUS_READY_UPLOAD => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_STATUS_READY_UPLOAD'),
+            self::STATUS_UPLOADED => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_STATUS_UPLOADED'),
+            self::STATUS_PROCESS => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_STATUS_PROCESS'),
+            self::STATUS_FAILED => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_STATUS_FAILED'),
+            self::STATUS_SUCCESS => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_STATUS_SUCCESS'),
+            self::STATUS_CANCELED => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_STATUS_CANCELED'),
+        ];
+    }
+
+    public static function getAccessibleStatusList()
+    {
+        return [
+            self::STATUS_NEW => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_STATUS_NEW'),
+            self::STATUS_READY_UPLOAD => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_STATUS_READY_UPLOAD'),
         ];
     }
 
@@ -49,7 +59,7 @@ class TaskTable extends Main\Entity\DataManager
      */
     public static function getTableName()
     {
-        return 'b_abbyy_cloud_task';
+        return 'b_smartcat_connector_task';
     }
 
     /**
@@ -64,81 +74,71 @@ class TaskTable extends Main\Entity\DataManager
                 'data_type' => 'integer',
                 'primary' => true,
                 'autocomplete' => true,
-                'title' => Loc::getMessage('ABBYY_CLOUD_TASK_ENTITY_ID_FIELD'),
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_ID_FIELD'),
             ),
             'PROFILE_ID' => array(
                 'data_type' => 'integer',
                 'required' => true,
-                'title' => Loc::getMessage('ABBYY_CLOUD_TASK_ENTITY_PROFILE_ID_FIELD'),
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_PROFILE_ID_FIELD'),
             ),
             'ELEMENT_ID' => array(
                 'data_type' => 'integer',
                 'required' => true,
-                'title' => Loc::getMessage('ABBYY_CLOUD_TASK_ENTITY_ELEMENT_ID_FIELD'),
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_ELEMENT_ID_FIELD'),
             ),
             'STATUS' => array(
                 'data_type' => 'string',
                 //'validation' => array(__CLASS__, 'validateStatus'),
-                'title' => Loc::getMessage('ABBYY_CLOUD_TASK_ENTITY_STATUS_FIELD'),
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_STATUS_FIELD'),
                 'default_value' => self::STATUS_NEW,
             ),
-            'ORDER_ID' => array(
+            'PROJECT_ID' => array(
                 'data_type' => 'string',
-                'validation' => array(__CLASS__, 'validateOrderId'),
-                'title' => Loc::getMessage('ABBYY_CLOUD_TASK_ENTITY_ORDER_ID_FIELD'),
+                'validation' => array(__CLASS__, 'validateProjectId'),
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_PROJECT_ID_FIELD'),
             ),
-            'ORDER_NUMBER' => array(
+            'PROJECT_NAME' => array(
                 'data_type' => 'string',
-                'validation' => array(__CLASS__, 'validateOrderNumber'),
-                'title' => Loc::getMessage('ABBYY_CLOUD_TASK_ENTITY_ORDER_NUMBER_FIELD'),
+                'validation' => array(__CLASS__, 'validateProjectName'),
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_PROJECT_NAME_FIELD'),
             ),
             'DATE_CREATE' => array(
                 'data_type' => 'datetime',
-                'title' => Loc::getMessage('ABBYY_CLOUD_TASK_ENTITY_DATE_CREATE_FIELD'),
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_DATE_CREATE_FIELD'),
                 'default_value' => new Main\Type\DateTime(),
             ),
             'DEADLINE' => array(
                 'data_type' => 'datetime',
-                'title' => Loc::getMessage('ABBYY_CLOUD_TASK_ENTITY_DEADLINE_FIELD'),
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_DEADLINE_FIELD'),
                 'default_value' => new Main\Type\DateTime(),
             ),
             'DATE_UPDATE' => array(
                 'data_type' => 'datetime',
-                'title' => Loc::getMessage('ABBYY_CLOUD_TASK_ENTITY_DATE_UPDATE_FIELD'),
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_DATE_UPDATE_FIELD'),
                 'default_value' => new Main\Type\DateTime(),
             ),
             'CONTENT' => array(
                 'data_type' => 'text',
-                'title' => Loc::getMessage('ABBYY_CLOUD_TASK_ENTITY_CONTENT_FIELD'),
-            ),
-            'FILE_ID' => array(
-                'data_type' => 'string',
-                'validation' => array(__CLASS__, 'validateFileId'),
-                'title' => Loc::getMessage('ABBYY_CLOUD_TASK_ENTITY_FILE_ID_FIELD'),
-            ),
-            'FILE_TOKEN' => array(
-                'data_type' => 'string',
-                'validation' => array(__CLASS__, 'validateFileToken'),
-                'title' => Loc::getMessage('ABBYY_CLOUD_TASK_ENTITY_FILE_TOKEN_FIELD'),
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_CONTENT_FIELD'),
             ),
             'COMMENT' => array(
                 'data_type' => 'text',
-                'title' => Loc::getMessage('ABBYY_CLOUD_TASK_ENTITY_COMMENT_FIELD'),
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_COMMENT_FIELD'),
             ),
             'AMOUNT' => array(
                 'data_type' => 'float',
-                'title' => Loc::getMessage('ABBYY_CLOUD_TASK_ENTITY_AMOUNT_FIELD'),
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_AMOUNT_FIELD'),
             ),
             'CURRENCY' => array(
                 'data_type' => 'string',
                 'validation' => array(__CLASS__, 'validateCurrency'),
-                'title' => Loc::getMessage('ABBYY_CLOUD_TASK_ENTITY_CURRENCY_FIELD'),
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_CURRENCY_FIELD'),
             ),
-            'TYPE' => array(
+            'VENDOR' => array(
                 'data_type' => 'string',
                 'required' => true,
-                'validation' => array(__CLASS__, 'validateType'),
-                'title' => Loc::getMessage('ABBYY_CLOUD_TASK_ENTITY_TYPE_FIELD'),
+                'validation' => array(__CLASS__, 'validateVendor'),
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_TYPE_FIELD'),
             ),
         );
     }
@@ -191,11 +191,11 @@ class TaskTable extends Main\Entity\DataManager
     }
 
     /**
-     * Returns validators for ORDER_ID field.
+     * Returns validators for PROJECT_ID field.
      *
      * @return array
      */
-    public static function validateOrderId()
+    public static function validateProjectId()
     {
         return array(
             new Main\Entity\Validator\Length(null, 100),
@@ -203,38 +203,14 @@ class TaskTable extends Main\Entity\DataManager
     }
 
     /**
-     * Returns validators for ORDER_NUMBER field.
+     * Returns validators for PROJECT_NAME field.
      *
      * @return array
      */
-    public static function validateOrderNumber()
+    public static function validateProjectName()
     {
         return array(
             new Main\Entity\Validator\Length(null, 100),
-        );
-    }
-
-    /**
-     * Returns validators for FILE_ID field.
-     *
-     * @return array
-     */
-    public static function validateFileId()
-    {
-        return array(
-            new Main\Entity\Validator\Length(null, 255),
-        );
-    }
-
-    /**
-     * Returns validators for FILE_TOKEN field.
-     *
-     * @return array
-     */
-    public static function validateFileToken()
-    {
-        return array(
-            new Main\Entity\Validator\Length(null, 255),
         );
     }
 
@@ -255,10 +231,10 @@ class TaskTable extends Main\Entity\DataManager
      *
      * @return array
      */
-    public static function validateType()
+    public static function validateVendor()
     {
         return array(
-            new Main\Entity\Validator\Length(null, 20),
+            new Main\Entity\Validator\Length(null, 100),
         );
     }
 }

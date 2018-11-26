@@ -1,5 +1,5 @@
 <?php
-namespace Abbyy\Cloud;
+namespace Smartcat\Connector;
 
 use Bitrix\Main,
     Bitrix\Main\Localization\Loc;
@@ -20,14 +20,15 @@ Loc::loadMessages(__FILE__);
  **/
 class ProfileTable extends Main\Entity\DataManager
 {
-
+    const LEFT_TO_RIGHT = 'Y';
+    const RIGHT_TO_LEFT = 'N';
     public static function getTypeList()
     {
         return [
-            'mt' => Loc::getMessage('ABBYY_CLOUD_PROFILE_ENTITY_MT'),
-            'ht_express' => Loc::getMessage('ABBYY_CLOUD_PROFILE_ENTITY_HT_EXPRESS'),
-            'ht_expert' => Loc::getMessage('ABBYY_CLOUD_PROFILE_ENTITY_HT_EXPERT'),
-            'ht_professional' => Loc::getMessage('ABBYY_CLOUD_PROFILE_ENTITY_HT_PROFESSIONAL'),
+            'mt' => Loc::getMessage('SMARTCAT_CONNECTOR_PROFILE_ENTITY_MT'),
+            'ht_express' => Loc::getMessage('SMARTCAT_CONNECTOR_PROFILE_ENTITY_HT_EXPRESS'),
+            'ht_expert' => Loc::getMessage('SMARTCAT_CONNECTOR_PROFILE_ENTITY_HT_EXPERT'),
+            'ht_professional' => Loc::getMessage('SMARTCAT_CONNECTOR_PROFILE_ENTITY_HT_PROFESSIONAL'),
         ];
     }
 
@@ -38,7 +39,7 @@ class ProfileTable extends Main\Entity\DataManager
      */
     public static function getTableName()
     {
-        return 'b_abbyy_cloud_profile';
+        return 'b_smartcat_connector_profile';
     }
 
     /**
@@ -53,50 +54,58 @@ class ProfileTable extends Main\Entity\DataManager
                 'data_type' => 'integer',
                 'primary' => true,
                 'autocomplete' => true,
-                'title' => Loc::getMessage('ABBYY_CLOUD_PROFILE_ENTITY_ID_FIELD'),
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_PROFILE_ENTITY_ID_FIELD'),
             ),
             'NAME' => array(
                 'data_type' => 'string',
                 'required' => true,
                 'validation' => array(__CLASS__, 'validateName'),
-                'title' => Loc::getMessage('ABBYY_CLOUD_PROFILE_ENTITY_NAME_FIELD'),
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_PROFILE_ENTITY_NAME_FIELD'),
             ),
             'ACTIVE' => array(
                 'data_type' => 'boolean',
                 'required' => true,
-                'title' => Loc::getMessage('ABBYY_CLOUD_PROFILE_ENTITY_ACTIVE_FIELD'),
+                'values' => array(self::RIGHT_TO_LEFT, self::LEFT_TO_RIGHT),
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_PROFILE_ENTITY_ACTIVE_FIELD'),
             ),
             'PUBLISH' => array(
                 'data_type' => 'boolean',
                 'required' => true,
-                'title' => Loc::getMessage('ABBYY_CLOUD_PROFILE_ENTITY_PUBLISH_FIELD'),
+                'values' => array(self::RIGHT_TO_LEFT, self::LEFT_TO_RIGHT),
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_PROFILE_ENTITY_PUBLISH_FIELD'),
             ),
             'AUTO_ORDER' => array(
                 'data_type' => 'boolean',
                 'required' => true,
-                'title' => Loc::getMessage('ABBYY_CLOUD_PROFILE_ENTITY_AUTO_ORDER_FIELD'),
+                'values' => array(self::RIGHT_TO_LEFT, self::LEFT_TO_RIGHT),
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_PROFILE_ENTITY_AUTO_ORDER_FIELD'),
             ),
             'IBLOCK_ID' => array(
                 'data_type' => 'integer',
                 'required' => true,
-                'title' => Loc::getMessage('ABBYY_CLOUD_PROFILE_ENTITY_IBLOCK_ID_FIELD'),
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_PROFILE_ENTITY_IBLOCK_ID_FIELD'),
             ),
             'LANG' => array(
                 'data_type' => 'string',
                 'required' => true,
                 'validation' => array(__CLASS__, 'validateLang'),
-                'title' => Loc::getMessage('ABBYY_CLOUD_PROFILE_ENTITY_LANG_FIELD'),
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_PROFILE_ENTITY_LANG_FIELD'),
             ),
             'FIELDS' => array(
                 'data_type' => 'text',
                 'serialized' => true,
-                'title' => Loc::getMessage('ABBYY_CLOUD_PROFILE_IBLOCK_ENTITY_FIELDS_FIELD'),
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_PROFILE_IBLOCK_ENTITY_FIELDS_FIELD'),
             ),
-            'TYPE' => array(
+            'WORKFLOW' => array(
                 'data_type' => 'string',
                 'required' => true,
                 'validation' => array(__CLASS__, 'validateType'),
-                'title' => Loc::getMessage('ABBYY_CLOUD_PROFILE_ENTITY_TYPE_FIELD'),
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_PROFILE_ENTITY_WORKFLOW_FIELD'),
+            ),
+            'VENDOR' => array(
+                'data_type' => 'text',
+                'required' => true,
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_PROFILE_ENTITY_VENDOR_FIELD'),
             ),
         );
     }
@@ -133,7 +142,7 @@ class ProfileTable extends Main\Entity\DataManager
     public static function validateType()
     {
         return array(
-            new Main\Entity\Validator\Length(null, 20),
+            new Main\Entity\Validator\Length(null, 100),
         );
     }
 

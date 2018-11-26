@@ -1,5 +1,5 @@
 <?
-$MESS["ABBYY_CLOUD_PROFILI_PEREVODA"] = "Ïðîôèëè ïåðåâîäà";
-$MESS["ABBYY_CLOUD_ZAKAZY"] = "Çàêàçû";
-$MESS["ABBYY_CLOUD_ALS"] = "ALS êîííåêòîð";
+$MESS["SMARTCAT_CONNECTOR_PROFILI_PEREVODA"] = "ÐŸÑ€Ð¾Ñ„Ð¸Ð»Ð¸ Ð¿ÐµÑ€ÐµÐ²Ð¾Ð´Ð°";
+$MESS["SMARTCAT_CONNECTOR_ZAKAZY"] = "Ð£Ð¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¸Ðµ Ð¿ÐµÑ€ÐµÐ²Ð¾Ð´Ð°Ð¼Ð¸";
+$MESS["SMARTCAT_CONNECTOR_ALS"] = "Smartcat Translation Manager";
 ?>

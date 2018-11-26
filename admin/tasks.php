@@ -8,17 +8,18 @@ $sModuleId = basename($sModuleDir);
 \Bitrix\Main\Loader::includeModule($sModuleId);
 \Bitrix\Main\Loader::includeModule('iblock');
 
-$APPLICATION->SetTitle(GetMessage("ABBYY_CLOUD_ZAKAZY"));
+$APPLICATION->SetTitle(GetMessage("SMARTCAT_CONNECTOR_ZAKAZY"));
 
 
-$arStatus = \Abbyy\Cloud\TaskTable::getStatusList();
+$arStatus = \Smartcat\Connector\TaskTable::getAccessibleStatusList();
+$arStatusAll = \Smartcat\Connector\TaskTable::getStatusList();
 
-$arProfiles = \Abbyy\Cloud\ProfileTable::getList([
+$arProfiles = \Smartcat\Connector\ProfileTable::getList([
     'order' => ['NAME' => 'asc'],
     'filter' => ['=ACTIVE' => 'Y'],
 ])->fetchAll();
 
-$sTableID = "tbl_abbyy_cloud_tasks";
+$sTableID = "tbl_smartcat_connector_tasks";
 $oSort = new CAdminSorting($sTableID, "id", "desc");
 $lAdmin = new CAdminList($sTableID, $oSort);
 
@@ -26,7 +27,7 @@ if ($lAdmin->EditAction()) {
     foreach ($_REQUEST['FIELDS'] as $ID => $arFields) {
         if (!$lAdmin->IsUpdated($ID)) continue;
         $arFields['ACTIVE'] = ($arFields['ACTIVE'] == 'Y');
-        \Abbyy\Cloud\TaskTable::update($ID, $arFields);
+        \Smartcat\Connector\TaskTable::update($ID, $arFields);
     }
 }
 
@@ -36,45 +37,45 @@ if ($arID = $lAdmin->GroupAction()) {
         $ID = IntVal($ID);
         switch ($_REQUEST['action']) {
             case "delete":
-                \Abbyy\Cloud\TaskTable::delete($ID);
+                \Smartcat\Connector\TaskTable::delete($ID);
                 break;
             case "status":
                 if (array_key_exists($_REQUEST['status_to_move'], $arStatus)) {
 
-                    $arTask = \Abbyy\Cloud\TaskTable::getById($ID)->fetch();
-                    if ($arTask) {
-                        \Abbyy\Cloud\TaskTable::update($ID, [
+                    $arTask = \Smartcat\Connector\TaskTable::getById($ID)->fetch();
+                    if ($arTask && $arTask['STATUS'] !== $_REQUEST['status_to_move']) {
+                        \Smartcat\Connector\TaskTable::update($ID, [
                             'STATUS' => $_REQUEST['status_to_move'],
                         ]);
 
                         $arStatusReset = [
-                            \Abbyy\Cloud\TaskTable::STATUS_FAILED,
-                            \Abbyy\Cloud\TaskTable::STATUS_CANCELED,
+                            \Smartcat\Connector\TaskTable::STATUS_FAILED,
+                            \Smartcat\Connector\TaskTable::STATUS_CANCELED,
                         ];
 
-                        if ($_REQUEST['status_to_move'] == \Abbyy\Cloud\TaskTable::STATUS_NEW) {
-                            $rsFiles = \Abbyy\Cloud\TaskFileTable::getList([
+                        if ($_REQUEST['status_to_move'] == \Smartcat\Connector\TaskTable::STATUS_NEW) {
+                            $rsFiles = \Smartcat\Connector\TaskFileTable::getList([
                                 'filter' => [
                                     '=TASK_ID' => $ID,
                                 ]
                             ]);
                             while ($arFile = $rsFiles->fetch()) {
-                                \Abbyy\Cloud\TaskFileTable::update($arFile['ID'], [
-                                    'STATUS' => \Abbyy\Cloud\TaskFileTable::STATUS_NEW,
+                                \Smartcat\Connector\TaskFileTable::update($arFile['ID'], [
+                                    'STATUS' => \Smartcat\Connector\TaskFileTable::STATUS_NEW,
                                 ]);
                             }
                         } elseif (in_array($arTask['STATUS'], $arStatusReset)
                             && !in_array($_REQUEST['status_to_move'], $arStatusReset)
                         ) {
-                            $rsFiles = \Abbyy\Cloud\TaskFileTable::getList([
+                            $rsFiles = \Smartcat\Connector\TaskFileTable::getList([
                                 'filter' => [
                                     '=TASK_ID' => $ID,
-                                    '=STATUS' => \Abbyy\Cloud\TaskFileTable::STATUS_FAILED,
+                                    '=STATUS' => \Smartcat\Connector\TaskFileTable::STATUS_FAILED,
                                 ]
                             ]);
                             while ($arFile = $rsFiles->fetch()) {
-                                \Abbyy\Cloud\TaskFileTable::update($arFile['ID'], [
-                                    'STATUS' => \Abbyy\Cloud\TaskFileTable::STATUS_NEW,
+                                \Smartcat\Connector\TaskFileTable::update($arFile['ID'], [
+                                    'STATUS' => \Smartcat\Connector\TaskFileTable::STATUS_NEW,
                                 ]);
                             }
                         }
@@ -96,43 +97,38 @@ $arHeader = array(
     ),
     array(
         "id" => "PROFILE",
-        "content" => GetMessage("ABBYY_CLOUD_PROFILQ"),
+        "content" => GetMessage("SMARTCAT_CONNECTOR_PROFILQ"),
         "default" => true,
         //"sort" => "PROFILE_ID",
     ),
     array(
         "id" => "ELEMENT",
-        "content" => GetMessage("ABBYY_CLOUD_ELEMENT"),
+        "content" => GetMessage("SMARTCAT_CONNECTOR_ELEMENT"),
         "default" => true,
     ),
     array(
         "id" => "LANGUAGES",
-        "content" => GetMessage("ABBYY_CLOUD_PEREVOD"),
+        "content" => GetMessage("SMARTCAT_CONNECTOR_PEREVOD"),
         "default" => true,
     ),
     array(
-        "id" => "ORDER_NUMBER",
-        "content" => GetMessage("ABBYY_CLOUD_ZAKAZA"),
+        "id" => "PROJECT_NAME",
+        "content" => GetMessage("SMARTCAT_CONNECTOR_PROJECT"),
         "default" => true,
     ),
     array(
         "id" => "STATUS",
-        "content" => GetMessage("ABBYY_CLOUD_STATUS"),
-        "default" => true,
-    ),
-    array(
-        "id" => "AMOUNT",
-        "content" => GetMessage("ABBYY_CLOUD_STOIMOSTQ"),
+        "content" => GetMessage("SMARTCAT_CONNECTOR_STATUS"),
         "default" => true,
     ),
     array(
         "id" => "DEADLINE",
-        "content" => GetMessage("ABBYY_CLOUD_DEDLAYN"),
+        "content" => GetMessage("SMARTCAT_CONNECTOR_DEDLAYN"),
         "default" => true,
     ),
     array(
         "id" => "COMMENT",
-        "content" => GetMessage("ABBYY_CLOUD_PRIMECANIE"),
+        "content" => GetMessage("SMARTCAT_CONNECTOR_PRIMECANIE"),
         "default" => true,
     ),
 );
@@ -158,11 +154,11 @@ if ($_REQUEST['set_filter']) {
 
 $arStat = [];
 
-foreach (\Abbyy\Cloud\TaskTable::getStatusList() as $sStatusID => $sStatusName) {
-    $arStat[$sStatusName] = \Abbyy\Cloud\TaskTable::getCount(array_merge($filter, ['=STATUS' => $sStatusID]));
+foreach (\Smartcat\Connector\TaskTable::getStatusList() as $sStatusID => $sStatusName) {
+    $arStat[$sStatusName] = \Smartcat\Connector\TaskTable::getCount(array_merge($filter, ['=STATUS' => $sStatusID]));
 }
 
-$rsItems = \Abbyy\Cloud\TaskTable::getList(array(
+$rsItems = \Smartcat\Connector\TaskTable::getList(array(
     'order' => array(strtoupper($by) => $order),
     'count_total' => true,
     'offset' => $nav->getOffset(),
@@ -172,9 +168,11 @@ $rsItems = \Abbyy\Cloud\TaskTable::getList(array(
 
 $nav->setRecordCount($rsItems->getCount());
 
-$lAdmin->setNavigation($nav, GetMessage("ABBYY_CLOUD_ZADANIA"));
+$lAdmin->setNavigation($nav, GetMessage("SMARTCAT_CONNECTOR_ZADANIA"));
 
-$arTypes = \Abbyy\Cloud\ProfileTable::getTypeList();
+$arTypes = \Smartcat\Connector\ProfileTable::getTypeList();
+
+$apiServer = \Bitrix\Main\Config\Option::get('smartcat.connector', 'api_server');
 
 while ($arItem = $rsItems->fetch()) {
 
@@ -182,12 +180,17 @@ while ($arItem = $rsItems->fetch()) {
     $arRow['ID'] = $arItem['ID'];
     $arRow['COMMENT'] = $arItem['COMMENT'];
     $arRow['DEADLINE'] = $arItem['DEADLINE'] ? date('Y-m-d\\TH:i:s.0\\Z', $arItem['DEADLINE']->getTimestamp()) : '-';//$arItem['DEADLINE'];
-    $arRow['AMOUNT'] = $arItem['AMOUNT'] . $arItem['CURRENY'];
-    $arRow['STATUS'] = $arStatus[$arItem['STATUS']];
-    $arRow['ORDER_NUMBER'] = $arItem['ORDER_NUMBER'] ?: '&mdash;';
+    $arRow['STATUS'] = $arStatusAll[$arItem['STATUS']];
 
-    $arProfile = \Abbyy\Cloud\ProfileTable::getById($arItem['PROFILE_ID'])->fetch();
-    $sProfileLink = '/bitrix/admin/abbyy.cloud_profile.php?ID=' . $arProfile['ID'] . '&lang=ru';
+    if(!empty($arItem['PROJECT_NAME'])){
+        $projectLink = "<a href=\"//$apiServer/projects/{$arItem['PROJECT_ID']}\" target=\"blank\" >";
+        $arRow['PROJECT_NAME'] = $projectLink . $arItem['PROJECT_NAME'] . '</a>';
+    }else{
+        $arRow['PROJECT_NAME'] = '&mdash;';
+    }
+
+    $arProfile = \Smartcat\Connector\ProfileTable::getById($arItem['PROFILE_ID'])->fetch();
+    $sProfileLink = '/bitrix/admin/smartcat.connector_profile.php?ID=' . $arProfile['ID'] . '&lang=ru';
     $arRow['PROFILE'] = $arProfile['NAME'] . ' [<a href="' . $sProfileLink . '" target="_blank">' . $arItem['PROFILE_ID'] . '</a>]';
 
     $arIBlock = CIBlock::GetByID($arProfile['IBLOCK_ID'])->Fetch();
@@ -197,7 +200,7 @@ while ($arItem = $rsItems->fetch()) {
 
     $arRow['ELEMENT'] = $arElement['NAME'] . ' [<a href="' . $sElementLink . '" target="_blank">' . $arItem['ELEMENT_ID'] . '</a>]';
 
-    $rsFiles = \Abbyy\Cloud\TaskFileTable::getList([
+    $rsFiles = \Smartcat\Connector\TaskFileTable::getList([
         'filter' => [
             '=TASK_ID' => $arItem['ID'],
         ],
@@ -205,35 +208,39 @@ while ($arItem = $rsItems->fetch()) {
 
     $arLang = [];
     while ($arFile = $rsFiles->fetch()) {
-        $sLangRow = '<a href="/bitrix/admin/abbyy.cloud_content.php?lang=ru&TASK_ID=' . $arItem['ID'] . '" target="_blank">' . $arFile['LANG_FROM'] . '</a> -> ';
-        if ($arFile['STATUS'] == \Abbyy\Cloud\TaskFileTable::STATUS_SUCCESS) {
-            $sLangRow .= '<a href="/bitrix/admin/abbyy.cloud_content.php?lang=ru&FILE_ID=' . $arFile['ID'] . '" target="_blank">' . $arFile['LANG_TO'] . '</a>';
+        $sLangRow = '<a href="/bitrix/admin/smartcat.connector_content.php?lang=ru&TASK_ID=' . $arItem['ID'] . '" target="_blank">' . $arFile['LANG_FROM'] . '</a> -> ';
+        if ($arFile['STATUS'] == \Smartcat\Connector\TaskFileTable::STATUS_SUCCESS) {
+            $sLangRow .= '<a href="/bitrix/admin/smartcat.connector_content.php?lang=ru&FILE_ID=' . $arFile['ID'] . '" target="_blank">' . $arFile['LANG_TO'] . '</a>';
         } else {
             $sLangRow .= $arFile['LANG_TO'];
         }
         $arLang[] = $sLangRow;
     }
-    $sType = $arTypes[$arItem['TYPE']];
+    $sVendor = explode('|',$arItem['VENDOR'])[1];
 
-    $arRow['LANGUAGES'] = $sType . ':<br>' . implode("<br>", $arLang);
+    $arRow['LANGUAGES'] = $sVendor . ':<br>' . implode("<br>", $arLang);
 
     $row = &$lAdmin->AddRow($arRow['ID'], $arRow);
 
     $row->AddViewField('ELEMENT', $arRow['ELEMENT']);
     $row->AddViewField('LANGUAGES', $arRow['LANGUAGES']);
     $row->AddViewField('PROFILE', $arRow['PROFILE']);
-    //$row->AddInputField('NAME', Array("size" => "20"));
-    //$row->AddCheckField("ACTIVE");
+    $row->AddViewField('PROJECT_NAME', $arRow['PROJECT_NAME']);
 
     $arActions = [];
 
-    //$arActions[] = array("ICON" => "edit", "TEXT" => "Редактировать", "ACTION" => $lAdmin->ActionRedirect("abbyy.cloud.php?ID=" . urlencode($arRow['ID'])), "DEFAULT" => true);
-
     foreach ($arStatus as $sStatus => $sLabel) {
         if ($sStatus == $arItem['STATUS']) continue;
+
+        if($arItem['STATUS'] === \Smartcat\Connector\TaskTable::STATUS_UPLOADED){
+            $text = GetMessage("SMARTCAT_CONNECTOR_OTMENIT_OTPRAVKU");
+        }
+        if($arItem['STATUS'] === \Smartcat\Connector\TaskTable::STATUS_NEW){
+            $text = GetMessage("SMARTCAT_CONNECTOR_IZMENITQ_STATUS");
+        }
         $arActions[] = array(
             "ICON" => "edit",
-            "TEXT" => GetMessage("ABBYY_CLOUD_V_STATUS") . $sLabel . '"',
+            "TEXT" => $text,
             "ACTION" => $lAdmin->ActionDoGroup($arRow['ID'], "status", "status_to_move={$sStatus}"),
         );
     }
@@ -241,8 +248,8 @@ while ($arItem = $rsItems->fetch()) {
 
     $arActions[] = array(
         "ICON" => "delete",
-        "TEXT" => GetMessage("ABBYY_CLOUD_UDALITQ"),
-        "ACTION" => "if(confirm('".GetMessage("ABBYY_CLOUD_UDALITQ_PROFILQ") . $lAdmin->ActionDoGroup($arRow['ID'], "delete")
+        "TEXT" => GetMessage("SMARTCAT_CONNECTOR_UDALITQ"),
+        "ACTION" => "if(confirm('".GetMessage("SMARTCAT_CONNECTOR_UDALITQ_PROFILQ") . $lAdmin->ActionDoGroup($arRow['ID'], "delete")
     );
 
     $row->AddActions($arActions);
@@ -254,16 +261,13 @@ $arActions = array(
 );
 $arParams = array();
 
-$statuses = '<div id="status_to_move" style="display:none"><select name="status_to_move">';
-foreach ($arStatus as $sStatus => $sLabel) {
-    $statuses .= '<option value="' . $sStatus . '">' . $sLabel . '</option>';
-}
-$statuses .= '</select></div>';
+$status_inp = '<input type="hidden" name="status_to_move" id="status_to_move"> <input type="hidden" name="action" value="status">';
 
-$arActions["status"] = GetMessage("ABBYY_CLOUD_IZMENITQ_STATUS");
-$arActions["status_chooser"] = array("type" => "html", "value" => $statuses);
+$arActions["status_upload"] = GetMessage("SMARTCAT_CONNECTOR_IZMENITQ_STATUS");
+$arActions["status_new"] = GetMessage("SMARTCAT_CONNECTOR_OTMENIT_OTPRAVKU");
+$arActions["status_action"] = array("type" => "html", "value" => $status_inp);
 
-$arParams["select_onchange"] = "BX('status_to_move').style.display = (this.value == 'status' ? 'block':'none');";
+$arParams["select_onchange"] = "BX('status_to_move').value = (this.value == 'status_upload' ? '" .\Smartcat\Connector\TaskTable::STATUS_READY_UPLOAD. "': (this.value == 'status_new' ? '" . \Smartcat\Connector\TaskTable::STATUS_NEW . "' : '' ));";
 
 $lAdmin->AddGroupActionTable($arActions, $arParams);
 
@@ -276,7 +280,7 @@ require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_a
 <form method="GET" name="find_form" id="find_form" action="<? echo $APPLICATION->GetCurPage() ?>">
     <?
     $arFindFields = Array();
-    $arFindFields["STATUS"] = GetMessage("ABBYY_CLOUD_STATUS");
+    $arFindFields["STATUS"] = GetMessage("SMARTCAT_CONNECTOR_STATUS");
 
     $filterUrl = $APPLICATION->GetCurPageParam();
     $oFilter = new CAdminFilter($sTableID . "_filter", $arFindFields, array("table_id" => $sTableID, "url" => $filterUrl));
@@ -310,10 +314,10 @@ require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_a
     $oFilter->Begin();
     ?>
     <tr>
-        <td><?=GetMessage("ABBYY_CLOUD_PROFILQ")?></td>
+        <td><?=GetMessage("SMARTCAT_CONNECTOR_PROFILQ")?></td>
         <td>
             <select name="find_profile" id="find_profile">
-                <option value=""><?=GetMessage("ABBYY_CLOUD_VSE")?></option>
+                <option value=""><?=GetMessage("SMARTCAT_CONNECTOR_VSE")?></option>
                 <? foreach ($arProfiles as $arProfile): ?>
                     <option
                             value="<?= $arProfile['ID']; ?>" <?= ($arProfile['ID'] == $find_profile ? 'selected' : ''); ?>>
@@ -325,11 +329,11 @@ require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_a
         </td>
     </tr>
     <tr>
-        <td><?=GetMessage("ABBYY_CLOUD_STATUS")?></td>
+        <td><?=GetMessage("SMARTCAT_CONNECTOR_STATUS")?></td>
         <td>
             <select name="find_status" id="find_status">
-                <option value=""><?=GetMessage("ABBYY_CLOUD_VSE")?></option>
-                <? foreach (\Abbyy\Cloud\TaskTable::getStatusList() as $sCode => $sStatus): ?>
+                <option value=""><?=GetMessage("SMARTCAT_CONNECTOR_VSE")?></option>
+                <? foreach (\Smartcat\Connector\TaskTable::getStatusList() as $sCode => $sStatus): ?>
                     <option value="<?= $sCode; ?>" <?= ($sCode == $find_status ? 'selected' : ''); ?>>
                         <?= $sStatus; ?>
                     </option>
@@ -341,11 +345,11 @@ require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_a
     <?
     $oFilter->Buttons();
     ?><input class="adm-btn" type="submit" name="set_filter"
-             value="<?=GetMessage("ABBYY_CLOUD_NAYTI")?>"
-             title="<?=GetMessage("ABBYY_CLOUD_NAYTI")?>" onClick="return applyFilter(this);">
+             value="<?=GetMessage("SMARTCAT_CONNECTOR_NAYTI")?>"
+             title="<?=GetMessage("SMARTCAT_CONNECTOR_NAYTI")?>" onClick="return applyFilter(this);">
     <input class="adm-btn" type="submit" name="del_filter"
-           value="<?=GetMessage("ABBYY_CLOUD_OTMENITQ")?>"
-           title="<?=GetMessage("ABBYY_CLOUD_OTMENITQ")?>"
+           value="<?=GetMessage("SMARTCAT_CONNECTOR_OTMENITQ")?>"
+           title="<?=GetMessage("SMARTCAT_CONNECTOR_OTMENITQ")?>"
            onClick="deleteFilter(this); return false;">
     <?
     $oFilter->End();

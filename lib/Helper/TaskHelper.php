@@ -1,13 +1,13 @@
 <?php
 
-namespace Abbyy\Cloud\Helper;
+namespace Smartcat\Connector\Helper;
 
 
 use Bitrix\Main\Loader;
-use Abbyy\Cloud\ProfileIblockTable;
-use Abbyy\Cloud\ProfileTable;
-use Abbyy\Cloud\TaskFileTable;
-use Abbyy\Cloud\TaskTable;
+use Smartcat\Connector\ProfileIblockTable;
+use Smartcat\Connector\ProfileTable;
+use Smartcat\Connector\TaskFileTable;
+use Smartcat\Connector\TaskTable;
 use Bitrix\Main\Type\DateTime;
 
 class TaskHelper
@@ -38,13 +38,15 @@ class TaskHelper
             'filter' => $arProfileFilter,
         ]);
 
+        $datatime = (new \DateTime('now'))->modify(' + 1 day');
+
         while ($arProfile = $rsProfiles->fetch()) {
             $arTask = [
                 'PROFILE_ID' => $arProfile['ID'],
                 'ELEMENT_ID' => $ID,
-                'TYPE' => $arProfile['TYPE'],
-                'DEADLINE' => $deadline ? DateTime::createFromTimestamp(MakeTimeStamp($deadline)) : '',
-                'STATUS' => TaskTable::STATUS_NEW,
+                'VENDOR' => $arProfile['VENDOR'],
+                'DEADLINE' =>  $datatime ? DateTime::createFromTimestamp($datatime->getTimestamp()) : '',
+                'STATUS' => $arProfile['AUTO_ORDER'] === 'Y' ? TaskTable::STATUS_READY_UPLOAD : TaskTable::STATUS_NEW,
                 'CONTENT' => self::prepareElementContent($ID, $arProfile['FIELDS']),
             ];
 
@@ -53,6 +55,8 @@ class TaskHelper
             $result = TaskTable::add($arTask);
             if ($result->isSuccess()) {
                 $taskID = $result->getId();
+            }else{
+                echo '<pre>' . print_r($result->getErrorMessages(), true) . '</pre>';
             }
 
             if ($taskID > 0) {
@@ -72,7 +76,12 @@ class TaskHelper
                         'LANG_TO' => $arIBlock['LANG'],
                     ];
 
-                    TaskFileTable::add($arTaskFile);
+                    $res = TaskFileTable::add($arTaskFile);
+
+                    if (!$res->isSuccess()) {
+                        echo '<pre>' . print_r($res->getErrorMessages(), true) . '</pre>';
+                        die();
+                    }
                 }
             }
 
@@ -119,7 +128,7 @@ class TaskHelper
             }
         }
 
-        $sContent = str_replace('&nbsp;', '', $sContent); // abbyy.cloud bug
+        $sContent = str_replace('&nbsp;', '', $sContent); // smartcat.connector bug
         return $sContent;
     }
 }

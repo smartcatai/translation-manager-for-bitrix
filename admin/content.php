@@ -44,17 +44,17 @@ $arTask = null;
 $arFile = null;
 
 if ($TASK_ID > 0) {
-    $arTask = \Abbyy\Cloud\TaskTable::getById($TASK_ID)->fetch();
+    $arTask = \Smartcat\Connector\TaskTable::getById($TASK_ID)->fetch();
     if ($arTask) {
-        $arPofile = \Abbyy\Cloud\ProfileTable::getById($arTask['PROFILE_ID'])->fetch();
+        $arPofile = \Smartcat\Connector\ProfileTable::getById($arTask['PROFILE_ID'])->fetch();
     }
 } elseif ($FILE_ID > 0) {
-    $arFile = \Abbyy\Cloud\TaskFileTable::getById($FILE_ID)->fetch();
+    $arFile = \Smartcat\Connector\TaskFileTable::getById($FILE_ID)->fetch();
     if ($arFile) {
-        $arTask = \Abbyy\Cloud\TaskTable::getById($arFile['TASK_ID'])->fetch();
+        $arTask = \Smartcat\Connector\TaskTable::getById($arFile['TASK_ID'])->fetch();
     }
     if ($arTask) {
-        $arPofile = \Abbyy\Cloud\ProfileTable::getById($arTask['PROFILE_ID'])->fetch();
+        $arPofile = \Smartcat\Connector\ProfileTable::getById($arTask['PROFILE_ID'])->fetch();
     }
 }
 
@@ -80,7 +80,7 @@ $APPLICATION->SetTitle($arPofile['NAME']);
             background: #333;
         }
 
-        .abbyy-cloud-content {
+        .smartcat-content {
             width: 100%;
             max-width: 1200px;
             margin: 2em auto;
@@ -89,11 +89,11 @@ $APPLICATION->SetTitle($arPofile['NAME']);
             border-radius: 10px;
         }
 
-        .abbyy-cloud-content img {
+        .smartcat-content img {
             max-width: 100%;
         }
 
-        .abbyy-cloud-content * {
+        .smartcat-content * {
             margin-left: 0 !important;
             margin-right: 0 !important;
             max-width: 100% !important;
@@ -103,10 +103,10 @@ $APPLICATION->SetTitle($arPofile['NAME']);
     <title><?= $APPLICATION->ShowTitle(); ?></title>
 </head>
 <? if (!$arPofile): ?>
-    <? CAdminMessage::ShowMessage(GetMessage("ABBYY_CLOUD_TEKST_NE_NAYDEN")); ?>
+    <? CAdminMessage::ShowMessage(GetMessage("SMARTCAT_CONNECTOR_TEKST_NE_NAYDEN")); ?>
 <? else: ?>
 
-    <div class="abbyy-cloud-content">
+    <div class="smartcat-content">
         <? if ($arFile): ?>
             <?= $arFile['TRANSLATION']; ?>
         <? elseif ($arTask): ?>

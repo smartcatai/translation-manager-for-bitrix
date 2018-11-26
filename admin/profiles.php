@@ -7,9 +7,9 @@ $sModuleId = basename($sModuleDir);
 
 \Bitrix\Main\Loader::includeModule($sModuleId);
 
-$APPLICATION->SetTitle(GetMessage("ABBYY_CLOUD_PROFILI_PEREVODA"));
+$APPLICATION->SetTitle(GetMessage("SMARTCAT_CONNECTOR_PROFILI_PEREVODA"));
 
-$sTableID = "tbl_abbyy_cloud_profiles";
+$sTableID = "tbl_smartcat_connector_profiles";
 $oSort = new CAdminSorting($sTableID, "name", "asc");
 $lAdmin = new CAdminList($sTableID, $oSort);
 
@@ -17,7 +17,7 @@ if ($lAdmin->EditAction()) {
     foreach ($_REQUEST['FIELDS'] as $ID => $arFields) {
         if (!$lAdmin->IsUpdated($ID)) continue;
         $arFields['ACTIVE'] = ($arFields['ACTIVE'] == 'Y');
-        \Abbyy\Cloud\ProfileTable::update($ID, $arFields);
+        \Smartcat\Connector\ProfileTable::update($ID, $arFields);
     }
 }
 
@@ -27,7 +27,7 @@ if ($arID = $lAdmin->GroupAction()) {
         $ID = IntVal($ID);
         switch ($_REQUEST['action']) {
             case "delete":
-                \Abbyy\Cloud\ProfileTable::delete($ID);
+                \Smartcat\Connector\ProfileTable::delete($ID);
                 break;
         }
     }
@@ -42,28 +42,28 @@ $arHeader = array(
     ),
     array(
         "id" => "NAME",
-        "content" => GetMessage("ABBYY_CLOUD_NAZVANIE"),
+        "content" => GetMessage("SMARTCAT_CONNECTOR_NAZVANIE"),
         "default" => true,
         "sort" => "NAME",
     ),
     array(
-        "id" => "TYPE",
-        "content" => GetMessage("ABBYY_CLOUD_TIP_PEREVODA"),
+        "id" => "VENDOR",
+        "content" => GetMessage("SMARTCAT_CONNECTOR_VENDOR"),
         "default" => true,
     ),
     array(
-        "id" => "ACTIVE",
-        "content" => GetMessage("ABBYY_CLOUD_AKTIVNOSTQ"),
+        "id" => "LANG",
+        "content" => GetMessage("SMARTCAT_CONNECTOR_AZYK_ORIG"),
         "default" => true,
     ),
     array(
         "id" => "LANGS",
-        "content" => GetMessage("ABBYY_CLOUD_AZYKI"),
+        "content" => GetMessage("SMARTCAT_CONNECTOR_AZYKI"),
         "default" => true,
     ),
     array(
-        "id" => "TASKS_COUNT",
-        "content" => GetMessage("ABBYY_CLOUD_KOL_VO_ZADANIY"),
+        "id" => "ACTIVE",
+        "content" => GetMessage("SMARTCAT_CONNECTOR_AKTIVNOSTQ"),
         "default" => true,
     ),
 );
@@ -73,7 +73,7 @@ $lAdmin->AddHeaders($arHeader);
 
 $nav = new \Bitrix\Main\UI\AdminPageNavigation("nav-profiles");
 
-$rsItems = \Abbyy\Cloud\ProfileTable::getList(array(
+$rsItems = \Smartcat\Connector\ProfileTable::getList(array(
     'order' => array(strtoupper($by) => $order),
     'count_total' => true,
     'offset' => $nav->getOffset(),
@@ -82,9 +82,9 @@ $rsItems = \Abbyy\Cloud\ProfileTable::getList(array(
 
 $nav->setRecordCount($rsItems->getCount());
 
-$lAdmin->setNavigation($nav, GetMessage("ABBYY_CLOUD_PROFILI"));
+$lAdmin->setNavigation($nav, GetMessage("SMARTCAT_CONNECTOR_PROFILI"));
 
-$arTypes = \Abbyy\Cloud\ProfileTable::getTypeList();
+$arTypes = \Smartcat\Connector\ProfileTable::getTypeList();
 
 while ($arItem = $rsItems->fetch()) {
 
@@ -93,8 +93,9 @@ while ($arItem = $rsItems->fetch()) {
     $arRow['NAME'] = $arItem['NAME'];
     $arRow['ACTIVE'] = $arItem['ACTIVE'];
 
+    $arRow['LANG'] = $arItem['LANG'];
     $arRow['LANGS'] = [];
-    $arIBlocks = \Abbyy\Cloud\ProfileIblockTable::getList([
+    $arIBlocks = \Smartcat\Connector\ProfileIblockTable::getList([
         'filter' => [
             '=PROFILE_ID' => $arRow['ID'],
         ]
@@ -105,11 +106,11 @@ while ($arItem = $rsItems->fetch()) {
     }
     $arRow['LANGS'] = implode(', ', $arRow['LANGS']);
 
-    $arRow['TASKS_COUNT'] = \Abbyy\Cloud\TaskTable::getCount([
-        'PROFILE_ID' => $arRow['ID'],
-    ]);
+    // $arRow['TASKS_COUNT'] = \Smartcat\Connector\TaskTable::getCount([
+    //     'PROFILE_ID' => $arRow['ID'],
+    // ]);
 
-    $arRow['TYPE'] = $arTypes[$arItem['TYPE']];
+    $arRow['VENDOR'] = explode('|', $arItem['VENDOR'])[1];
 
     $row = &$lAdmin->AddRow($arRow['ID'], $arRow);
 
@@ -118,12 +119,12 @@ while ($arItem = $rsItems->fetch()) {
 
     $arActions = [];
 
-    $arActions[] = array("ICON" => "edit", "TEXT" => GetMessage("ABBYY_CLOUD_REDAKTIROVATQ"), "ACTION" => $lAdmin->ActionRedirect("abbyy.cloud_profile.php?ID=" . urlencode($arRow['ID'])), "DEFAULT" => true);
+    $arActions[] = array("ICON" => "edit", "TEXT" => GetMessage("SMARTCAT_CONNECTOR_REDAKTIROVATQ"), "ACTION" => $lAdmin->ActionRedirect("smartcat.connector_profile.php?ID=" . urlencode($arRow['ID'])), "DEFAULT" => true);
 
     $arActions[] = array(
         "ICON" => "delete",
-        "TEXT" => GetMessage("ABBYY_CLOUD_UDALITQ"),
-        "ACTION" => "if(confirm('".GetMessage("ABBYY_CLOUD_UDALITQ_PROFILQ") . $lAdmin->ActionDoGroup($arRow['ID'], "delete")
+        "TEXT" => GetMessage("SMARTCAT_CONNECTOR_UDALITQ"),
+        "ACTION" => "if(confirm('".GetMessage("SMARTCAT_CONNECTOR_UDALITQ_PROFILQ") . $lAdmin->ActionDoGroup($arRow['ID'], "delete")
     );
 
     $row->AddActions($arActions);
@@ -132,9 +133,9 @@ while ($arItem = $rsItems->fetch()) {
 $aContext = array(
     array(
         "ICON" => "btn_new",
-        "TEXT" => GetMessage("ABBYY_CLOUD_DOBAVITQ_PROFILQ"),
-        "ONCLICK" => "location.href = 'abbyy.cloud_profile.php'",
-        "TITLE" => GetMessage("ABBYY_CLOUD_DOBAVITQ_PROFILQ"),
+        "TEXT" => GetMessage("SMARTCAT_CONNECTOR_DOBAVITQ_PROFILQ"),
+        "ONCLICK" => "location.href = 'smartcat.connector_profile.php'",
+        "TITLE" => GetMessage("SMARTCAT_CONNECTOR_DOBAVITQ_PROFILQ"),
     ),
 );
 

@@ -1,19 +1,20 @@
 <?
-$MESS["ABBYY_CLOUD_ZAKAZY"] = "Çàêàçû";
-$MESS["ABBYY_CLOUD_PROFILQ"] = "Ïðîôèëü";
-$MESS["ABBYY_CLOUD_ELEMENT"] = "Ýëåìåíò";
-$MESS["ABBYY_CLOUD_PEREVOD"] = "Ïåðåâîä";
-$MESS["ABBYY_CLOUD_ZAKAZA"] = "¹ çàêàçà";
-$MESS["ABBYY_CLOUD_STATUS"] = "Ñòàòóñ";
-$MESS["ABBYY_CLOUD_STOIMOSTQ"] = "Ñòîèìîñòü";
-$MESS["ABBYY_CLOUD_DEDLAYN"] = "Äåäëàéí";
-$MESS["ABBYY_CLOUD_PRIMECANIE"] = "Ïðèìå÷àíèå";
-$MESS["ABBYY_CLOUD_ZADANIA"] = "Çàäàíèÿ";
-$MESS["ABBYY_CLOUD_V_STATUS"] = "Â ñòàòóñ \"";
-$MESS["ABBYY_CLOUD_UDALITQ"] = "Óäàëèòü";
-$MESS["ABBYY_CLOUD_UDALITQ_PROFILQ"] = "Óäàëèòü ïðîôèëü?')) ";
-$MESS["ABBYY_CLOUD_IZMENITQ_STATUS"] = "Èçìåíèòü ñòàòóñ";
-$MESS["ABBYY_CLOUD_VSE"] = "Âñå";
-$MESS["ABBYY_CLOUD_NAYTI"] = "Íàéòè";
-$MESS["ABBYY_CLOUD_OTMENITQ"] = "Îòìåíèòü";
+$MESS["SMARTCAT_CONNECTOR_ZAKAZY"] = "ÐŸÑ€Ð¾ÐµÐºÑ‚Ñ‹";
+$MESS["SMARTCAT_CONNECTOR_PROFILQ"] = "ÐŸÑ€Ð¾Ñ„Ð¸Ð»ÑŒ";
+$MESS["SMARTCAT_CONNECTOR_ELEMENT"] = "Ð­Ð»ÐµÐ¼ÐµÐ½Ñ‚";
+$MESS["SMARTCAT_CONNECTOR_PEREVOD"] = "ÐŸÐµÑ€ÐµÐ²Ð¾Ð´";
+$MESS["SMARTCAT_CONNECTOR_PROJECT"] = "ÐÐ°Ð·Ð²Ð°Ð½Ð¸Ðµ Ð¿Ñ€Ð¾ÐµÐºÑ‚Ð°";
+$MESS["SMARTCAT_CONNECTOR_STATUS"] = "Ð¡Ñ‚Ð°Ñ‚ÑƒÑ";
+$MESS["SMARTCAT_CONNECTOR_STOIMOSTQ"] = "Ð¡Ñ‚Ð¾Ð¸Ð¼Ð¾ÑÑ‚ÑŒ";
+$MESS["SMARTCAT_CONNECTOR_DEDLAYN"] = "Ð”ÐµÐ´Ð»Ð°Ð¹Ð½";
+$MESS["SMARTCAT_CONNECTOR_PRIMECANIE"] = "ÐŸÑ€Ð¸Ð¼ÐµÑ‡Ð°Ð½Ð¸Ðµ";
+$MESS["SMARTCAT_CONNECTOR_ZADANIA"] = "Ð—Ð°Ð´Ð°Ð½Ð¸Ñ";
+$MESS["SMARTCAT_CONNECTOR_V_STATUS"] = "Ð’ ÑÑ‚Ð°Ñ‚ÑƒÑ \"";
+$MESS["SMARTCAT_CONNECTOR_UDALITQ"] = "Ð£Ð´Ð°Ð»Ð¸Ñ‚ÑŒ";
+$MESS["SMARTCAT_CONNECTOR_UDALITQ_PROFILQ"] = "Ð£Ð´Ð°Ð»Ð¸Ñ‚ÑŒ Ð¿Ñ€Ð¾Ñ„Ð¸Ð»ÑŒ?')) ";
+$MESS["SMARTCAT_CONNECTOR_IZMENITQ_STATUS"] = "ÐžÑ‚Ð¿Ñ€Ð°Ð²Ð¸Ñ‚ÑŒ Ð½Ð° Ð¿ÐµÑ€ÐµÐ²Ð¾Ð´";
+$MESS["SMARTCAT_CONNECTOR_OTMENIT_OTPRAVKU"] = "ÐžÑ‚Ð¼ÐµÐ½Ð¸Ñ‚ÑŒ Ð¾Ñ‚Ð¿Ñ€Ð°Ð²ÐºÑƒ";
+$MESS["SMARTCAT_CONNECTOR_VSE"] = "Ð’ÑÐµ";
+$MESS["SMARTCAT_CONNECTOR_NAYTI"] = "ÐÐ°Ð¹Ñ‚Ð¸";
+$MESS["SMARTCAT_CONNECTOR_OTMENITQ"] = "ÐžÑ‚Ð¼ÐµÐ½Ð¸Ñ‚ÑŒ";
 ?>

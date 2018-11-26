@@ -1,3 +1,3 @@
 <?
-$MESS["ABBYY_CLOUD_TREBUETSA_OPLATA"] = "Òðåáóåòñÿ îïëàòà";
+$MESS["SMARTCAT_CONNECTOR_TREBUETSA_OPLATA"] = "Ð¢Ñ€ÐµÐ±ÑƒÐµÑ‚ÑÑ Ð¾Ð¿Ð»Ð°Ñ‚Ð°";
 ?>

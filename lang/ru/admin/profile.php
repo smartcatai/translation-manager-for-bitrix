@@ -1,33 +1,38 @@
 <?
-$MESS["ABBYY_CLOUD_NAZVANIE"] = "Íàçâàíèå";
-$MESS["ABBYY_CLOUD_OPISANIE_DLA_ANONSA"] = "Îïèñàíèå äëÿ àíîíñà";
-$MESS["ABBYY_CLOUD_DETALQNOE_OPISANIE"] = "Äåòàëüíîå îïèñàíèå";
-$MESS["ABBYY_CLOUD_RAZDEL_INFOBLOKA"] = "Ðàçäåë èíôîáëîêà";
-$MESS["ABBYY_CLOUD_PROFILQ_NE_NAYDEN"] = "Ïðîôèëü íå íàéäåí";
-$MESS["ABBYY_CLOUD_NET_DOSTUPNYH_AZYKOV"] = "Íåò äîñòóïíûõ ÿçûêîâ äëÿ ïåðåâîäà";
-$MESS["ABBYY_CLOUD_NE_UKAZAN_INFOBLOK_D"] = "Íå óêàçàí èíôîáëîê äëÿ ïåðåâîäà";
-$MESS["ABBYY_CLOUD_NE_UDALOSQ_NAYTI_INF"] = "Íå óäàëîñü íàéòè èíôîáëîê äëÿ ïåðåâîäà";
-$MESS["ABBYY_CLOUD_NE_UDALOSQ_OBNOVITQ"] = "Íå óäàëîñü îáíîâèòü ïðîôèëü: ";
-$MESS["ABBYY_CLOUD_NE_UDALOSQ_SOZDATQ_P"] = "Íå óäàëîñü ñîçäàòü ïðîôèëü: ";
-$MESS["ABBYY_CLOUD_NE_UDALOSQ_NAYTI_INF1"] = "Íå óäàëîñü íàéòè èíôîáëîê \"";
-$MESS["ABBYY_CLOUD_PROFILI_PEREVODA"] = "Ïðîôèëè ïåðåâîäà";
-$MESS["ABBYY_CLOUD_PROFILQ_PEREVODA"] = "Ïðîôèëü ïåðåâîäà";
-$MESS["ABBYY_CLOUD_INFOBLOK"] = "Èíôîáëîê";
-$MESS["ABBYY_CLOUD_VYBRATQ"] = "Âûáðàòü]";
-$MESS["ABBYY_CLOUD_AKTIVNOSTQ"] = "Àêòèâíîñòü";
-$MESS["ABBYY_CLOUD_AZYK"] = "ßçûê";
-$MESS["ABBYY_CLOUD_PARAMETRY_PEREVODA"] = "Ïàðàìåòðû ïåðåâîäà";
-$MESS["ABBYY_CLOUD_TIP_PEREVODA"] = "Òèï ïåðåâîäà";
-$MESS["ABBYY_CLOUD_PUBLIKOVATQ_PEREVOD"] = "Ïóáëèêîâàòü ïåðåâîä àâòîìàòè÷åñêè";
-$MESS["ABBYY_CLOUD_AVTOMATICESKI_PEREVO"] = "Àâòîìàòè÷åñêè ïåðåâîäèòü íîâûå ìàòåðèàëû";
-$MESS["ABBYY_CLOUD_KAKIE_POLA_PEREVODIT"] = "Êàêèå ïîëÿ ïåðåâîäèòü?";
-$MESS["ABBYY_CLOUD_NA_KAKIE_AZYKI_PEREV"] = "Íà êàêèå ÿçûêè ïåðåâîäèòü?";
-$MESS["ABBYY_CLOUD_SOZDATQ_NOVYY"] = "Ñîçäàòü íîâûé]";
-$MESS["ABBYY_CLOUD_VYBRATQ_AZYK"] = "Âûáðàòü ÿçûê]";
-$MESS["ABBYY_CLOUD_DOBAVITQ_INFOBLOK"] = "Äîáàâèòü èíôîáëîê";
-$MESS["ABBYY_CLOUD_NE_UDALOSQ_PODKLUCIT"] = "Íå óäàëîñü ïîäêëþ÷èòüñÿ ê Abbyy.cloud. Ïðîâåðüòå ";
-$MESS["ABBYY_CLOUD_NASTROYKI_DO"] = "íàñòðîéêè
-        äîñòóïà";
-$MESS["ABBYY_CLOUD_K_SERVISA"] = "ê API ñåðâèñà.
+$MESS["SMARTCAT_CONNECTOR_NAZVANIE"] = "ÐÐ°Ð·Ð²Ð°Ð½Ð¸Ðµ";
+$MESS["SMARTCAT_CONNECTOR_OPISANIE_DLA_ANONSA"] = "ÐžÐ¿Ð¸ÑÐ°Ð½Ð¸Ðµ Ð´Ð»Ñ Ð°Ð½Ð¾Ð½ÑÐ°";
+$MESS["SMARTCAT_CONNECTOR_DETALQNOE_OPISANIE"] = "Ð”ÐµÑ‚Ð°Ð»ÑŒÐ½Ð¾Ðµ Ð¾Ð¿Ð¸ÑÐ°Ð½Ð¸Ðµ";
+$MESS["SMARTCAT_CONNECTOR_RAZDEL_INFOBLOKA"] = "Ð Ð°Ð·Ð´ÐµÐ» Ð¸Ð½Ñ„Ð¾Ð±Ð»Ð¾ÐºÐ°";
+$MESS["SMARTCAT_CONNECTOR_PROFILQ_NE_NAYDEN"] = "ÐŸÑ€Ð¾Ñ„Ð¸Ð»ÑŒ Ð½Ðµ Ð½Ð°Ð¹Ð´ÐµÐ½";
+$MESS["SMARTCAT_CONNECTOR_ACCOUNT_ERROR"] = "ÐžÑˆÐ¸Ð±ÐºÐ° Ð¿Ð¾Ð´ÐºÐ»ÑŽÑ‡ÐµÐ½Ð¸Ñ Ðº Ð°ÐºÐºÐ°ÑƒÐ½Ñ‚Ñƒ";
+$MESS["SMARTCAT_CONNECTOR_ACCOUNT_ERROR_EXPLAIN"] = "ÐŸÑ€Ð¾Ð²ÐµÑ€Ñ‚Ðµ Ð¿Ñ€Ð°Ð²Ð¸Ð»ÑŒÐ½Ð¾ÑÑ‚ÑŒ Ð½Ð°ÑÑ‚Ñ€Ð¾Ð¹ÐºÐ¸ Ð¼Ð¾Ð´ÑƒÐ»Ñ";
+$MESS["SMARTCAT_CONNECTOR_NET_DOSTUPNYH_AZYKOV"] = "ÐÐµÑ‚ Ð´Ð¾ÑÑ‚ÑƒÐ¿Ð½Ñ‹Ñ… ÑÐ·Ñ‹ÐºÐ¾Ð² Ð´Ð»Ñ Ð¿ÐµÑ€ÐµÐ²Ð¾Ð´Ð°";
+$MESS["SMARTCAT_CONNECTOR_NE_UKAZAN_INFOBLOK_D"] = "ÐÐµ ÑƒÐºÐ°Ð·Ð°Ð½ Ð¸Ð½Ñ„Ð¾Ð±Ð»Ð¾Ðº Ð´Ð»Ñ Ð¿ÐµÑ€ÐµÐ²Ð¾Ð´Ð°";
+$MESS["SMARTCAT_CONNECTOR_NE_UDALOSQ_NAYTI_INF"] = "ÐÐµ ÑƒÐ´Ð°Ð»Ð¾ÑÑŒ Ð½Ð°Ð¹Ñ‚Ð¸ Ð¸Ð½Ñ„Ð¾Ð±Ð»Ð¾Ðº Ð´Ð»Ñ Ð¿ÐµÑ€ÐµÐ²Ð¾Ð´Ð°";
+$MESS["SMARTCAT_CONNECTOR_NE_UDALOSQ_OBNOVITQ"] = "ÐÐµ ÑƒÐ´Ð°Ð»Ð¾ÑÑŒ Ð¾Ð±Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ Ð¿Ñ€Ð¾Ñ„Ð¸Ð»ÑŒ: ";
+$MESS["SMARTCAT_CONNECTOR_NE_UDALOSQ_SOZDATQ_P"] = "ÐÐµ ÑƒÐ´Ð°Ð»Ð¾ÑÑŒ ÑÐ¾Ð·Ð´Ð°Ñ‚ÑŒ Ð¿Ñ€Ð¾Ñ„Ð¸Ð»ÑŒ: ";
+$MESS["SMARTCAT_CONNECTOR_NE_UDALOSQ_NAYTI_INF1"] = "ÐÐµ ÑƒÐ´Ð°Ð»Ð¾ÑÑŒ Ð½Ð°Ð¹Ñ‚Ð¸ Ð¸Ð½Ñ„Ð¾Ð±Ð»Ð¾Ðº \"";
+$MESS["SMARTCAT_CONNECTOR_PROFILI_PEREVODA"] = "ÐŸÑ€Ð¾Ñ„Ð¸Ð»Ð¸ Ð¿ÐµÑ€ÐµÐ²Ð¾Ð´Ð°";
+$MESS["SMARTCAT_CONNECTOR_PROFILQ_PEREVODA"] = "ÐŸÑ€Ð¾Ñ„Ð¸Ð»ÑŒ Ð¿ÐµÑ€ÐµÐ²Ð¾Ð´Ð°";
+$MESS["SMARTCAT_CONNECTOR_INFOBLOK"] = "Ð˜Ð½Ñ„Ð¾Ð±Ð»Ð¾Ðº";
+$MESS["SMARTCAT_CONNECTOR_VYBRATQ"] = "Ð’Ñ‹Ð±Ñ€Ð°Ñ‚ÑŒ]";
+$MESS["SMARTCAT_CONNECTOR_AKTIVNOSTQ"] = "ÐÐºÑ‚Ð¸Ð²Ð½Ð¾ÑÑ‚ÑŒ";
+$MESS["SMARTCAT_CONNECTOR_AZYK"] = "Ð¯Ð·Ñ‹Ðº";
+$MESS["SMARTCAT_CONNECTOR_PARAMETRY_PEREVODA"] = "ÐŸÐ°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ñ‹ Ð¿ÐµÑ€ÐµÐ²Ð¾Ð´Ð°";
+$MESS["SMARTCAT_CONNECTOR_TIP_PEREVODA"] = "Ð­Ñ‚Ð°Ð¿Ñ‹ Ñ€Ð°Ð±Ð¾Ñ‡ÐµÐ³Ð¾ Ð¿Ñ€Ð¾Ñ†ÐµÑÑÐ°";
+$MESS["SMARTCAT_CONNECTOR_PUBLIKOVATQ_PEREVOD"] = "ÐÐ²Ñ‚Ð¾Ð¼Ð°Ñ‚Ð¸Ñ‡ÐµÑÐºÐ¸ Ð¿ÑƒÐ±Ð»Ð¸ÐºÐ¾Ð²Ð°Ñ‚ÑŒ Ð¿ÐµÑ€ÐµÐ²Ð¾Ð´Ñ‹";
+$MESS["SMARTCAT_CONNECTOR_AVTOMATICESKI_PEREVO"] = "ÐÐ²Ñ‚Ð¾Ð¼Ð°Ñ‚Ð¸Ñ‡ÐµÑÐºÐ¸ Ð¿ÐµÑ€ÐµÐ²Ð¾Ð´Ð¸Ñ‚ÑŒ Ð½Ð¾Ð²Ñ‹Ðµ Ð¼Ð°Ñ‚ÐµÑ€Ð¸Ð°Ð»Ñ‹";
+$MESS["SMARTCAT_CONNECTOR_KAKIE_POLA_PEREVODIT"] = "ÐšÐ°ÐºÐ¸Ðµ Ð¿Ð¾Ð»Ñ Ð¿ÐµÑ€ÐµÐ²Ð¾Ð´Ð¸Ñ‚ÑŒ?";
+$MESS["SMARTCAT_CONNECTOR_NA_KAKIE_AZYKI_PEREV"] = "ÐÐ° ÐºÐ°ÐºÐ¸Ðµ ÑÐ·Ñ‹ÐºÐ¸ Ð¿ÐµÑ€ÐµÐ²Ð¾Ð´Ð¸Ñ‚ÑŒ?";
+$MESS["SMARTCAT_CONNECTOR_SOZDATQ_NOVYY"] = "Ð¡Ð¾Ð·Ð´Ð°Ñ‚ÑŒ Ð½Ð¾Ð²Ñ‹Ð¹]";
+$MESS["SMARTCAT_CONNECTOR_VYBRATQ_AZYK"] = "Ð’Ñ‹Ð±Ñ€Ð°Ñ‚ÑŒ ÑÐ·Ñ‹Ðº]";
+$MESS["SMARTCAT_CONNECTOR_DOBAVITQ_INFOBLOK"] = "Ð”Ð¾Ð±Ð°Ð²Ð¸Ñ‚ÑŒ Ð¸Ð½Ñ„Ð¾Ð±Ð»Ð¾Ðº";
+$MESS["SMARTCAT_CONNECTOR_NE_UDALOSQ_PODKLUCIT"] = "ÐÐµ ÑƒÐ´Ð°Ð»Ð¾ÑÑŒ Ð¿Ð¾Ð´ÐºÐ»ÑŽÑ‡Ð¸Ñ‚ÑŒÑÑ Ðº Smartcat. ÐŸÑ€Ð¾Ð²ÐµÑ€ÑŒÑ‚Ðµ ";
+$MESS["SMARTCAT_CONNECTOR_NASTROYKI_DO"] = "Ð½Ð°ÑÑ‚Ñ€Ð¾Ð¹ÐºÐ¸
+        Ð´Ð¾ÑÑ‚ÑƒÐ¿Ð°";
+$MESS["SMARTCAT_CONNECTOR_K_SERVISA"] = "Ðº API ÑÐµÑ€Ð²Ð¸ÑÐ°.
     ";
+$MESS["SMARTCAT_CONNECTOR_VENDOR"] = "Ð’ÐµÐ½Ð´Ð¾Ñ€";
+$MESS["SMARTCAT_CONNECTOR_WITHOUT_VENDOR"] = "Ð‘ÐµÐ· Ð²ÐµÐ½Ð´Ð¾Ñ€Ð°";
+
 ?>

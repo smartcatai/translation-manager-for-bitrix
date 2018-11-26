@@ -1,5 +1,5 @@
 <?php
-namespace Abbyy\Cloud;
+namespace Smartcat\Connector;
 
 use Bitrix\Main,
     Bitrix\Main\Localization\Loc;
@@ -31,7 +31,7 @@ class ProfileIblockTable extends Main\Entity\DataManager
      */
     public static function getTableName()
     {
-        return 'b_abbyy_cloud_profile_iblock';
+        return 'b_smartcat_connector_profile_iblock';
     }
 
     /**
@@ -46,23 +46,23 @@ class ProfileIblockTable extends Main\Entity\DataManager
                 'data_type' => 'integer',
                 'primary' => true,
                 'autocomplete' => true,
-                'title' => Loc::getMessage('ABBYY_CLOUD_PROFILE_IBLOCK_ENTITY_ID_FIELD'),
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_PROFILE_IBLOCK_ENTITY_ID_FIELD'),
             ),
             'PROFILE_ID' => array(
                 'data_type' => 'integer',
                 'required' => true,
-                'title' => Loc::getMessage('ABBYY_CLOUD_PROFILE_IBLOCK_ENTITY_PROFILE_ID_FIELD'),
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_PROFILE_IBLOCK_ENTITY_PROFILE_ID_FIELD'),
             ),
             'IBLOCK_ID' => array(
                 'data_type' => 'integer',
                 'required' => true,
-                'title' => Loc::getMessage('ABBYY_CLOUD_PROFILE_IBLOCK_ENTITY_IBLOCK_ID_FIELD'),
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_PROFILE_IBLOCK_ENTITY_IBLOCK_ID_FIELD'),
             ),
             'LANG' => array(
                 'data_type' => 'string',
                 'required' => true,
                 'validation' => array(__CLASS__, 'validateLang'),
-                'title' => Loc::getMessage('ABBYY_CLOUD_PROFILE_IBLOCK_ENTITY_LANG_FIELD'),
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_PROFILE_IBLOCK_ENTITY_LANG_FIELD'),
             ),
 
         );

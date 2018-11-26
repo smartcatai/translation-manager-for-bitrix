@@ -1,9 +1,9 @@
 <?php
 
-namespace Abbyy\Cloud\Helper;
+namespace Smartcat\Connector\Helper;
 
 
-use Abbyy\Cloud\Agent\Task;
+use Smartcat\Connector\Agent\Task;
 use Bitrix\Main\Config\Option;
 use Bitrix\Main\Loader;
 
@@ -13,7 +13,7 @@ class IblockHelper
     const ERROR_LINKED_ELEMENT_NOT_FOUND = 1;
 
     /**
-     * Копирует элемент в указанный инфоблок и возвращает ID нового элемента в случае успеха
+     * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ ID пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
      *
      * @param $elementID
      * @param $iblockID
@@ -38,7 +38,7 @@ class IblockHelper
             }
         }
 
-        $bWaitLinkedElements = Option::get('abbyy.cloud', 'wait_linked_elements', 'N');
+        $bWaitLinkedElements = Option::get('smartcat.connector', 'wait_linked_elements', 'N');
 
         $obElement = \CIBlockElement::GetByID($elementID)->GetNextElement(true, false);
 
@@ -350,7 +350,7 @@ class IblockHelper
 
         $arIblockFrom = \CIBlock::GetByID($iblockID)->Fetch();
         if (!$arIblockFrom) {
-            throw new \Exception(GetMessage("ABBYY_CLOUD_NE_UDALOSQ_NAYTI_ISH"));
+            throw new \Exception(GetMessage("SMARTCAT_CONNECTOR_NE_UDALOSQ_NAYTI_ISH"));
         }
 
         $sTargetTypeID = $arIblockFrom['IBLOCK_TYPE_ID'] . '_' . $lang;
@@ -362,8 +362,8 @@ class IblockHelper
             $arTargetType = \CIBlockType::GetByID($arIblockFrom['IBLOCK_TYPE_ID'])->GetNext(false, false);
             $arTargetTypeLang = \CIBlockType::GetByIDLang($arIblockFrom['IBLOCK_TYPE_ID'], LANGUAGE_ID);
 
-            $arTargetType = \Abbyy\Cloud\Helper\ArrayHelper::cleanUpTilda($arTargetType);
-            $arTargetTypeLang = \Abbyy\Cloud\Helper\ArrayHelper::cleanUpTilda($arTargetTypeLang);
+            $arTargetType = \Smartcat\Connector\Helper\ArrayHelper::cleanUpTilda($arTargetType);
+            $arTargetTypeLang = \Smartcat\Connector\Helper\ArrayHelper::cleanUpTilda($arTargetTypeLang);
 
             $arTargetType['ID'] = $sTargetTypeID;
             $arTargetTypeLang['NAME'] .= ' (' . strtoupper($lang) . ')';
@@ -372,7 +372,7 @@ class IblockHelper
 
             $res = $CIBlockType->Add($arTargetType);
             if (!$res) {
-                throw new \Exception(GetMessage("ABBYY_CLOUD_NE_UDALOSQ_SOZDATQ_T") . $arTargetTypeLang['NAME'] . '": ' . $CIBlockType->LAST_ERROR);
+                throw new \Exception(GetMessage("SMARTCAT_CONNECTOR_NE_UDALOSQ_SOZDATQ_T") . $arTargetTypeLang['NAME'] . '": ' . $CIBlockType->LAST_ERROR);
             }
         }
 
@@ -394,7 +394,7 @@ class IblockHelper
         } else {
             $ID = $CIBlock->Add($arTargetIBlock);
             if (!$ID) {
-                throw new \Exception(GetMessage("ABBYY_CLOUD_NE_UDALOSQ_SOZDATQ_I") . $arTargetIBlock['NAME'] . '": ' . $CIBlock->LAST_ERROR);
+                throw new \Exception(GetMessage("SMARTCAT_CONNECTOR_NE_UDALOSQ_SOZDATQ_I") . $arTargetIBlock['NAME'] . '": ' . $CIBlock->LAST_ERROR);
             }
             return $ID;
         }
@@ -420,6 +420,7 @@ class IblockHelper
 
             if (!$arPropCopy) {
                 $arPropCopy = $arProp;
+                unset($arPropCopy['TIMESTAMP_X']);
                 $arPropCopy['IBLOCK_ID'] = $iblockIDTo;
                 $arPropCopy['ID'] = $CIBLockProperty->Add($arPropCopy);
             }

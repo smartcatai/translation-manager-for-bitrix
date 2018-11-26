@@ -1,3 +1,3 @@
 <?
-$MESS["ABBYY_CLOUD_NE_UDALATQ_TABLICY"] = "Íå óäàëÿòü òàáëèöû";
+$MESS["SMARTCAT_CONNECTOR_NE_UDALATQ_TABLICY"] = "ÐÐµ ÑƒÐ´Ð°Ð»ÑÑ‚ÑŒ Ñ‚Ð°Ð±Ð»Ð¸Ñ†Ñ‹";
 ?>

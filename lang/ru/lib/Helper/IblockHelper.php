@@ -1,5 +1,5 @@
 <?
-$MESS["ABBYY_CLOUD_NE_UDALOSQ_NAYTI_ISH"] = "Íå óäàëîñü íàéòè èñõîäíûé èíôîáëîê";
-$MESS["ABBYY_CLOUD_NE_UDALOSQ_SOZDATQ_T"] = "Íå óäàëîñü ñîçäàòü òèï èíôîáëîêà \"";
-$MESS["ABBYY_CLOUD_NE_UDALOSQ_SOZDATQ_I"] = "Íå óäàëîñü ñîçäàòü èíôîáëîê \"";
+$MESS["SMARTCAT_CONNECTOR_NE_UDALOSQ_NAYTI_ISH"] = "ÐÐµ ÑƒÐ´Ð°Ð»Ð¾ÑÑŒ Ð½Ð°Ð¹Ñ‚Ð¸ Ð¸ÑÑ…Ð¾Ð´Ð½Ñ‹Ð¹ Ð¸Ð½Ñ„Ð¾Ð±Ð»Ð¾Ðº";
+$MESS["SMARTCAT_CONNECTOR_NE_UDALOSQ_SOZDATQ_T"] = "ÐÐµ ÑƒÐ´Ð°Ð»Ð¾ÑÑŒ ÑÐ¾Ð·Ð´Ð°Ñ‚ÑŒ Ñ‚Ð¸Ð¿ Ð¸Ð½Ñ„Ð¾Ð±Ð»Ð¾ÐºÐ° \"";
+$MESS["SMARTCAT_CONNECTOR_NE_UDALOSQ_SOZDATQ_I"] = "ÐÐµ ÑƒÐ´Ð°Ð»Ð¾ÑÑŒ ÑÐ¾Ð·Ð´Ð°Ñ‚ÑŒ Ð¸Ð½Ñ„Ð¾Ð±Ð»Ð¾Ðº \"";
 ?>

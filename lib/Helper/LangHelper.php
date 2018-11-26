@@ -1,8 +1,8 @@
 <?php
 
-namespace Abbyy\Cloud\Helper;
+namespace Smartcat\Connector\Helper;
 
-use ABBYY\CloudAPI\SmartCAT;
+use Smartcat\ConnectorAPI\SmartCAT;
 use Bitrix\Main\Config\Option;
 
 class LangHelper
@@ -245,15 +245,11 @@ class LangHelper
     }
 
     /**
-     * Возвращает список доступных языков для ручного перевода
+     * 
      */
     public static function getLanguagesForHT($langFrom, $htType)
     {
-        $apiId = Option::get('abbyy.cloud', 'api_id');
-        $apiSecret = Option::get('abbyy.cloud', 'api_secret');
-
-
-        $cloudApi = new SmartCAT($apiId, $apiSecret);
+        $cloudApi =  \Smartcat\Connector\Helper\ApiHelper::createApi();
 
         $priceManager = $cloudApi->getPricesManager();
 

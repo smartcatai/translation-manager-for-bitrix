@@ -1,10 +1,12 @@
 <?
+use PhpParser\Node\Expr\Array_;
+
 //if (!$USER->IsAdmin())
 //    return;
 IncludeModuleLangFile($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/options.php");
 IncludeModuleLangFile(__FILE__);
 
-$module_id = "abbyy.cloud";
+$module_id = "smartcat.connector";
 
 $arErrors = Array();
 $arMessages = Array();
@@ -12,7 +14,7 @@ $arMessages = Array();
 \Bitrix\Main\Loader::includeModule($module_id);
 
 $MOD_RIGHT = $APPLICATION->GetGroupRight($module_id);
-$schema = new \Abbyy\Cloud\Schema(dirname(__FILE__) . '/install/db/mysql');
+$schema = new \Smartcat\Connector\Schema(dirname(__FILE__) . '/install/db/mysql');
 
 if ($schema->needUpgrade() && $_REQUEST['db_upgrade'] == 'y') {
     $schema->upgrade();
@@ -21,18 +23,15 @@ if ($schema->needUpgrade() && $_REQUEST['db_upgrade'] == 'y') {
 
 $arAllOptions = Array();
 
-
-$arAllOptions[] = GetMessage("ABBYY_CLOUD_DOSTUP_K");
-$arAllOptions[] = Array("api_id", "App ID", '', Array('text', 100));
-$arAllOptions[] = Array("api_secret", "Api token", '', Array('text', 100));
-
-$arAllOptions[] = GetMessage("ABBYY_CLOUD_DOPOLNITELQNYE_NASTR");
-$arAllOptions[] = Array("wait_linked_elements", GetMessage("ABBYY_CLOUD_NE_PEREVODITQ_ELEMEN"), '', Array('checkbox'));
-$arAllOptions[] = Array("notify_email", "Email ".GetMessage("ABBYY_CLOUD_DLA_UVEDOMLENIY"), '', Array('text', 100));
-$arAllOptions[] = Array("add_css", GetMessage("ABBYY_CLOUD_PUTQ_K_DOPOLNITELQNO"), '', Array('text', 100));
-
-
-$arAllOptions[] = Array("note" => GetMessage("ABBYY_CLOUD_VERSIA_SHEMY") . $schema->getCurrentVersion() . ' ' . ($schema->needUpgrade() ? '<a href="' . $APPLICATION->GetCurPageParam('db_upgrade=y') . '">'.GetMessage("ABBYY_CLOUD_OBNOVITQ_DO") . $schema->getLastVersion() . '</a>' : ''));
+$arAllOptions[] = GetMessage("SMARTCAT_CONNECTOR_DOSTUP_K");
+$arAllOptions[] = Array("api_id", GetMessage("SMARTCAT_CONNECTOR_API_ID"), '', Array('text', 100));
+$arAllOptions[] = Array("api_secret", GetMessage("SMARTCAT_CONNECTOR_API_SECRET"), '', Array('text', 100));
+$arAllOptions[] = Array("api_server", GetMessage("SMARTCAT_CONNECTOR_API_SERVER"), \SmartCat\Client\SmartCat::SC_EUROPE, Array('selectbox', Array(
+    \SmartCat\Client\SmartCat::SC_ASIA => GetMessage("SMARTCAT_CONNECTOR_SC_ASIA"),
+    \SmartCat\Client\SmartCat::SC_EUROPE => GetMessage("SMARTCAT_CONNECTOR_SC_EUROPE"),
+    \SmartCat\Client\SmartCat::SC_USA => GetMessage("SMARTCAT_CONNECTOR_SC_USA"),
+)));
+$arAllOptions[] = Array("api_test", GetMessage("SMARTCAT_CONNECTOR_API_TEST"), '', Array('checkbox', false));
 
 if ($REQUEST_METHOD == 'POST' && strlen($Update) > 0 && check_bitrix_sessid()) {
     $arOptions = $arAllOptions;
@@ -53,6 +52,24 @@ if ($REQUEST_METHOD == 'POST' && strlen($Update) > 0 && check_bitrix_sessid()) {
     LocalRedirect($APPLICATION->GetCurPageParam());
 }
 
+$arInfo = Array();
+try{
+    $acc_info = \Smartcat\Connector\Helper\ApiHelper::getAccount();
+    if($acc_info){
+        $arInfo[] = GetMessage("SMARTCAT_CONNECTOR_ACCOUNT") . ': ' . $acc_info->getName();
+    }
+}catch(\Exception $e){
+    $apiId = \Bitrix\Main\Config\Option::get('smartcat.connector', 'api_id');
+    $apiSecret = \Bitrix\Main\Config\Option::get('smartcat.connector', 'api_secret');
+    if(!empty($apiId) || !empty($apiSecret) ){
+        CAdminMessage::ShowMessage(GetMessage("SMARTCAT_CONNECTOR_ACCOUNT_ERROR") .': '. $e->getMessage());
+    }
+    $arInfo[] = GetMessage("SMARTCAT_CONNECTOR_ACCOUNT_NEED_SETTINGS");
+}
+
+$arInfo[] =  GetMessage("SMARTCAT_CONNECTOR_VERSIA_SHEMY") 
+                .$schema->getCurrentVersion() . ' '
+                .($schema->needUpgrade() ? '<a href="' . $APPLICATION->GetCurPageParam('db_upgrade=y') . '">'.GetMessage("SMARTCAT_CONNECTOR_OBNOVITQ_DO") . $schema->getLastVersion() . '</a>' : '');
 
 foreach ($arErrors as $strError)
     CAdminMessage::ShowMessage($strError);
@@ -62,7 +79,7 @@ foreach ($arMessages as $strMessage)
 ?>
 <?
 $aTabs = array();
-$aTabs[] = array('DIV' => 'set', 'TAB' => GetMessage('MAIN_TAB_SET'), 'ICON' => 'edit', 'TITLE' => GetMessage("ABBYY_CLOUD_NASTROYKI_MODULA"));
+$aTabs[] = array('DIV' => 'set', 'TAB' => GetMessage('MAIN_TAB_SET'), 'ICON' => 'edit', 'TITLE' => GetMessage("SMARTCAT_CONNECTOR_NASTROYKI_MODULA"));
 
 
 $tabControl = new CAdminTabControl("tabControl", $aTabs);
@@ -75,6 +92,14 @@ $tabControl->Begin();
     <? $tabControl->BeginNextTab(); ?>
 
     <? __AdmSettingsDrawList($module_id, $arAllOptions); ?>
+
+    <? foreach($arInfo as $info):?>
+    <tr>
+        <td colspan="2" align="center">
+            <?=$info;?>
+        </td>
+    </tr>
+    <? endforeach ?>
 
 
     <? $tabControl->Buttons(); ?>

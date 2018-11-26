@@ -1,10 +1,20 @@
 <?
-$MESS["ABBYY_CLOUD_DOSTUP_K"] = "Доступ к API";
-$MESS["ABBYY_CLOUD_DOPOLNITELQNYE_NASTR"] = "Дополнительные настройки";
-$MESS["ABBYY_CLOUD_NE_PEREVODITQ_ELEMEN"] = "Не переводить элемент, пока не выполнен перевод всех связанных элементов";
-$MESS["ABBYY_CLOUD_DLA_UVEDOMLENIY"] = "для уведомлений";
-$MESS["ABBYY_CLOUD_PUTQ_K_DOPOLNITELQNO"] = "Путь к дополнительному CSS";
-$MESS["ABBYY_CLOUD_VERSIA_SHEMY"] = "Версия схемы: ";
-$MESS["ABBYY_CLOUD_OBNOVITQ_DO"] = "Обновить до ";
-$MESS["ABBYY_CLOUD_NASTROYKI_MODULA"] = "Настройки модуля";
+$MESS["SMARTCAT_CONNECTOR_DOSTUP_K"] = "Р”РѕСЃС‚СѓРї Рє API";
+$MESS["SMARTCAT_CONNECTOR_DOPOLNITELQNYE_NASTR"] = "Р”РѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹Рµ РЅР°СЃС‚СЂРѕР№РєРё";
+$MESS["SMARTCAT_CONNECTOR_NE_PEREVODITQ_ELEMEN"] = "РќРµ РїРµСЂРµРІРѕРґРёС‚СЊ СЌР»РµРјРµРЅС‚, РїРѕРєР° РЅРµ РІС‹РїРѕР»РЅРµРЅ РїРµСЂРµРІРѕРґ РІСЃРµС… СЃРІСЏР·Р°РЅРЅС‹С… СЌР»РµРјРµРЅС‚РѕРІ";
+$MESS["SMARTCAT_CONNECTOR_DLA_UVEDOMLENIY"] = "РґР»СЏ СѓРІРµРґРѕРјР»РµРЅРёР№";
+$MESS["SMARTCAT_CONNECTOR_PUTQ_K_DOPOLNITELQNO"] = "РџСѓС‚СЊ Рє РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅРѕРјСѓ CSS";
+$MESS["SMARTCAT_CONNECTOR_VERSIA_SHEMY"] = "Р’РµСЂСЃРёСЏ РєРѕРЅРЅРµРєС‚РѕСЂР°: ";
+$MESS["SMARTCAT_CONNECTOR_OBNOVITQ_DO"] = "РћР±РЅРѕРІРёС‚СЊ РґРѕ ";
+$MESS["SMARTCAT_CONNECTOR_NASTROYKI_MODULA"] = "РќР°СЃС‚СЂРѕР№РєРё РјРѕРґСѓР»СЏ";
+$MESS["SMARTCAT_CONNECTOR_ACCOUNT"] = "РљРѕРЅРЅРµРєС‚РѕСЂ РїРѕРґРєР»СЋС‡РµРЅ Рє";
+$MESS["SMARTCAT_CONNECTOR_ACCOUNT_ERROR"] = "РћС€РёР±РєР° РїРѕРґРєР»СЋС‡РµРЅРёСЏ Рє Р°РєРєР°СѓРЅС‚Сѓ";
+$MESS["SMARTCAT_CONNECTOR_ACCOUNT_NEED_SETTINGS"] = "РџРѕР»СѓС‡РёС‚Рµ РєР»СЋС‡ API РІ <a href=\"//help.smartcat.ai/hc/en-us/articles/115002475012\" target=\"blank\">РЅР°СЃС‚СЂРѕР№РєР°С… РІР°С€РµРіРѕ Р°РєРєР°СѓРЅС‚Р°</a> Smartcat";
+$MESS["SMARTCAT_CONNECTOR_API_ID"] = "ID Р°РєРєР°СѓРЅС‚Р°";
+$MESS["SMARTCAT_CONNECTOR_API_SECRET"] = "РљР»СЋС‡ API";
+$MESS["SMARTCAT_CONNECTOR_API_SERVER"] = "РЎРµСЂРІРµСЂ";
+$MESS["SMARTCAT_CONNECTOR_SC_ASIA"] = "РђР·РёСЏ";
+$MESS["SMARTCAT_CONNECTOR_SC_EUROPE"] = "Р•РІСЂРѕРїР°";
+$MESS["SMARTCAT_CONNECTOR_SC_USA"] = "РЎРЁРђ";
+$MESS["SMARTCAT_CONNECTOR_API_TEST" ] = "РўРµСЃС‚РѕРІС‹Р№ СЂРµР¶РёРј";
 ?>

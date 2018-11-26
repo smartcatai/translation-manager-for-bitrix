@@ -6,7 +6,7 @@
  * @author: Timokhin Maxim <tm@likee.ru>
  */
 
-namespace Abbyy\Cloud;
+namespace Smartcat\Connector;
 
 use Bitrix\Main\Application;
 use Bitrix\Main\Config\Option;

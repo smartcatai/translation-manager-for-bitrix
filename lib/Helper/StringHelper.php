@@ -6,7 +6,7 @@
  * @author: Timokhin Maxim <tm@likee.ru>
  */
 
-namespace Abbyy\Cloud\Helper;
+namespace Smartcat\Connector\Helper;
 
 
 class StringHelper
