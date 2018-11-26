@@ -2,11 +2,11 @@
     "name": "smartcatai/bitrix-translate-connector",
     "description": "Bitrix Connector for SmartCat.ai",
     "require": {
-      "php": "~7.0.13|~7.1.0",
+      "php": ">= 5.6",
       "smartcat/smartcat-api": "^2.0.1"
     },
-    "type": "magento2-module",
-    "version": "1.0.0",
+    "type": "bitrix-module",
+    "version": "2.0.0",
     "license": "GPL-3.0-or-later",
     "autoload": {
       "psr-4": {
