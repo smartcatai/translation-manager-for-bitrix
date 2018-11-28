@@ -66,11 +66,11 @@ class Task
                 $project = $projectManager->projectCreateProject($newProject);
             }catch(\Exception $e){
                 self::log("SmartCat error add project: {$e->getMessage()}");
-                return;
+                continue;
             }
 
             if($project === null){
-                return;
+                continue;
             }
 
             $sFilePath = tempnam(sys_get_temp_dir(), 'TRANSLATE-');
@@ -152,6 +152,10 @@ class Task
                 $project = $projectManager->projectGet($arTask['PROJECT_ID']);
             } catch (\Exception $e) {
                 self::log($e->getMessage() , __METHOD__, __LINE__);
+                TaskTable::update($arTask['ID'], [
+                    'STATUS' => TaskTable::STATUS_READY_UPLOAD,
+                ]);
+                continue;
             }
 
             $disasemblingSuccess = true;

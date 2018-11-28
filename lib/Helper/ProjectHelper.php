@@ -38,12 +38,12 @@ class ProjectHelper
         $test = \Bitrix\Main\Config\Option::get('smartcat.connector', 'api_test');
 
         return Array(
-            'name' => $name,
+            'name' => substr(str_replace(['*','|','\\',':','“','<','>','?','/'], ' ', $name),0,100),
             'desc' => 'Content from bitrix module',
             'source_lang' => $arProfile['LANG'],
             'target_langs' => $arLangs,
             'stages' => explode(',', $arProfile['WORKFLOW']),
-            'test' => $test === 'Y' ? true: false,
+            'test' => false,
             'deadline' => (new \DateTime('now'))->modify(' +1 day'), //(string)$arTask['DEADLINE']
             'external_tag' => 'source:Bitrix',
         );

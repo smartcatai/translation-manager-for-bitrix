@@ -31,7 +31,6 @@ $arAllOptions[] = Array("api_server", GetMessage("SMARTCAT_CONNECTOR_API_SERVER"
     \SmartCat\Client\SmartCat::SC_EUROPE => GetMessage("SMARTCAT_CONNECTOR_SC_EUROPE"),
     \SmartCat\Client\SmartCat::SC_USA => GetMessage("SMARTCAT_CONNECTOR_SC_USA"),
 )));
-$arAllOptions[] = Array("api_test", GetMessage("SMARTCAT_CONNECTOR_API_TEST"), '', Array('checkbox', false));
 
 if ($REQUEST_METHOD == 'POST' && strlen($Update) > 0 && check_bitrix_sessid()) {
     $arOptions = $arAllOptions;
