@@ -45,6 +45,7 @@ class ProjectHelper
             'stages' => explode(',', $arProfile['WORKFLOW']),
             'test' => $test === 'Y' ? true: false,
             'deadline' => (new \DateTime('now'))->modify(' +1 day'), //(string)$arTask['DEADLINE']
+            'external_tag' => 'source:Bitrix',
         );
     }
 
@@ -63,6 +64,7 @@ class ProjectHelper
             ->setPretranslate(false)
             ->setWorkflowStages($params['stages'])
             ->setAssignToVendor(false)
+            ->setExternalTag($params['external_tag'])
             ->setIsForTesting($params['test'])
             ->attacheFile(fopen($arFile['path']),$arFile['name']);
 
@@ -83,6 +85,7 @@ class ProjectHelper
             ->setPretranslate(false)
             ->setWorkflowStages($params['stages'])
             ->setAssignToVendor(false)
+            ->setExternalTag($params['external_tag'])
             ->setIsForTesting($params['test']);
     }
 
