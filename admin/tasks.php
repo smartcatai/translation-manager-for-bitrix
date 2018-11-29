@@ -231,18 +231,21 @@ while ($arItem = $rsItems->fetch()) {
 
     foreach ($arStatus as $sStatus => $sLabel) {
         if ($sStatus == $arItem['STATUS']) continue;
+        $text = '';
 
-        if($arItem['STATUS'] === \Smartcat\Connector\TaskTable::STATUS_UPLOADED){
+        if($arItem['STATUS'] === \Smartcat\Connector\TaskTable::STATUS_READY_UPLOAD){
             $text = GetMessage("SMARTCAT_CONNECTOR_OTMENIT_OTPRAVKU");
         }
         if($arItem['STATUS'] === \Smartcat\Connector\TaskTable::STATUS_NEW){
             $text = GetMessage("SMARTCAT_CONNECTOR_IZMENITQ_STATUS");
         }
-        $arActions[] = array(
-            "ICON" => "edit",
-            "TEXT" => $text,
-            "ACTION" => $lAdmin->ActionDoGroup($arRow['ID'], "status", "status_to_move={$sStatus}"),
-        );
+        if(!empty($text)){
+            $arActions[] = array(
+                "ICON" => "edit",
+                "TEXT" => $text,
+                "ACTION" => $lAdmin->ActionDoGroup($arRow['ID'], "status", "status_to_move={$sStatus}"),
+            );
+        }
     }
 
 

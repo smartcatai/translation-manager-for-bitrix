@@ -46,7 +46,7 @@ class TaskHelper
                 'ELEMENT_ID' => $ID,
                 'VENDOR' => $arProfile['VENDOR'],
                 'DEADLINE' =>  $datatime ? DateTime::createFromTimestamp($datatime->getTimestamp()) : '',
-                'STATUS' => $arProfile['AUTO_ORDER'] === 'Y' ? TaskTable::STATUS_READY_UPLOAD : TaskTable::STATUS_NEW,
+                'STATUS' => TaskTable::STATUS_READY_UPLOAD,
                 'CONTENT' => self::prepareElementContent($ID, $arProfile['FIELDS']),
             ];
 
