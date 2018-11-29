@@ -36,6 +36,9 @@ class Iblock
         foreach ($arProfiles as $arProfile) {
             foreach($arProfile['FIELDS'] as $fieldList){
                 foreach($fieldList as $field){
+                    if(!isset($arFields[$field])){
+                        continue;
+                    }
                     if($arFields[$field] === $arElement[$field]){
                         continue;
                     }
@@ -64,6 +67,9 @@ class Iblock
         foreach ($arProfiles as $arProfile) {
             foreach($arProfile['FIELDS'] as $fieldList){
                 foreach($fieldList as $field){
+                    if(!isset($arFields[$field])){
+                        continue;
+                    }
                     if($arFields[$field] === $arElement[$field]){
                         continue;
                     }
