@@ -193,7 +193,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()) {
     if($_REQUEST['WORKFLOW']){
         $workflow = $_REQUEST['WORKFLOW'];
         foreach($workflow as $id=>$stage){
-            if(!in_array($stage, $arWorflowStages)){
+            if(!isset($arWorflowStages[$stage])){
                 array_splice($workflow, $id, 1);
             }
         }
@@ -260,7 +260,6 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()) {
 
             $arProfileIblockFields = $arIblockData;
             $arProfileIblockFields['PROFILE_ID'] = $arProfile['ID'];
-            var_dump($arProfile['ID'],$arErrors);
 
             if ($isNew) {
                 $res = \Smartcat\Connector\ProfileIblockTable::add($arProfileIblockFields);
