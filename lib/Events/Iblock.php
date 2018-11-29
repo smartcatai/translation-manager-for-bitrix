@@ -21,6 +21,7 @@ class Iblock
             $arProfiles = ProfileTable::getList([
                 'filter' => [
                     '=IBLOCK_ID' => intval($arFields['IBLOCK_ID']),
+                    '=ACTIVE' => 'Y',
                     '=AUTO_ORDER' => 'Y',
                 ],
             ])->fetchAll();
@@ -76,6 +77,7 @@ class Iblock
             $arProfiles = ProfileTable::getList([
                 'filter' => [
                     '=IBLOCK_ID' => $iblockID,
+                    '=ACTIVE' => 'Y',
                 ],
             ])->fetchAll();
 
