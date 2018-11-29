@@ -236,8 +236,12 @@ class smartcat_connector extends CModule
     public function InstallEvents()
     {
         $obEventManager = \Bitrix\Main\EventManager::getInstance();
+        $obEventManager->registerEventHandler('iblock', 'OnBeforeIBlockElementAdd', $this->MODULE_ID,
+            '\Smartcat\Connector\Events\Iblock', 'OnBeforeIBlockElementAdd');
         $obEventManager->registerEventHandler('iblock', 'OnAfterIBlockElementAdd', $this->MODULE_ID,
             '\Smartcat\Connector\Events\Iblock', 'OnAfterIBlockElementAdd');
+        $obEventManager->registerEventHandler('iblock', 'OnBeforeIBlockElementUpdate', $this->MODULE_ID,
+            '\Smartcat\Connector\Events\Iblock', 'OnBeforeIBlockElementUpdate');
         $obEventManager->registerEventHandler('iblock', 'OnAfterIBlockElementUpdate', $this->MODULE_ID,
             '\Smartcat\Connector\Events\Iblock', 'OnAfterIBlockElementUpdate');
         $obEventManager->registerEventHandler('iblock', 'OnAfterIBlockElementDelete', $this->MODULE_ID,
@@ -254,8 +258,12 @@ class smartcat_connector extends CModule
     public function UnInstallEvents()
     {
         $obEventManager = \Bitrix\Main\EventManager::getInstance();
+        $obEventManager->unRegisterEventHandler('iblock', 'OnBeforeIBlockElementAdd', $this->MODULE_ID,
+            '\Smartcat\Connector\Events\Iblock', 'OnBeforeIBlockElementAdd');
         $obEventManager->unRegisterEventHandler('iblock', 'OnAfterIBlockElementAdd', $this->MODULE_ID,
             '\Smartcat\Connector\Events\Iblock', 'OnAfterIBlockElementAdd');
+        $obEventManager->unRegisterEventHandler('iblock', 'OnBeforeIBlockElementUpdate', $this->MODULE_ID,
+            '\Smartcat\Connector\Events\Iblock', 'OnBeforeIBlockElementUpdate');
         $obEventManager->unRegisterEventHandler('iblock', 'OnAfterIBlockElementUpdate', $this->MODULE_ID,
             '\Smartcat\Connector\Events\Iblock', 'OnAfterIBlockElementUpdate');
         $obEventManager->unRegisterEventHandler('iblock', 'OnAfterIBlockElementDelete', $this->MODULE_ID,

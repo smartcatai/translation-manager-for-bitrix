@@ -13,11 +13,42 @@ Loc::loadMessages(__FILE__);
 
 class Iblock
 {
+    protected static $iBlockUpdated = false;
+    protected static $createTask = false;
+
+    public static function onBeforeIBlockElementUpdate(&$arFields)
+    {
+        self::$iBlockUpdated = true;
+        $obElement = \CIBlockElement::GetByID($arFields['ID'])->GetNextElement(true, false);
+        $arElement = $obElement->GetFields();
+        $arProfiles = ProfileTable::getList([
+            'filter' => [
+                '=IBLOCK_ID' => intval($arFields['IBLOCK_ID']),
+                '=ACTIVE' => 'Y',
+                '=AUTO_ORDER' => 'Y',
+            ],
+        ])->fetchAll();
+        foreach ($arProfiles as $arProfile) {
+            foreach($arProfile['FIELDS'] as $fieldList){
+                foreach($fieldList as $field){
+                    if($arFields[$field] === $arElement[$field]){
+                        var_dump($field, $arFields[$field], $arElement[$field]);
+                        continue;
+                    }
+                    var_dump($field, $arFields[$field], $arElement[$field]);
+                    self::$createTask = true;
+                    break;
+                }
+                if(self::$createTask){
+                    break;
+                }
+            }
+        }
+    }
 
     public static function OnAfterIBlockElementAdd(&$arFields)
     {
         if ($arFields['ID'] > 0) {
-
             $arProfiles = ProfileTable::getList([
                 'filter' => [
                     '=IBLOCK_ID' => intval($arFields['IBLOCK_ID']),
@@ -26,14 +57,29 @@ class Iblock
                 ],
             ])->fetchAll();
             foreach ($arProfiles as $arProfile) {
-                TaskHelper::createForElement($arFields['ID'], $arProfile['IBLOCK_ID'], $arProfile['ID']);
+                if(!self::$iBlockUpdated){
+                    TaskHelper::createForElement($arFields['ID'], $arProfile['IBLOCK_ID'], $arProfile['ID']);
+                }
             }
         }
     }
 
     public static function OnAfterIBlockElementUpdate(&$arFields)
     {
-
+        if ($arFields['ID'] > 0) {
+            $arProfiles = ProfileTable::getList([
+                'filter' => [
+                    '=IBLOCK_ID' => intval($arFields['IBLOCK_ID']),
+                    '=ACTIVE' => 'Y',
+                    '=AUTO_ORDER' => 'Y',
+                ],
+            ])->fetchAll();
+            foreach ($arProfiles as $arProfile) {
+                if(self::$iBlockUpdated && self::$createTask){
+                    TaskHelper::createForElement($arFields['ID'], $arProfile['IBLOCK_ID'], $arProfile['ID']);
+                }
+            }
+        }
     }
 
     public static function OnAfterIBlockElementDelete($arFields)
