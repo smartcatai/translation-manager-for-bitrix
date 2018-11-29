@@ -405,7 +405,9 @@ class Task
             }
             unset($arElement['IBLOCK_SECTION_ID']);
             if ($elementID > 0) {
-                unset($arElement['ACTIVE']);
+                if($arElement['ACTIVE'] === 'Y'){
+                    unset($arElement['ACTIVE']);
+                }
                 $CIBlockElement->Update($elementID, $arElement);
             } else {
                 $elementID = $CIBlockElement->Add($arElement);
