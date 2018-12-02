@@ -21,7 +21,7 @@ class Iblock
     {
         self::$iBlockAdd = true;
         $obElement = \CIBlockElement::GetByID($arFields['ID'])->GetNextElement(true, false);
-        if( $obElement === NULL){
+        if(!$obElement){
             self::$createTask = true;
             return;
         }
@@ -95,7 +95,7 @@ class Iblock
             ])->fetchAll();
             foreach ($arProfiles as $arProfile) {
                 if(self::$iBlockAdd && self::$createTask){
-                    TaskHelper::createForElement($arFields['ID'], $arProfile['IBLOCK_ID'], $arProfile['ID']);
+                    // TaskHelper::createForElement($arFields['ID'], $arProfile['IBLOCK_ID'], $arProfile['ID']);
                 }
             }
         }
@@ -113,7 +113,7 @@ class Iblock
             ])->fetchAll();
             foreach ($arProfiles as $arProfile) {
                 if(self::$iBlockUpdated && self::$createTask){
-                    TaskHelper::createForElement($arFields['ID'], $arProfile['IBLOCK_ID'], $arProfile['ID']);
+                    // TaskHelper::createForElement($arFields['ID'], $arProfile['IBLOCK_ID'], $arProfile['ID']);
                 }
             }
         }
