@@ -6,6 +6,8 @@ class smartcat_connector extends CModule
 
     public $MODULE_ID = self::MODULE_ID;
 
+    public $PARTNER_NAME = 'Smartcat Platform Inc.';
+    public $PARTNER_URI = 'https://smartcat.ai/';
     public $MODULE_VERSION;
     public $MODULE_VERSION_DATE;
     public $DIR;
