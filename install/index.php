@@ -4,7 +4,7 @@ class smartcat_connector extends CModule
 {
     const MODULE_ID = 'smartcat.connector';
 
-    public $MODULE_ID = self::MODULE_ID;
+    public $MODULE_ID = 'smartcat.connector';
 
     public $PARTNER_NAME = 'Smartcat Platform Inc.';
     public $PARTNER_URI = 'https://smartcat.ai/';
