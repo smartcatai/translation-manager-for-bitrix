@@ -3,7 +3,7 @@
     "description": "Bitrix Connector for SmartCat.ai",
     "require": {
       "php": ">= 5.6",
-      "smartcat/smartcat-api": "^2.0.1"
+      "smartcat/smartcat-api": "^2.0.3"
     },
     "type": "bitrix-module",
     "version": "2.0.0",

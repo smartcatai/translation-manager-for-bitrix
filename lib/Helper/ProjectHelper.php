@@ -109,6 +109,6 @@ class ProjectHelper
     {
         $vendorId = strstr($vendor, '|', true);
         return (new ProjectChangesModel())
-            ->setVendorAccountId($vendorId);
+            ->setVendorAccountId([$vendorId]);
     }
 }
