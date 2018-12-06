@@ -17,6 +17,8 @@ class smartcat_connector extends CModule
         $arModuleVersion = array();
         include __DIR__ . '/version.php';
 
+        $this->PARTNER_NAME = GetMessage('SMARTCART_CONNECTOR_PARTNER_NAME');
+        $this->PARTNER_URI = 'https://smartcat.ai/';
         $this->MODULE_NAME = GetMessage("SMARTCAT_CONNECTOR_KONNEKTOR");
         $this->MODULE_VERSION = $arModuleVersion['VERSION'];
         $this->MODULE_VERSION_DATE = $arModuleVersion['VERSION_DATE'];
