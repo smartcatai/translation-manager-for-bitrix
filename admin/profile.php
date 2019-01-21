@@ -123,8 +123,12 @@ if ($ID > 0) {
     $arProfileIblock = [];
 }
 
+$arIblockFrom = null;
+
 if ($_REQUEST['IBLOCK_ID'] > 0) {
     $arProfile['IBLOCK_ID'] = intval($_REQUEST['IBLOCK_ID']);
+
+    $arIblockFrom = CIBlock::GetByID($_REQUEST['IBLOCK_ID'])->Fetch();
 }
 
 if (!empty($_REQUEST['LANG']) && array_key_exists($_REQUEST['LANG'], $arLanguagesFrom)) {
@@ -170,6 +174,8 @@ if ($arProfile['IBLOCK_ID'] > 0) {
     }
 }
 
+$arProfile['NAME'] = isset($_REQUEST['NAME']) && !empty($_REQUEST['NAME']) ? $_REQUEST['NAME'] : $arProfile['NAME'];
+
 if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()) {
 
     //echo '<pre>' . print_r($_POST, true) . '</pre>';
@@ -182,13 +188,12 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()) {
         $arErrors[] = GetMessage("SMARTCAT_CONNECTOR_NE_UKAZAN_INFOBLOK_D");
     }
 
-    $arIblockFrom = null;
-    if (empty($arErrors)) {
-        $arIblockFrom = CIBlock::GetByID($_REQUEST['IBLOCK_ID'])->Fetch();
-    }
-
     if (!$arIblockFrom) {
         $arErrors[] = GetMessage("SMARTCAT_CONNECTOR_NE_UDALOSQ_NAYTI_INF");
+    }
+
+    if(empty($arErrors) && empty($_REQUEST['FIELDS'])){
+        $arErrors[] = GetMessage("SMARTCAT_CONNECTOR_FIELD_ERROR");
     }
 
     if($_REQUEST['WORKFLOW']){
@@ -200,7 +205,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()) {
         }
     }
 
-    $arProfile['NAME'] = $arIblockFrom['NAME'];
+
     $arProfile['ACTIVE'] = (isset($_REQUEST['ACTIVE']) && $_REQUEST['ACTIVE'] == 'Y');
     $arProfile['PUBLISH'] = (isset($_REQUEST['PUBLISH']) && $_REQUEST['PUBLISH'] == 'Y');
     $arProfile['AUTO_ORDER'] = (isset($_REQUEST['AUTO_ORDER']) && $_REQUEST['AUTO_ORDER'] == 'Y');
@@ -347,7 +352,7 @@ if (!empty($arErrors)): ?>
         <tr>
             <th><?= GetMessage("SMARTCAT_CONNECTOR_INFOBLOK") ?></th>
             <td>
-                <select name="IBLOCK_ID" required class="js-select-iblock">
+                <select name="IBLOCK_ID" class="js-select-iblock">
                     <option value="">[<?= GetMessage("SMARTCAT_CONNECTOR_VYBRATQ") ?></option>
                     <? foreach ($arIblockTree as $arType): ?>
                         <optgroup label="<?= $arType['NAME']; ?>">
@@ -362,6 +367,12 @@ if (!empty($arErrors)): ?>
                         </optgroup>
                     <? endforeach; ?>
                 </select>
+            </td>
+        </tr>
+
+        <tr>
+            <td><?= GetMessage("SMARTCAT_CONNECTOR_NAZVANIE") ?></td>
+            <td><input type="text" name="NAME" value="<?=$arProfile['NAME']?>">
             </td>
         </tr>
 

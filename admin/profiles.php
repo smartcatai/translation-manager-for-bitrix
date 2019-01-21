@@ -47,6 +47,12 @@ $arHeader = array(
         "sort" => "NAME",
     ),
     array(
+        "id" => "INFOBLOCK",
+        "content" => GetMessage("SMARTCAT_CONNECTOR_INFOBLOCK"),
+        "default" => true,
+        "sort" => "INFOBLOCK",
+    ),
+    array(
         "id" => "VENDOR",
         "content" => GetMessage("SMARTCAT_CONNECTOR_VENDOR"),
         "default" => true,
@@ -88,9 +94,11 @@ $arTypes = \Smartcat\Connector\ProfileTable::getTypeList();
 
 while ($arItem = $rsItems->fetch()) {
 
+    $arIblockFrom = CIBlock::GetByID($arItem['IBLOCK_ID'])->Fetch();
     $arRow = [];
     $arRow['ID'] = $arItem['ID'];
     $arRow['NAME'] = $arItem['NAME'];
+    $arRow['INFOBLOCK'] = $arIblockFrom['NAME'];
     $arRow['ACTIVE'] = $arItem['ACTIVE'];
 
     $arRow['LANG'] = $arItem['LANG'];

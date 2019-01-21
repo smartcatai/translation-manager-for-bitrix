@@ -34,5 +34,6 @@ $MESS["SMARTCAT_CONNECTOR_K_SERVISA"] = "к API сервиса.
     ";
 $MESS["SMARTCAT_CONNECTOR_VENDOR"] = "Вендор";
 $MESS["SMARTCAT_CONNECTOR_WITHOUT_VENDOR"] = "Без вендора";
+$MESS["SMARTCAT_CONNECTOR_FIELD_ERROR"] = 'Не выбранно "Какие поля переводить?"';
 
 ?>
