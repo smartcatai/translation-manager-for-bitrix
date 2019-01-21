@@ -154,6 +154,7 @@ if (!empty($arProfile['LANG'])) {
     if (empty($arLanguagesTo)) {
         $arErrors[] = GetMessage("SMARTCAT_CONNECTOR_NET_DOSTUPNYH_AZYKOV");
     }
+    sort($arLanguagesTo);
 
 }
 
