@@ -61,7 +61,11 @@ try{
     $apiId = \Bitrix\Main\Config\Option::get('smartcat.connector', 'api_id');
     $apiSecret = \Bitrix\Main\Config\Option::get('smartcat.connector', 'api_secret');
     if(!empty($apiId) || !empty($apiSecret) ){
-        CAdminMessage::ShowMessage(GetMessage("SMARTCAT_CONNECTOR_ACCOUNT_ERROR") .': '. $e->getMessage());
+        $msgError = GetMessage("SMARTCAT_CONNECTOR_ACCOUNT_ERROR_SERVER");
+        if($e instanceof \Http\Client\Common\Exception\ClientErrorException){
+            $msgError = GetMessage("SMARTCAT_CONNECTOR_ACCOUNT_ERROR_API");
+        }
+        CAdminMessage::ShowMessage($msgError);
     }
     $arInfo[] = GetMessage("SMARTCAT_CONNECTOR_ACCOUNT_NEED_SETTINGS");
 }
