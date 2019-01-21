@@ -11,7 +11,7 @@ $MESS["SMARTCAT_CONNECTOR_ACCOUNT"] = "Коннектор подключен к"
 $MESS["SMARTCAT_CONNECTOR_ACCOUNT_ERROR"] = "Ошибка подключения к аккаунту";
 $MESS["SMARTCAT_CONNECTOR_ACCOUNT_ERROR_API"] = "Ошибка подключения к аккаунту: неверный ID аккаунта или ключ API";
 $MESS["SMARTCAT_CONNECTOR_ACCOUNT_ERROR_SERVER"] = "Ошибка подключения к серверу";
-$MESS["SMARTCAT_CONNECTOR_ACCOUNT_NEED_SETTINGS"] = "Получите ключ API в <a href=\"//help.smartcat.ai/hc/en-us/articles/115002475012\" target=\"blank\">настройках вашего аккаунта</a> Smartcat";
+$MESS["SMARTCAT_CONNECTOR_ACCOUNT_NEED_SETTINGS"] = "Получите ключ API в <a href=\"//help.smartcat.ai/hc/articles/115002475012\" target=\"blank\">настройках вашего аккаунта</a> Smartcat";
 $MESS["SMARTCAT_CONNECTOR_API_ID"] = "ID аккаунта";
 $MESS["SMARTCAT_CONNECTOR_API_SECRET"] = "Ключ API";
 $MESS["SMARTCAT_CONNECTOR_API_SERVER"] = "Сервер";
