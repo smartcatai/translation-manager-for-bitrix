@@ -15,7 +15,7 @@ use Bitrix\Main\Type\DateTime;
 
 class Task
 {
-
+    const FILENAME = "Translation-";
     public static function Check()
     {
         self::log("Start Check");
@@ -66,6 +66,10 @@ class Task
                 $project = $projectManager->projectCreateProject($newProject);
             }catch(\Exception $e){
                 self::log("SmartCat error add project: {$e->getMessage()}");
+                TaskTable::update($arTask['ID'], [
+                    'STATUS' => TaskTable::STATUS_FAILED,
+                    'COMMENT' => $e->getMessage()
+                ]);
                 continue;
             }
 
@@ -77,7 +81,7 @@ class Task
 
             file_put_contents($sFilePath, '<html><head></head><body>' . $arTask['CONTENT'] . '</body></html>');
 
-            $documentModel = ProjectHelper::createDocumentFromFile($sFilePath, 'TRANSLATED-' . $arTask['ID'] . '.html');
+            $documentModel = ProjectHelper::createDocumentFromFile($sFilePath, self::FILENAME . $arTask['ID'] . '.html');
 
             try{
                 $documents = $projectManager->projectAddDocument([
@@ -153,7 +157,8 @@ class Task
             } catch (\Exception $e) {
                 self::log($e->getMessage() , __METHOD__, __LINE__);
                 TaskTable::update($arTask['ID'], [
-                    'STATUS' => TaskTable::STATUS_READY_UPLOAD,
+                    'STATUS' => TaskTable::STATUS_FAILED,
+                    'COMMENT' => $e->getMessage()
                 ]);
                 continue;
             }
@@ -174,7 +179,7 @@ class Task
                 }
             }
 
-            if ($project && $project->getStatus() == 'inprogress') {
+            if ($project && strtolower($project->getStatus()) == 'inprogress') {
                 TaskTable::update($arTask['ID'], [
                     'STATUS' => TaskTable::STATUS_PROCESS,
                     'DEADLINE' => $project->getDeadline() instanceof \DateTime ? DateTime::createFromTimestamp($project->getDeadline()->getTimestamp()) : ''
@@ -276,7 +281,7 @@ class Task
             }
             self::log($response->getStatusCode(),$mimeType);
             if($mimeType==='text/html'){
-                $name = sys_get_temp_dir() . '/TRANSLATED-' . $arTaskFile['TASK_ID'] . '(' . $arTaskFile['LANG_TO'] . ').html';
+                $name = sys_get_temp_dir() . '/' . self::FILENAME . $arTaskFile['TASK_ID'] . '(' . $arTaskFile['LANG_TO'] . ').html';
                 self::log('File name', $name );
                 file_put_contents( $name , $response->getBody()->getContents());
                 TaskFileTable::update($arTaskFile['ID'], [
@@ -333,7 +338,7 @@ class Task
         $CIBlockElement = new \CIBlockElement();
     
         while ($arTaskFile = $rsTaskFiles->fetch()) {
-            $name = sys_get_temp_dir() .'/TRANSLATED-'.$arTaskFile['TASK_ID'].'('.$arTaskFile['LANG_TO'].').html';
+            $name = sys_get_temp_dir() .'/' . self::FILENAME.$arTaskFile['TASK_ID'].'('.$arTaskFile['LANG_TO'].').html';
             self::log('File name', $name );
             $translateText = file_get_contents($name);
 
@@ -466,7 +471,7 @@ class Task
         $mess = implode(', ', $arOutput) . PHP_EOL;
         //echo date('d.m.Y H:i:s') . ': ' . $mess;
         //fwrite(STDERR, date('d.m.Y H:i:s') . ': ' . $mess);
-        //file_put_contents($_SERVER['DOCUMENT_ROOT'] . '/task_log.txt', date('d.m.Y H:i:s') . ': ' . $mess . "\n", FILE_APPEND);
+        file_put_contents($_SERVER['DOCUMENT_ROOT'] . '/task_log.txt', date('d.m.Y H:i:s') . ': ' . $mess . "\n", FILE_APPEND);
     }
 
 }

@@ -40,6 +40,7 @@ $arWorflowStages = ApiHelper::getWorkflowStages();
 $arVendors = ApiHelper::getVendor();
 
 $arVendors[0] = GetMessage("SMARTCAT_CONNECTOR_WITHOUT_VENDOR");
+asort($arVendors);
 
 $arFieldsToTranslate = [
     'NAME' => GetMessage("SMARTCAT_CONNECTOR_NAZVANIE"),
@@ -129,6 +130,7 @@ if ($_REQUEST['IBLOCK_ID'] > 0) {
     $arProfile['IBLOCK_ID'] = intval($_REQUEST['IBLOCK_ID']);
 
     $arIblockFrom = CIBlock::GetByID($_REQUEST['IBLOCK_ID'])->Fetch();
+    $arProfile['NAME'] = $arProfile['NAME'] ? $arProfile['NAME'] : $arIblockFrom['NAME'];
 }
 
 if (!empty($_REQUEST['LANG']) && array_key_exists($_REQUEST['LANG'], $arLanguagesFrom)) {
@@ -143,6 +145,7 @@ if (!empty($arProfile['LANG'])) {
 
 
     $langs = \Smartcat\Connector\Helper\ApiHelper::getLanguages();
+    asort($langs);
 
     $arLang = [];
 
@@ -158,7 +161,6 @@ if (!empty($arProfile['LANG'])) {
     if (empty($arLanguagesTo)) {
         $arErrors[] = GetMessage("SMARTCAT_CONNECTOR_NET_DOSTUPNYH_AZYKOV");
     }
-    sort($arLanguagesTo);
 
 }
 
@@ -170,11 +172,16 @@ if ($arProfile['IBLOCK_ID'] > 0) {
     ]);
 
     while ($arProp = $rsProps->Fetch()) {
+        if(!empty($arProp['USER_TYPE'])){
+            continue;
+        }
+        
         $arPropsToTranslate[$arProp['CODE']] = $arProp['NAME'];
     }
 }
 
 $arProfile['NAME'] = isset($_REQUEST['NAME']) && !empty($_REQUEST['NAME']) ? $_REQUEST['NAME'] : $arProfile['NAME'];
+$arProfile['WORKFLOW'] = isset($arProfile['WORKFLOW']) ? $arProfile['WORKFLOW'] : ApiHelper::DEFAULT_WORFLOW_STAGES;
 
 if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()) {
 
@@ -195,7 +202,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()) {
     if(empty($arErrors) && empty($_REQUEST['FIELDS'])){
         $arErrors[] = GetMessage("SMARTCAT_CONNECTOR_FIELD_ERROR");
     }
-
+    $workflow = [];
     if($_REQUEST['WORKFLOW']){
         $workflow = $_REQUEST['WORKFLOW'];
         foreach($workflow as $id=>$stage){
@@ -204,7 +211,9 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()) {
             }
         }
     }
-
+    if(!in_array(ApiHelper::DEFAULT_WORFLOW_STAGES,$workflow)){
+        array_unshift($workflow,ApiHelper::DEFAULT_WORFLOW_STAGES);
+    }
 
     $arProfile['ACTIVE'] = (isset($_REQUEST['ACTIVE']) && $_REQUEST['ACTIVE'] == 'Y');
     $arProfile['PUBLISH'] = (isset($_REQUEST['PUBLISH']) && $_REQUEST['PUBLISH'] == 'Y');
@@ -212,8 +221,16 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()) {
     $arProfile['IBLOCK_ID'] = intval($_REQUEST['IBLOCK_ID']);
     $arProfile['LANG'] = trim($_REQUEST['LANG']);
     $arProfile['FIELDS'] = $_REQUEST['FIELDS'];
-    $arProfile['WORKFLOW'] = $workflow ? implode(',',$workflow) : '';
+    $arProfile['WORKFLOW'] = implode(',',$workflow);
     $arProfile['VENDOR'] = $_REQUEST['VENDOR'];
+
+    $langIsSelected = array_reduce($_REQUEST['IBLOCKS'], function($langIsSelected, $item){
+        return $langIsSelected || !empty($item['LANG']); 
+    }, false);
+
+    if(!$langIsSelected){
+        $arErrors[] = GetMessage("SMARTCAT_CONNECTOR_LANGS_ERROR");
+    }
 
     if (empty($arErrors)) {
         if ($ID > 0) {

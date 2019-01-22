@@ -26,7 +26,7 @@ $MESS["SMARTCAT_CONNECTOR_KAKIE_POLA_PEREVODIT"] = "Какие поля пере
 $MESS["SMARTCAT_CONNECTOR_NA_KAKIE_AZYKI_PEREV"] = "На какие языки переводить?";
 $MESS["SMARTCAT_CONNECTOR_SOZDATQ_NOVYY"] = "Создать новый]";
 $MESS["SMARTCAT_CONNECTOR_VYBRATQ_AZYK"] = "Выбрать язык]";
-$MESS["SMARTCAT_CONNECTOR_DOBAVITQ_INFOBLOK"] = "Добавить инфоблок";
+$MESS["SMARTCAT_CONNECTOR_DOBAVITQ_INFOBLOK"] = "Добавить язык";
 $MESS["SMARTCAT_CONNECTOR_NE_UDALOSQ_PODKLUCIT"] = "Не удалось подключиться к Smartcat. Проверьте ";
 $MESS["SMARTCAT_CONNECTOR_NASTROYKI_DO"] = "настройки
         доступа";
@@ -35,5 +35,6 @@ $MESS["SMARTCAT_CONNECTOR_K_SERVISA"] = "к API сервиса.
 $MESS["SMARTCAT_CONNECTOR_VENDOR"] = "Вендор";
 $MESS["SMARTCAT_CONNECTOR_WITHOUT_VENDOR"] = "Без вендора";
 $MESS["SMARTCAT_CONNECTOR_FIELD_ERROR"] = 'Не выбранно "Какие поля переводить?"';
+$MESS["SMARTCAT_CONNECTOR_LANGS_ERROR"] = 'Не выбранно "На какие языки переводить?"';
 
 ?>

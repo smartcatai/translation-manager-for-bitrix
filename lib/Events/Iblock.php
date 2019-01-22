@@ -16,6 +16,7 @@ class Iblock
     protected static $iBlockUpdated = false;
     protected static $iBlockAdd = false;
     protected static $createTask = false;
+    const ACTION_NAME = 'smartcat_connector_translate';
 
     public static function onBeforeIBlockElementAdd(&$arFields)
     {
@@ -95,7 +96,7 @@ class Iblock
             ])->fetchAll();
             foreach ($arProfiles as $arProfile) {
                 if(self::$iBlockAdd && self::$createTask){
-                    // TaskHelper::createForElement($arFields['ID'], $arProfile['IBLOCK_ID'], $arProfile['ID']);
+                    TaskHelper::createForElement($arFields['ID'], $arProfile['IBLOCK_ID'], $arProfile['ID']);
                 }
             }
         }
@@ -113,7 +114,7 @@ class Iblock
             ])->fetchAll();
             foreach ($arProfiles as $arProfile) {
                 if(self::$iBlockUpdated && self::$createTask){
-                    // TaskHelper::createForElement($arFields['ID'], $arProfile['IBLOCK_ID'], $arProfile['ID']);
+                    TaskHelper::createForElement($arFields['ID'], $arProfile['IBLOCK_ID'], $arProfile['ID']);
                 }
             }
         }
@@ -211,14 +212,25 @@ class Iblock
                 foreach ($list->aRows as $id => $row) {
                     foreach ($arProfiles as $arProfile) {
 
-                        $list->arActions['smartcat_connector_translate_' . $arProfile['ID']] = GetMessage("SMARTCAT_CONNECTOR_PEREVOD") . $arTypes[$arProfile['TYPE']] . ' (' . implode(', ', $arProfile['LANGS']) . ')';
+                        $list->arActions[self::ACTION_NAME . '_' . $arProfile['ID']] = GetMessage("SMARTCAT_CONNECTOR_PEREVOD") . $arTypes[$arProfile['TYPE']] . ' (' . implode(', ', $arProfile['LANGS']) . ')';
 
                         $sMessage = Loc::getMessage('SMARTCAT_CONNECTOR_PROFILE_TASK_EXIST', [
                             '#STATUS#' => TaskTable::getStatusList()[$arTask['STATUS']]
                         ]);
 
                         global $APPLICATION;
-                        $link = \CUtil::AddSlashes($APPLICATION->GetCurPage()) . "?ID=" . \CUtil::AddSlashes($row->id) . "&action_button=smartcat_connector_translate&lang=" . LANGUAGE_ID . "&" . bitrix_sessid_get() . "&" . \CUtil::AddSlashes('&type=' . urlencode($_REQUEST['type']) . '&lang=' . LANGUAGE_ID . '&IBLOCK_ID=' . $IBLOCK_ID . '&PROFILE_ID=' . $arProfile['ID'] . ($find_section ? '&find_section_section=' . $find_section : '') . '&find_el_y=' . $find_el);
+                        $link = \CUtil::AddSlashes($APPLICATION->GetCurPage()) 
+                                . "?ID=" . \CUtil::AddSlashes($row->id) 
+                                . "&action_button=" . self::ACTION_NAME
+                                . "&lang=" . LANGUAGE_ID 
+                                . "&" . bitrix_sessid_get() 
+                                . "&" . \CUtil::AddSlashes('&type=' . urlencode($_REQUEST['type']) 
+                                    . '&lang=' . LANGUAGE_ID 
+                                    . '&IBLOCK_ID=' . $IBLOCK_ID 
+                                    . '&PROFILE_ID=' . $arProfile['ID'] 
+                                    . ($find_section ? '&find_section_section=' . $find_section : '') 
+                                    . '&find_el_y=' . $find_el
+                                );
 
                         if ($arTask) {
                             $row->aActions[] = [
@@ -239,7 +251,7 @@ class Iblock
 
             }
         }
-        if ($_REQUEST['action_button'] == 'smartcat_connector_translate') {
+        if ($_REQUEST['action_button'] == self::ACTION_NAME) {
             $GLOBALS['APPLICATION']->RestartBuffer();
             die();
         }
@@ -254,24 +266,38 @@ class Iblock
         $bListPage = ($strCurPage == '/bitrix/admin/iblock_element_admin.php' ||
             $strCurPage == '/bitrix/admin/iblock_list_admin.php'
         );
+    
+        $action = '';
+        $requestAction = '';
+        $profileId = isset($_REQUEST['PROFILE_ID']) ? $_REQUEST['PROFILE_ID'] : '';
 
-        if (substr($_REQUEST['action'], 0, 22) == 'smartcat_connector_translate_') {
-            $_REQUEST['PROFILE_ID'] = intval(str_replace('smartcat_connector_translate_', '', $_REQUEST['action']));
-            $_REQUEST['action'] = 'smartcat_connector_translate';
+        if(is_array($_REQUEST['action'])){
+            foreach($_REQUEST['action'] as $actionName){
+                if (strpos($actionName, self::ACTION_NAME) !== false) {
+                    $requestAction = $actionName;
+                    break;
+                }
+            }
+        }elseif(strpos($_REQUEST['action'], self::ACTION_NAME) !== false){
+            $requestAction = $_REQUEST['action'];
         }
 
+        if (!empty($requestAction) ) {
+            $profileId = intval(str_replace(self::ACTION_NAME . '_', '', $requestAction));
+        }
 
-        if (check_bitrix_sessid() && $bListPage && $_REQUEST['PROFILE_ID'] > 0 && Loader::includeModule('iblock') && Loader::includeModule('smartcat.connector')) {
+        $action = self::ACTION_NAME;
+
+        if (check_bitrix_sessid() && $bListPage && $profileId > 0 && Loader::includeModule('iblock') && Loader::includeModule('smartcat.connector')) {
             if (!is_array($_REQUEST['ID'])) $_REQUEST['ID'] = [$_REQUEST['ID']];
 
-            if ($_REQUEST['action'] == 'smartcat_connector_translate' || $_REQUEST['action_button'] == 'smartcat_connector_translate') {
+            if ($action == self::ACTION_NAME || $_REQUEST['action_button'] == self::ACTION_NAME) {
                 foreach ($_REQUEST['ID'] as $ID) {
                     if ($ID[0] == 'S') continue;
                     if ($ID[0] == 'E') $ID = substr($ID, 1);
-                    TaskHelper::createForElement($ID, intval($_REQUEST['IBLOCK_ID']), intval($_REQUEST['PROFILE_ID']), $_REQUEST['deadline']);
+                    TaskHelper::createForElement($ID, intval($_REQUEST['IBLOCK_ID']), intval($profileId), $_REQUEST['deadline']);
                 }
             }
-
         }
     }
 

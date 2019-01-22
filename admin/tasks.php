@@ -46,6 +46,7 @@ if ($arID = $lAdmin->GroupAction()) {
                     if ($arTask && $arTask['STATUS'] !== $_REQUEST['status_to_move']) {
                         \Smartcat\Connector\TaskTable::update($ID, [
                             'STATUS' => $_REQUEST['status_to_move'],
+                            'COMMENT' => '',
                         ]);
 
                         $arStatusReset = [
@@ -239,6 +240,11 @@ while ($arItem = $rsItems->fetch()) {
         if($arItem['STATUS'] === \Smartcat\Connector\TaskTable::STATUS_NEW){
             $text = GetMessage("SMARTCAT_CONNECTOR_IZMENITQ_STATUS");
         }
+
+        if($arItem['STATUS'] === \Smartcat\Connector\TaskTable::STATUS_FAILED && $sStatus === \Smartcat\Connector\TaskTable::STATUS_READY_UPLOAD ){
+            $text = GetMessage("SMARTCAT_CONNECTOR_IZMENITQ_STATUS");
+        }
+
         if(!empty($text)){
             $arActions[] = array(
                 "ICON" => "edit",

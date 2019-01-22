@@ -4,6 +4,7 @@ namespace Smartcat\Connector\Helper;
 
 class ApiHelper
 {
+    const DEFAULT_WORFLOW_STAGES = "translation";
     protected static $api = NULL;
 
     public static function createApi()
@@ -50,7 +51,7 @@ class ApiHelper
             "translation"=>GetMessage("SMARTCAT_CONNECTOR_STAGE_TRANSLATION"),
             "editing"=>GetMessage("SMARTCAT_CONNECTOR_STAGE_EDITING"),
             "proofreading"=>GetMessage("SMARTCAT_CONNECTOR_STAGE_PROOFREADING"),
-            "postediting"=>GetMessage("SMARTCAT_CONNECTOR_STAGE_POSTEDITING"));
+        );
     }
 
 }
