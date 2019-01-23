@@ -295,25 +295,38 @@ class Iblock
             if ($action == self::ACTION_NAME || $_REQUEST['action_button'] == self::ACTION_NAME) {
                 $arProfile = \Smartcat\Connector\ProfileTable::getById(intval($profileId))->fetch();
                 $task_ids = [];
-                $project_name = [];
+                $project_names = [];
 
                 foreach ($_REQUEST['ID'] as $ID) {
-                    if ($ID[0] == 'S') continue;
-                    if ($ID[0] == 'E') $ID = substr($ID, 1);
-                    $arElement = \CIBlockElement::GetByID($ID)->GetNextElement(true, false)->GetFields();
-                    $project_name[]= $arElement['NAME'];
-                    $task_ids[] = TaskHelper::createForElement($ID, intval($_REQUEST['IBLOCK_ID']), intval($profileId), $_REQUEST['deadline']);
+                    if ($ID[0] == 'S') {
+                        $ID = substr($ID, 1);
+                        $res = \CIBlockElement::GetList(["SORT"=>"ASC",], ['IBLOCK_ID'=>$_REQUEST['IBLOCK_ID'],'IBLOCK_SECTION_ID' => $ID]);
+                        while($element = $res->GetNext(true, false)){
+                            $project_names[]= $element['NAME'];
+                            $task_ids[] = TaskHelper::createForElement($element['ID'], intval($_REQUEST['IBLOCK_ID']), intval($profileId), $_REQUEST['deadline']);
+                        }
+                    }
+                    if ($ID[0] == 'E') {
+                        $ID = substr($ID, 1);
+                        $arElement = \CIBlockElement::GetByID($ID)->GetNextElement(true, false)->GetFields();
+                        $project_names[]= $arElement['NAME'];
+                        $task_ids[] = TaskHelper::createForElement($ID, intval($_REQUEST['IBLOCK_ID']), intval($profileId), $_REQUEST['deadline']);
+                    }
                 }
-                $api = \Smartcat\Connector\Helper\ApiHelper::createApi();
-                $params = ProjectHelper::prepareProjectParamsNew($arProfile, implode(', ',$project_name));
-                try{
-                $project = $api
-                    ->getProjectManager()
-                    ->projectCreateProject(ProjectHelper::createProjectNew($params));
-                }catch(\Http\Client\Common\Exception\ClientErrorException $e){
-                    var_dump($e->getResponse()->getBody()->getContents()); die;
+
+                if( !empty($project_names) && !empty($task_ids) ){ // && count($task_ids)<4
+                    $api = \Smartcat\Connector\Helper\ApiHelper::createApi();
+                    $params = ProjectHelper::prepareProjectParams($arProfile, implode(', ',$project_names));
+
+                    try{
+                    $project = $api
+                        ->getProjectManager()
+                        ->projectCreateProject(ProjectHelper::createProject($params));
+                    }catch(\Http\Client\Common\Exception\ClientErrorException $e){
+                        var_dump($e->getResponse()->getBody()->getContents()); die;
+                    }
+                    TaskHelper::setProject($task_ids, $project);
                 }
-                TaskHelper::setProject($task_ids, $project);
             }
         }
     }

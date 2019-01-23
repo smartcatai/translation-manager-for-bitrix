@@ -18,7 +18,7 @@ use Bitrix\Main\Type\DateTime;
 
 class ProjectHelper
 {
-    public static function prepareProjectParamsNew($arProfile, $name)
+    public static function prepareProjectParams($arProfile, $name)
     {
         $rsIBlocks = ProfileIblockTable::getList([
             'filter' => [
@@ -35,47 +35,17 @@ class ProjectHelper
 
         $vendorId = NULL;
         if(strstr($arProfile[VENDOR], '|', true)!=='0'){
-            $vendorId = [strstr($vendor, '|', true)];
+            $vendorId = [strstr($arProfile[VENDOR], '|', true)];
         }
 
         return Array(
-            'name' => substr(str_replace(['*','|','\\',':','“','<','>','?','/'], ' ', $name),0,94),
+            'name' => mb_substr(str_replace(['*','|','\\',':','"','<','>','?','/'], ' ', $name),0,70),
             'desc' => 'Content from bitrix module',
             'source_lang' => $arProfile['LANG'],
             'target_langs' => $arLangs,
             'stages' => explode(',', $arProfile['WORKFLOW']),
             'test' => false,
             'vendorId' => $vendorId,
-            'deadline' => (new \DateTime('now'))->modify(' +1 day'), //(string)$arTask['DEADLINE']
-            'external_tag' => 'source:Bitrix',
-        );
-    }
-    public static function prepareProjectParams($arProfile, $arTask, $obElement)
-    {
-        $arElement = $obElement->GetFields();
-
-        $rsIBlocks = ProfileIblockTable::getList([
-            'filter' => [
-                '=PROFILE_ID' => $arProfile['ID'],
-            ],
-        ]);
-
-        $arIBlocks = $rsIBlocks->fetchAll();
-        
-        $arLangs = [];
-        foreach ($arIBlocks as $arIBlock) {
-            $arLangs[] = $arIBlock['LANG'];
-        }
-        $name = $arElement['NAME'] ;
-        $test = \Bitrix\Main\Config\Option::get('smartcat.connector', 'api_test');
-
-        return Array(
-            'name' => substr(str_replace(['*','|','\\',':','“','<','>','?','/'], ' ', $name),0,100),
-            'desc' => 'Content from bitrix module',
-            'source_lang' => $arProfile['LANG'],
-            'target_langs' => $arLangs,
-            'stages' => explode(',', $arProfile['WORKFLOW']),
-            'test' => false,
             'deadline' => (new \DateTime('now'))->modify(' +1 day'), //(string)$arTask['DEADLINE']
             'external_tag' => 'source:Bitrix',
         );
@@ -103,24 +73,8 @@ class ProjectHelper
         return $project;
     }
 
-    public static function createProject($arProfile, $arTask, $obElement)
-    {
-        $params = self::prepareProjectParams($arProfile, $arTask, $obElement);
 
-        return (new CreateProjectModel())
-            ->setName($params['name'])
-            ->setDescription($params['desc'])
-            ->setDeadline($params['deadline'])
-            ->setSourceLanguage($params['source_lang'])
-            ->setTargetLanguages($params['target_langs'])
-            ->setUseMT(false)
-            ->setPretranslate(false)
-            ->setWorkflowStages($params['stages'])
-            ->setAssignToVendor(false)
-            ->setExternalTag($params['external_tag'])
-            ->setIsForTesting($params['test']);
-    }
-    public static function createProjectNew($params)
+    public static function createProject($params)
     {
         $project = (new CreateProjectModel())
             ->setName($params['name'])
@@ -136,7 +90,9 @@ class ProjectHelper
             ->setIsForTesting($params['test']);
 
         if(!empty($params['vendorId'])){
-            $project->setVendorAccountIds($params['vendorId']);
+            $project
+                ->setAssignToVendor(true)
+                ->setVendorAccountIds($params['vendorId']);
         }
         return $project;
     }
