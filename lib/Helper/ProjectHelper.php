@@ -18,6 +18,38 @@ use Bitrix\Main\Type\DateTime;
 
 class ProjectHelper
 {
+    public static function prepareProjectParamsNew($arProfile, $name)
+    {
+        $rsIBlocks = ProfileIblockTable::getList([
+            'filter' => [
+                '=PROFILE_ID' => $arProfile['ID'],
+            ],
+        ]);
+
+        $arIBlocks = $rsIBlocks->fetchAll();
+
+        $arLangs = [];
+        foreach ($arIBlocks as $arIBlock) {
+            $arLangs[] = $arIBlock['LANG'];
+        }
+
+        $vendorId = NULL;
+        if(strstr($arProfile[VENDOR], '|', true)!=='0'){
+            $vendorId = [strstr($vendor, '|', true)];
+        }
+
+        return Array(
+            'name' => substr(str_replace(['*','|','\\',':','“','<','>','?','/'], ' ', $name),0,94),
+            'desc' => 'Content from bitrix module',
+            'source_lang' => $arProfile['LANG'],
+            'target_langs' => $arLangs,
+            'stages' => explode(',', $arProfile['WORKFLOW']),
+            'test' => false,
+            'vendorId' => $vendorId,
+            'deadline' => (new \DateTime('now'))->modify(' +1 day'), //(string)$arTask['DEADLINE']
+            'external_tag' => 'source:Bitrix',
+        );
+    }
     public static function prepareProjectParams($arProfile, $arTask, $obElement)
     {
         $arElement = $obElement->GetFields();
@@ -87,6 +119,26 @@ class ProjectHelper
             ->setAssignToVendor(false)
             ->setExternalTag($params['external_tag'])
             ->setIsForTesting($params['test']);
+    }
+    public static function createProjectNew($params)
+    {
+        $project = (new CreateProjectModel())
+            ->setName($params['name'])
+            ->setDescription($params['desc'])
+            ->setDeadline($params['deadline'])
+            ->setSourceLanguage($params['source_lang'])
+            ->setTargetLanguages($params['target_langs'])
+            ->setUseMT(false)
+            ->setPretranslate(false)
+            ->setWorkflowStages($params['stages'])
+            ->setAssignToVendor(false)
+            ->setExternalTag($params['external_tag'])
+            ->setIsForTesting($params['test']);
+
+        if(!empty($params['vendorId'])){
+            $project->setVendorAccountIds($params['vendorId']);
+        }
+        return $project;
     }
 
     public static function getFileImportSettings()

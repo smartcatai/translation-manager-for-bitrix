@@ -55,73 +55,79 @@ class Task
 
         $api = \Smartcat\Connector\Helper\ApiHelper::createApi();
         $projectManager = $api->getProjectManager();
+        $projectDocuments = [];
 
         while ($arTask = $rsTasks->fetch()) {
 
-            $arProfile = ProfileTable::getById($arTask['PROFILE_ID'])->fetch();
-            $obElement = \CIBlockElement::GetByID($arTask['ELEMENT_ID'])->GetNextElement(true, false);
-            $newProject = ProjectHelper::createProject($arProfile, $arTask, $obElement);
+            $projectId = $arTask['PROJECT_ID'];
+            if(empty($projectId)){
+                $arProfile = ProfileTable::getById($arTask['PROFILE_ID'])->fetch();
+                $obElement = \CIBlockElement::GetByID($arTask['ELEMENT_ID'])->GetNextElement(true, false);
+                $newProject = ProjectHelper::createProject($arProfile, $arTask, $obElement);
 
-            try {
-                $project = $projectManager->projectCreateProject($newProject);
-            }catch(\Exception $e){
-                self::log("SmartCat error add project: {$e->getMessage()}");
-                TaskTable::update($arTask['ID'], [
-                    'STATUS' => TaskTable::STATUS_FAILED,
-                    'COMMENT' => $e->getMessage()
-                ]);
+                try {
+                    $project = $projectManager->projectCreateProject($newProject);
+                    TaskTable::update($arTask['ID'], [
+                        'PROJECT_ID' => $project->getId(),
+                        'PROJECT_NAME' => $project->getName(),
+                    ]);
+                    $projectId = $project->getId();
+                }catch(\Exception $e){
+                    self::log("SmartCat error add project: {$e->getMessage()}");
+                    TaskTable::update($arTask['ID'], [
+                        'STATUS' => TaskTable::STATUS_FAILED,
+                        'COMMENT' => $e->getMessage()
+                    ]);
+                    continue;
+                }
+            }
+
+            if($projectId === null){
                 continue;
             }
 
-            if($project === null){
-                continue;
+            if(!array_key_exists($projectId,$projectDocuments)){
+                $projectDocuments[$projectId] = [];
             }
 
             $sFilePath = tempnam(sys_get_temp_dir(), 'TRANSLATE-');
 
             file_put_contents($sFilePath, '<html><head></head><body>' . $arTask['CONTENT'] . '</body></html>');
 
-            $documentModel = ProjectHelper::createDocumentFromFile($sFilePath, self::FILENAME . $arTask['ID'] . '.html');
+            $projectDocuments[$projectId][] = ProjectHelper::createDocumentFromFile($sFilePath, self::FILENAME . $arTask['ID'] . '.html');
+        }
 
+        foreach($projectDocuments as $projectId => $documentModels){
             try{
                 $documents = $projectManager->projectAddDocument([
-                    'documentModel' => [$documentModel],
-                    'projectId' => $project->getId(),
+                    'documentModel' => $documentModels,
+                    'projectId' => $projectId,
                 ]);
             }catch(\Exception $e){
                 self::log("SmartCat error add documents: {$e->getMessage()}");
                 return;
             }
 
-            //strstr('0|Без вендора','|',true)
-            if(strstr($arProfile[VENDOR], '|', true)!=='0'){
-                $projectChanges = ProjectHelper::createVendorChange($arProfile[VENDOR]);
-                $projectChanges
-                    ->setName($project->getName())
-                    ->setDescription($project->getDescription())
-                    ->setDeadline($project->getDeadline());
-                try{ 
-                    $projectManager->projectUpdateProject($project->getId(), $projectChanges);
-                }catch(\Exception $e){
-                    self::log("SmartCat error add vendor {$vendorId}: {$e->getMessage()}");
-                }
-            }
-
             if (!empty($documents)) {
-                TaskTable::update($arTask['ID'], [
-                    'PROJECT_ID' => $project->getId(),
-                    'PROJECT_NAME' => $project->getName(),
-                    'STATUS' => TaskTable::STATUS_UPLOADED,
-                ]);
-                $rsTaskFiles = TaskFileTable::getList([
-                    'order' => ['ID' => 'asc'],
-                    'filter' => [
-                        '=TASK_ID' => $arTask['ID'],
-                    ]
-                ]);
-                
-                while ($arTaskFile = $rsTaskFiles->fetch()) {
-                    foreach($documents as $document){
+                self::log("SmartCat documents work");
+                foreach($documents as $document){
+                    preg_match('/' .self::FILENAME . '(\d+)/', $document->getName(), $matches);
+                    $taskId = (int)$matches[1];
+                    self::log("SmartCat document task id: {$taskId}");
+                    self::log("SmartCat document task id: {$matches[1]}");
+                    self::log("SmartCat document task id: {$document->getName()}");
+                    
+                    TaskTable::update($taskId, [
+                        'STATUS' => TaskTable::STATUS_UPLOADED,
+                    ]);
+                    $rsTaskFiles = TaskFileTable::getList([
+                        'order' => ['ID' => 'asc'],
+                        'filter' => [
+                            '=TASK_ID' => $taskId,
+                        ]
+                    ]);
+                    
+                    while ($arTaskFile = $rsTaskFiles->fetch()) {
                         if($document->getTargetLanguage() === $arTaskFile['LANG_TO']){
                             TaskFileTable::update($arTaskFile['ID'], [
                                 'DOCUMENT_ID' => $document->getId(),
@@ -130,7 +136,6 @@ class Task
                         }
                     }
                 }
-                
             }
         }
     }

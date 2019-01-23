@@ -13,6 +13,21 @@ use Bitrix\Main\Type\DateTime;
 class TaskHelper
 {
 
+    public static function setProject($task_ids, $project)
+    {
+        $rsTasks = TaskTable::getList([
+            'order' => ['ID' => 'asc'],
+            'filter' => [
+                '=ID' => $task_ids,
+            ]
+        ]);
+        while ($arTask = $rsTasks->fetch()) {
+            TaskTable::update($arTask['ID'], [
+                'PROJECT_ID' => $project->getId(),
+                'PROJECT_NAME' => $project->getName(),
+            ]);
+        }
+    }
     public static function createForElement($ID, $IBLOCK_ID = null, $profileID = null, $deadline = null)
     {
 
@@ -86,6 +101,7 @@ class TaskHelper
             }
 
         }
+        return $taskID;
     }
 
     public static function prepareElementContent($elementID, $arFields = [])

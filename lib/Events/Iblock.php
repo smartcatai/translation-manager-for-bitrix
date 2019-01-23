@@ -3,6 +3,7 @@
 namespace Smartcat\Connector\Events;
 
 use Smartcat\Connector\Helper\TaskHelper;
+use Smartcat\Connector\Helper\ProjectHelper;
 use Smartcat\Connector\ProfileIblockTable;
 use Smartcat\Connector\ProfileTable;
 use Smartcat\Connector\TaskTable;
@@ -292,11 +293,27 @@ class Iblock
             if (!is_array($_REQUEST['ID'])) $_REQUEST['ID'] = [$_REQUEST['ID']];
 
             if ($action == self::ACTION_NAME || $_REQUEST['action_button'] == self::ACTION_NAME) {
+                $arProfile = \Smartcat\Connector\ProfileTable::getById(intval($profileId))->fetch();
+                $task_ids = [];
+                $project_name = [];
+
                 foreach ($_REQUEST['ID'] as $ID) {
                     if ($ID[0] == 'S') continue;
                     if ($ID[0] == 'E') $ID = substr($ID, 1);
-                    TaskHelper::createForElement($ID, intval($_REQUEST['IBLOCK_ID']), intval($profileId), $_REQUEST['deadline']);
+                    $arElement = \CIBlockElement::GetByID($ID)->GetNextElement(true, false)->GetFields();
+                    $project_name[]= $arElement['NAME'];
+                    $task_ids[] = TaskHelper::createForElement($ID, intval($_REQUEST['IBLOCK_ID']), intval($profileId), $_REQUEST['deadline']);
                 }
+                $api = \Smartcat\Connector\Helper\ApiHelper::createApi();
+                $params = ProjectHelper::prepareProjectParamsNew($arProfile, implode(', ',$project_name));
+                try{
+                $project = $api
+                    ->getProjectManager()
+                    ->projectCreateProject(ProjectHelper::createProjectNew($params));
+                }catch(\Http\Client\Common\Exception\ClientErrorException $e){
+                    var_dump($e->getResponse()->getBody()->getContents()); die;
+                }
+                TaskHelper::setProject($task_ids, $project);
             }
         }
     }
