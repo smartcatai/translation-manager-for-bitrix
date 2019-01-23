@@ -47,7 +47,7 @@ class TaskTable extends Main\Entity\DataManager
     public static function getAccessibleStatusList()
     {
         return [
-            self::STATUS_NEW => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_STATUS_NEW'),
+            self::STATUS_CANCELED => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_STATUS_CANCELED'),
             self::STATUS_READY_UPLOAD => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_STATUS_READY_UPLOAD'),
         ];
     }

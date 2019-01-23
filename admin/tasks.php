@@ -237,7 +237,12 @@ while ($arItem = $rsItems->fetch()) {
         if($arItem['STATUS'] === \Smartcat\Connector\TaskTable::STATUS_READY_UPLOAD){
             $text = GetMessage("SMARTCAT_CONNECTOR_OTMENIT_OTPRAVKU");
         }
-        if($arItem['STATUS'] === \Smartcat\Connector\TaskTable::STATUS_NEW){
+
+        if($arItem['STATUS'] === \Smartcat\Connector\TaskTable::STATUS_NEW && $sStatus === \Smartcat\Connector\TaskTable::STATUS_READY_UPLOAD){
+            $text = GetMessage("SMARTCAT_CONNECTOR_IZMENITQ_STATUS");
+        }
+
+        if($arItem['STATUS'] === \Smartcat\Connector\TaskTable::STATUS_CANCELED){
             $text = GetMessage("SMARTCAT_CONNECTOR_IZMENITQ_STATUS");
         }
 
@@ -276,7 +281,7 @@ $arActions["status_upload"] = GetMessage("SMARTCAT_CONNECTOR_IZMENITQ_STATUS");
 $arActions["status_new"] = GetMessage("SMARTCAT_CONNECTOR_OTMENIT_OTPRAVKU");
 $arActions["status_action"] = array("type" => "html", "value" => $status_inp);
 
-$arParams["select_onchange"] = "BX('status_to_move').value = (this.value == 'status_upload' ? '" .\Smartcat\Connector\TaskTable::STATUS_READY_UPLOAD. "': (this.value == 'status_new' ? '" . \Smartcat\Connector\TaskTable::STATUS_NEW . "' : '' ));";
+$arParams["select_onchange"] = "BX('status_to_move').value = (this.value == 'status_upload' ? '" .\Smartcat\Connector\TaskTable::STATUS_READY_UPLOAD. "': (this.value == 'status_new' ? '" . \Smartcat\Connector\TaskTable::STATUS_CANCELED . "' : '' ));";
 
 $lAdmin->AddGroupActionTable($arActions, $arParams);
 
