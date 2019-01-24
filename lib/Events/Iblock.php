@@ -97,7 +97,13 @@ class Iblock
             ])->fetchAll();
             foreach ($arProfiles as $arProfile) {
                 if(self::$iBlockAdd && self::$createTask){
-                    TaskHelper::createForElement($arFields['ID'], $arProfile['IBLOCK_ID'], $arProfile['ID']);
+                    $task_id = TaskHelper::createForElement($arFields['ID'], $arProfile['IBLOCK_ID'], $arProfile['ID']);
+                    try{
+                        $project = \Smartcat\Connector\Helper\ApiHelper::createProject($arProfile, $arFields['NAME']);
+                    }catch(\Http\Client\Common\Exception\ClientErrorException $e){
+                        var_dump($e->getResponse()->getBody()->getContents()); die;
+                    }
+                    TaskHelper::setProject([$task_id], $project);
                 }
             }
         }
@@ -115,7 +121,13 @@ class Iblock
             ])->fetchAll();
             foreach ($arProfiles as $arProfile) {
                 if(self::$iBlockUpdated && self::$createTask){
-                    TaskHelper::createForElement($arFields['ID'], $arProfile['IBLOCK_ID'], $arProfile['ID']);
+                    $task_id = TaskHelper::createForElement($arFields['ID'], $arProfile['IBLOCK_ID'], $arProfile['ID']);
+                    try{
+                        $project = \Smartcat\Connector\Helper\ApiHelper::createProject($arProfile, $arFields['NAME']);
+                    }catch(\Http\Client\Common\Exception\ClientErrorException $e){
+                        var_dump($e->getResponse()->getBody()->getContents()); die;
+                    }
+                    TaskHelper::setProject([$task_id], $project);
                 }
             }
         }
@@ -314,14 +326,9 @@ class Iblock
                     }
                 }
 
-                if( !empty($project_names) && !empty($task_ids) ){ // && count($task_ids)<4
-                    $api = \Smartcat\Connector\Helper\ApiHelper::createApi();
-                    $params = ProjectHelper::prepareProjectParams($arProfile, implode(', ',$project_names));
-
+                if( !empty($project_names) && !empty($task_ids) ){
                     try{
-                    $project = $api
-                        ->getProjectManager()
-                        ->projectCreateProject(ProjectHelper::createProject($params));
+                        $project = \Smartcat\Connector\Helper\ApiHelper::createProject($arProfile, implode(', ',$project_names));
                     }catch(\Http\Client\Common\Exception\ClientErrorException $e){
                         var_dump($e->getResponse()->getBody()->getContents()); die;
                     }

@@ -2,6 +2,8 @@
 
 namespace Smartcat\Connector\Helper;
 
+use Smartcat\Connector\Helper\ProjectHelper;
+
 class ApiHelper
 {
     const DEFAULT_WORFLOW_STAGES = "translation";
@@ -52,6 +54,18 @@ class ApiHelper
             "editing"=>GetMessage("SMARTCAT_CONNECTOR_STAGE_EDITING"),
             "proofreading"=>GetMessage("SMARTCAT_CONNECTOR_STAGE_PROOFREADING"),
         );
+    }
+
+    public static function createProject($arProfile, $name)
+    {
+        $project = NULL;
+        $params = ProjectHelper::prepareProjectParams($arProfile, $name);
+
+        $project = self::createApi()
+            ->getProjectManager()
+            ->projectCreateProject(ProjectHelper::createProject($params));
+
+        return $project;
     }
 
 }

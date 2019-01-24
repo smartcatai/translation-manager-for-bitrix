@@ -230,36 +230,6 @@ while ($arItem = $rsItems->fetch()) {
 
     $arActions = [];
 
-    foreach ($arStatus as $sStatus => $sLabel) {
-        if ($sStatus == $arItem['STATUS']) continue;
-        $text = '';
-
-        if($arItem['STATUS'] === \Smartcat\Connector\TaskTable::STATUS_READY_UPLOAD){
-            $text = GetMessage("SMARTCAT_CONNECTOR_OTMENIT_OTPRAVKU");
-        }
-
-        if($arItem['STATUS'] === \Smartcat\Connector\TaskTable::STATUS_NEW && $sStatus === \Smartcat\Connector\TaskTable::STATUS_READY_UPLOAD){
-            $text = GetMessage("SMARTCAT_CONNECTOR_IZMENITQ_STATUS");
-        }
-
-        if($arItem['STATUS'] === \Smartcat\Connector\TaskTable::STATUS_CANCELED){
-            $text = GetMessage("SMARTCAT_CONNECTOR_IZMENITQ_STATUS");
-        }
-
-        if($arItem['STATUS'] === \Smartcat\Connector\TaskTable::STATUS_FAILED && $sStatus === \Smartcat\Connector\TaskTable::STATUS_READY_UPLOAD ){
-            $text = GetMessage("SMARTCAT_CONNECTOR_IZMENITQ_STATUS");
-        }
-
-        if(!empty($text)){
-            $arActions[] = array(
-                "ICON" => "edit",
-                "TEXT" => $text,
-                "ACTION" => $lAdmin->ActionDoGroup($arRow['ID'], "status", "status_to_move={$sStatus}"),
-            );
-        }
-    }
-
-
     $arActions[] = array(
         "ICON" => "delete",
         "TEXT" => GetMessage("SMARTCAT_CONNECTOR_UDALITQ"),
@@ -275,16 +245,7 @@ $arActions = array(
 );
 $arParams = array();
 
-$status_inp = '<input type="hidden" name="status_to_move" id="status_to_move"> <input type="hidden" name="action" value="status">';
-
-$arActions["status_upload"] = GetMessage("SMARTCAT_CONNECTOR_IZMENITQ_STATUS");
-$arActions["status_new"] = GetMessage("SMARTCAT_CONNECTOR_OTMENIT_OTPRAVKU");
-$arActions["status_action"] = array("type" => "html", "value" => $status_inp);
-
-$arParams["select_onchange"] = "BX('status_to_move').value = (this.value == 'status_upload' ? '" .\Smartcat\Connector\TaskTable::STATUS_READY_UPLOAD. "': (this.value == 'status_new' ? '" . \Smartcat\Connector\TaskTable::STATUS_CANCELED . "' : '' ));";
-
 $lAdmin->AddGroupActionTable($arActions, $arParams);
-
 
 $lAdmin->CheckListMode();
 
