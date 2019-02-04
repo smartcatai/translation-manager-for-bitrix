@@ -18,7 +18,12 @@ try{
     $acc_info = \Smartcat\Connector\Helper\ApiHelper::getAccount();
 }catch(\Exception $e){
     require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_after.php");
-    CAdminMessage::ShowMessage(GetMessage("SMARTCAT_CONNECTOR_ACCOUNT_ERROR") .': '. $e->getMessage() . '<br>' .GetMessage("SMARTCAT_CONNECTOR_ACCOUNT_ERROR_EXPLAIN")  );
+    $msgError = GetMessage("SMARTCAT_CONNECTOR_ACCOUNT_ERROR_SERVER");
+    if($e instanceof \Http\Client\Common\Exception\ClientErrorException){
+        $msgError = GetMessage("SMARTCAT_CONNECTOR_ACCOUNT_ERROR_API");
+    }
+    $msgError .= '<br>' . GetMessage("SMARTCAT_CONNECTOR_ACCOUNT_ERROR_EXPLAIN");
+    CAdminMessage::ShowMessage($msgError);
     require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/epilog_admin.php");
 }
 

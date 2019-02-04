@@ -32,6 +32,16 @@ if ($arID = $lAdmin->GroupAction()) {
         }
     }
 }
+$msgError = '';
+try{
+    $acc_info = \Smartcat\Connector\Helper\ApiHelper::getAccount();
+}catch(\Exception $e){
+    $msgError = GetMessage("SMARTCAT_CONNECTOR_ACCOUNT_ERROR_SERVER");
+    if($e instanceof \Http\Client\Common\Exception\ClientErrorException){
+        $msgError = GetMessage("SMARTCAT_CONNECTOR_ACCOUNT_ERROR_API");
+    }
+    $msgError .= '<br>' . GetMessage("SMARTCAT_CONNECTOR_ACCOUNT_ERROR_EXPLAIN");
+}
 
 $arHeader = array(
     array(
@@ -140,10 +150,11 @@ while ($arItem = $rsItems->fetch()) {
 
 $aContext = array(
     array(
-        "ICON" => "btn_new",
-        "TEXT" => GetMessage("SMARTCAT_CONNECTOR_DOBAVITQ_PROFILQ"),
-        "ONCLICK" => "location.href = 'smartcat.connector_profile.php'",
-        "TITLE" => GetMessage("SMARTCAT_CONNECTOR_DOBAVITQ_PROFILQ"),
+        "HTML" => '<a href="javascript:void(0)" '
+            .'class="adm-btn adm-btn-add' . ( !empty($msgError) ? ' adm-btn-disabled' : ' adm-btn-save') . '" '
+            .'title="'.GetMessage("SMARTCAT_CONNECTOR_DOBAVITQ_PROFILQ").'" '
+            .'onclick="'.( !empty($msgError) ? 'return false;' : ' location.href = \'smartcat.connector_profile.php\' ') .'" '
+            .'id="btn_new">'.GetMessage("SMARTCAT_CONNECTOR_DOBAVITQ_PROFILQ").'</a>',
     ),
 );
 
@@ -157,6 +168,7 @@ $lAdmin->CheckListMode();
 
 
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_after.php");
+CAdminMessage::ShowMessage($msgError);
 ?>
 
 <? $lAdmin->DisplayList(); ?>
