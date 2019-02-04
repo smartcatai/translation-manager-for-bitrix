@@ -46,7 +46,6 @@ class ProjectHelper
             'stages' => explode(',', $arProfile['WORKFLOW']),
             'test' => false,
             'vendorId' => $vendorId,
-            'deadline' => (new \DateTime('now'))->modify(' +1 day'), //(string)$arTask['DEADLINE']
             'external_tag' => 'source:Bitrix',
         );
     }
@@ -59,7 +58,6 @@ class ProjectHelper
         $project
             ->setName($params['name'])
             ->setDescription($params['desc'])
-            ->setDeadline($params['deadline'])
             ->setSourceLanguage($params['source_lang'])
             ->setTargetLanguages($params['target_langs'])
             ->setUseMT(false)
@@ -79,7 +77,6 @@ class ProjectHelper
         $project = (new CreateProjectModel())
             ->setName($params['name'])
             ->setDescription($params['desc'])
-            ->setDeadline($params['deadline'])
             ->setSourceLanguage($params['source_lang'])
             ->setTargetLanguages($params['target_langs'])
             ->setUseMT(false)

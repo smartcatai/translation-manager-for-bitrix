@@ -180,8 +180,12 @@ while ($arItem = $rsItems->fetch()) {
     $arRow = [];
     $arRow['ID'] = $arItem['ID'];
     $arRow['COMMENT'] = $arItem['COMMENT'];
-    $arRow['DEADLINE'] = $arItem['DEADLINE'] ? date('Y-m-d\\TH:i:s.0\\Z', $arItem['DEADLINE']->getTimestamp()) : '-';//$arItem['DEADLINE'];
+    $arRow['DEADLINE'] = '&mdash;';
     $arRow['STATUS'] = $arStatusAll[$arItem['STATUS']];
+
+    if( $arItem['DEADLINE'] && $arItem['DEADLINE']->getTimestamp() > 1 ){
+        $arRow['DEADLINE'] = date('Y-m-d\\TH:i:s.0\\Z', $arItem['DEADLINE']->getTimestamp() );
+    }
 
     if(!empty($arItem['PROJECT_NAME'])){
         $projectLink = "<a href=\"//$apiServer/projects/{$arItem['PROJECT_ID']}\" target=\"blank\" >";

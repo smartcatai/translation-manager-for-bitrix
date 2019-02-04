@@ -178,7 +178,7 @@ class Task
             if ($project && strtolower($project->getStatus()) == 'inprogress') {
                 TaskTable::update($arTask['ID'], [
                     'STATUS' => TaskTable::STATUS_PROCESS,
-                    'DEADLINE' => $project->getDeadline() instanceof \DateTime ? DateTime::createFromTimestamp($project->getDeadline()->getTimestamp()) : ''
+                    'DEADLINE' => $project->getDeadline() instanceof \DateTime ? DateTime::createFromTimestamp($project->getDeadline()->getTimestamp()) : $arTask['DEADLINE']
                 ]);
             }
         }

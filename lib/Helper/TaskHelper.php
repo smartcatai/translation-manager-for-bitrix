@@ -53,17 +53,18 @@ class TaskHelper
             'filter' => $arProfileFilter,
         ]);
 
-        $datatime = (new \DateTime('now'))->modify(' + 1 day');
-
         while ($arProfile = $rsProfiles->fetch()) {
             $arTask = [
                 'PROFILE_ID' => $arProfile['ID'],
                 'ELEMENT_ID' => $ID,
                 'VENDOR' => $arProfile['VENDOR'],
-                'DEADLINE' =>  $datatime ? DateTime::createFromTimestamp($datatime->getTimestamp()) : '',
                 'STATUS' => TaskTable::STATUS_READY_UPLOAD,
                 'CONTENT' => self::prepareElementContent($ID, $arProfile['FIELDS']),
             ];
+
+            if($deadline){
+                $arTask['DEADLINE'] = DateTime::createFromTimestamp($deadline);
+            }
 
             $taskID = 0;
 
