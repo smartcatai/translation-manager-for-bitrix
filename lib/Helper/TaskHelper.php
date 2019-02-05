@@ -45,8 +45,29 @@ class TaskHelper
             '=IBLOCK_ID' => intval($IBLOCK_ID),
         ];
 
+        $targetElementId = 0;
         if ($profileID > 0) {
             $arProfileFilter['=ID'] = $profileID;
+
+            $anySuccesfulTask = TaskTable::getList([
+                'order' => ['ID' => 'asc'],
+                'filter' => [
+                    '=STATUS' => TaskTable::STATUS_SUCCESS,
+                    '=PROFILE_ID' => $profileID,
+                ]
+            ])->fetch();
+            if(!empty($anySuccesfulTask)){
+                $anySuccesfulTaskFile =  TaskFileTable::getList([
+                    'order' => ['ID' => 'asc'],
+                    'filter' => [
+                        '=TASK_ID' => $anySuccesfulTask['ID'],
+                    ]
+                ])->fetch();
+                if(!empty($anySuccesfulTaskFile)){
+                    $targetElementId = $anySuccesfulTaskFile['ELEMENT_ID'];
+                }
+            }
+
         }
 
         $rsProfiles = ProfileTable::getList([
@@ -91,6 +112,10 @@ class TaskHelper
                         'LANG_FROM' => $arProfile['LANG'],
                         'LANG_TO' => $arIBlock['LANG'],
                     ];
+
+                    if($targetElementId > 0){
+                        $arTaskFile['ELEMENT_ID'] = $targetElementId;
+                    }
 
                     $res = TaskFileTable::add($arTaskFile);
 
