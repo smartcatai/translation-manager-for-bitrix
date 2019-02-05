@@ -467,7 +467,7 @@ class Task
         $mess = implode(', ', $arOutput) . PHP_EOL;
         //echo date('d.m.Y H:i:s') . ': ' . $mess;
         //fwrite(STDERR, date('d.m.Y H:i:s') . ': ' . $mess);
-        file_put_contents($_SERVER['DOCUMENT_ROOT'] . '/task_log.txt', date('d.m.Y H:i:s') . ': ' . $mess . "\n", FILE_APPEND);
+        // file_put_contents($_SERVER['DOCUMENT_ROOT'] . '/task_log.txt', date('d.m.Y H:i:s') . ': ' . $mess . "\n", FILE_APPEND);
     }
 
 }
