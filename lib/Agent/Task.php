@@ -438,7 +438,7 @@ class Task
                             if (empty($arSection['XML_ID'])) continue;
                             if (!empty($arSections[$i])) {
                                 $res = $CIBlockSection->Update($arSection['ID'], [
-                                    'NAME' => trim($arSections[$i]),
+                                    'NAME' => StringHelper::specialcharsDecode(trim($arSections[$i])),
                                 ]);
                                 if (!$res) {
                                     self::log($CIBlockSection->LAST_ERROR, __LINE__);
