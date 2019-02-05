@@ -22,10 +22,16 @@ class TaskHelper
             ]
         ]);
         while ($arTask = $rsTasks->fetch()) {
-            TaskTable::update($arTask['ID'], [
-                'PROJECT_ID' => $project->getId(),
-                'PROJECT_NAME' => $project->getName(),
-            ]);
+            if(is_object($project)){
+                $data_for_update = [
+                    'PROJECT_ID' => $project->getId(),
+                    'PROJECT_NAME' => $project->getName(),
+                ];
+            }else{
+                //work if project not created on smartcat server
+                $data_for_update = $project;
+            }
+            TaskTable::update($arTask['ID'],$data_for_update);
         }
     }
     public static function createForElement($ID, $IBLOCK_ID = null, $profileID = null, $deadline = null)

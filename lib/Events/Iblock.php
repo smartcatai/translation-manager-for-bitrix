@@ -327,11 +327,7 @@ class Iblock
                 }
 
                 if( !empty($project_names) && !empty($task_ids) ){
-                    try{
-                        $project = \Smartcat\Connector\Helper\ApiHelper::createProject($arProfile, implode(', ',$project_names));
-                    }catch(\Http\Client\Common\Exception\ClientErrorException $e){
-                        var_dump($e->getResponse()->getBody()->getContents()); die;
-                    }
+                    $project = \Smartcat\Connector\Helper\ApiHelper::createProject($arProfile, implode(', ',$project_names));
                     TaskHelper::setProject($task_ids, $project);
                 }
             }

@@ -3,6 +3,7 @@
 namespace Smartcat\Connector\Helper;
 
 use Smartcat\Connector\Helper\ProjectHelper;
+use Smartcat\Connector\TaskTable;
 
 class ApiHelper
 {
@@ -61,10 +62,20 @@ class ApiHelper
         $project = NULL;
         $params = ProjectHelper::prepareProjectParams($arProfile, $name);
 
-        $project = self::createApi()
-            ->getProjectManager()
-            ->projectCreateProject(ProjectHelper::createProject($params));
-
+        try{
+            $project = self::createApi()
+                ->getProjectManager()
+                ->projectCreateProject(ProjectHelper::createProject($params));
+        } catch (\Exception $e) {
+            $msg = $e->getMessage();
+            if($e instanceof \Http\Client\Common\Exception\ClientErrorException ){
+                $msg .= ' ' . $e->getResponse()->getBody()->getContents();
+            }
+            return [
+                'STATUS' => TaskTable::STATUS_FAILED,
+                'COMMENT' => $msg,
+            ];
+        }
         return $project;
     }
 
