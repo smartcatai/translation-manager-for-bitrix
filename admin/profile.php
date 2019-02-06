@@ -198,9 +198,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()) {
 
     if ($_REQUEST['IBLOCK_ID'] <= 0) {
         $arErrors[] = GetMessage("SMARTCAT_CONNECTOR_NE_UKAZAN_INFOBLOK_D");
-    }
-
-    if (!$arIblockFrom) {
+    } elseif (!$arIblockFrom) {
         $arErrors[] = GetMessage("SMARTCAT_CONNECTOR_NE_UDALOSQ_NAYTI_INF");
     }
 
