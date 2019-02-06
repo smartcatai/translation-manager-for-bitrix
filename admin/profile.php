@@ -186,7 +186,7 @@ if ($arProfile['IBLOCK_ID'] > 0) {
 }
 
 $arProfile['NAME'] = isset($_REQUEST['NAME']) && !empty($_REQUEST['NAME']) ? $_REQUEST['NAME'] : $arProfile['NAME'];
-$arProfile['WORKFLOW'] = isset($arProfile['WORKFLOW']) ? $arProfile['WORKFLOW'] : ApiHelper::DEFAULT_WORFLOW_STAGES;
+$arProfile['WORKFLOW'] = isset($arProfile['WORKFLOW']) ? $arProfile['WORKFLOW'] : ApiHelper::DEFAULT_WORKFLOW_STAGE;
 
 if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()) {
 
@@ -216,8 +216,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()) {
             }
         }
     }
-    if(!in_array(ApiHelper::DEFAULT_WORFLOW_STAGES,$workflow)){
-        array_unshift($workflow,ApiHelper::DEFAULT_WORFLOW_STAGES);
+    if(!in_array(ApiHelper::DEFAULT_WORKFLOW_STAGE,$workflow)){
+        array_unshift($workflow,ApiHelper::DEFAULT_WORKFLOW_STAGE);
     }
 
     $arProfile['ACTIVE'] = (isset($_REQUEST['ACTIVE']) && $_REQUEST['ACTIVE'] == 'Y');
@@ -443,7 +443,8 @@ if (!empty($arErrors)): ?>
             <td>
                     <? foreach ($arWorflowStages as $stage=>$label): ?>
                         <label>
-                            <input type="checkbox" name="WORKFLOW[]" value="<?= $stage; ?>" <?= (strpos($arProfile['WORKFLOW'],$stage) !== false ? 'checked' : ''); ?>>
+                            <input type="checkbox" name="WORKFLOW[]" value="<?= $stage; ?>" <?= (strpos($arProfile['WORKFLOW'],$stage) !== false ? 'checked' : ''); ?>
+                            <?= $stage === ApiHelper::DEFAULT_WORKFLOW_STAGE ? 'disabled' : ''; ?>>
                             <?= $label; ?>
                         </label><br><br>
                     <? endforeach; ?>

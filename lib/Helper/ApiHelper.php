@@ -7,7 +7,7 @@ use Smartcat\Connector\TaskTable;
 
 class ApiHelper
 {
-    const DEFAULT_WORFLOW_STAGES = "translation";
+    const DEFAULT_WORKFLOW_STAGE = "translation";
     protected static $api = NULL;
 
     public static function createApi()
