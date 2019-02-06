@@ -23,6 +23,12 @@ class ApiHelper
         return self::$api;
     }
 
+    public static function checkAccountApi($apiId, $apiSecret, $apiServer)
+    {
+        $api = new \SmartCat\Client\SmartCat($apiId, $apiSecret, $apiServer);
+        return $api->getAccountManager()->accountGetAccountInfo();
+    }
+
     public static function getAccount()
     {
         return self::createApi()->getAccountManager()->accountGetAccountInfo();

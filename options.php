@@ -48,26 +48,31 @@ if ($REQUEST_METHOD == 'POST' && strlen($Update) > 0 && check_bitrix_sessid()) {
 
         \Bitrix\Main\Config\Option::set($module_id, $name, $val);
     }
-    LocalRedirect($APPLICATION->GetCurPageParam());
+    $arMessages[] = GetMessage("SMARTCAT_CONNECTOR_SAVE_SUCCESS");
 }
 
 $arInfo = Array();
 try{
-    $acc_info = \Smartcat\Connector\Helper\ApiHelper::getAccount();
+    if($REQUEST_METHOD == 'POST'){
+        $acc_info = \Smartcat\Connector\Helper\ApiHelper::checkAccountApi($api_id, $api_secret, $api_server);
+    }else{
+        $acc_info = \Smartcat\Connector\Helper\ApiHelper::getAccount();
+    }
     if($acc_info){
         $arInfo[] = GetMessage("SMARTCAT_CONNECTOR_ACCOUNT") . ': ' . $acc_info->getName();
     }
 }catch(\Exception $e){
-    $apiId = \Bitrix\Main\Config\Option::get('smartcat.connector', 'api_id');
-    $apiSecret = \Bitrix\Main\Config\Option::get('smartcat.connector', 'api_secret');
-    if(!empty($apiId) || !empty($apiSecret) ){
-        $msgError = GetMessage("SMARTCAT_CONNECTOR_ACCOUNT_ERROR_SERVER");
-        if($e instanceof \Http\Client\Common\Exception\ClientErrorException){
-            $msgError = GetMessage("SMARTCAT_CONNECTOR_ACCOUNT_ERROR_API");
-        }
-        CAdminMessage::ShowMessage($msgError);
+    $apiId = \Bitrix\Main\Config\Option::get('smartcat.connector', 'api_id', $api_id);
+    $apiSecret = \Bitrix\Main\Config\Option::get('smartcat.connector', 'api_secret', $api_secret);
+    $msgError = GetMessage("SMARTCAT_CONNECTOR_ACCOUNT_ERROR_SERVER");
+    if(empty($apiId) || empty($apiSecret) ){
+        $msgError = GetMessage("SMARTCAT_CONNECTOR_ACCOUNT_ERROR_ENTER");
+    }elseif($e instanceof \Http\Client\Common\Exception\ClientErrorException){
+        $msgError = GetMessage("SMARTCAT_CONNECTOR_ACCOUNT_ERROR_API");
     }
+    $arErrors[] = $msgError;
     $arInfo[] = GetMessage("SMARTCAT_CONNECTOR_ACCOUNT_NEED_SETTINGS");
+    $arMessages = [];
 }
 
 $arInfo[] =  GetMessage("SMARTCAT_CONNECTOR_VERSIA_SHEMY") 
