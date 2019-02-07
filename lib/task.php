@@ -110,7 +110,7 @@ class TaskTable extends Main\Entity\DataManager
             'DEADLINE' => array(
                 'data_type' => 'datetime',
                 'title' => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_DEADLINE_FIELD'),
-                'default_value' => new Main\Type\DateTime(),
+                'default_value' => null,
             ),
             'DATE_UPDATE' => array(
                 'data_type' => 'datetime',

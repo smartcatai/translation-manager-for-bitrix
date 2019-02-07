@@ -315,14 +315,14 @@ class Iblock
                         $res = \CIBlockElement::GetList(["SORT"=>"ASC",], ['IBLOCK_ID'=>$_REQUEST['IBLOCK_ID'],'IBLOCK_SECTION_ID' => $ID]);
                         while($element = $res->GetNext(true, false)){
                             $project_names[]= $element['NAME'];
-                            $task_ids[] = TaskHelper::createForElement($element['ID'], intval($_REQUEST['IBLOCK_ID']), intval($profileId), $_REQUEST['deadline']);
+                            $task_ids[] = TaskHelper::createForElement($element['ID'], intval($_REQUEST['IBLOCK_ID']), intval($profileId));
                         }
                     }
                     if ($ID[0] == 'E') {
                         $ID = substr($ID, 1);
                         $arElement = \CIBlockElement::GetByID($ID)->GetNextElement(true, false)->GetFields();
                         $project_names[]= $arElement['NAME'];
-                        $task_ids[] = TaskHelper::createForElement($ID, intval($_REQUEST['IBLOCK_ID']), intval($profileId), $_REQUEST['deadline']);
+                        $task_ids[] = TaskHelper::createForElement($ID, intval($_REQUEST['IBLOCK_ID']), intval($profileId));
                     }
                 }
 
@@ -332,6 +332,7 @@ class Iblock
                 }
             }
         }
+
     }
 
 }
