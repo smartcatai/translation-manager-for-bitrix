@@ -23,6 +23,9 @@ class Task
         self::log("Start CheckReadyTasks");
         self::CheckReadyTasks();
 
+        self::log("Start CheckCanseledTasks");
+        self::CheckCanseledTasks();
+
         self::log("Start CheckUploadedTasks");
         self::CheckUploadedTasks();
 
@@ -175,24 +178,51 @@ class Task
                 }
             }
 
-            if ($project && strtolower($project->getStatus()) == 'inprogress') {
-                TaskTable::update($arTask['ID'], [
-                    'STATUS' => TaskTable::STATUS_PROCESS,
-                    'DEADLINE' => $project->getDeadline() instanceof \DateTime ? DateTime::createFromTimestamp($project->getDeadline()->getTimestamp()) : $arTask['DEADLINE']
-                ]);
+            if ($project){
+                if (strtolower($project->getStatus()) == 'inprogress') {
+                    TaskTable::update($arTask['ID'], [
+                        'STATUS' => TaskTable::STATUS_PROCESS,
+                        'DEADLINE' => $project->getDeadline() instanceof \DateTime ? DateTime::createFromTimestamp($project->getDeadline()->getTimestamp()) : $arTask['DEADLINE']
+                    ]);
+                }
+                if (strtolower($project->getStatus()) == 'canceled') {
+                    TaskTable::update($arTask['ID'], [
+                        'STATUS' => TaskTable::STATUS_CANCELED,
+                    ]);
+                }
             }
         }
-        
     }
 
-    public static function CheckWaitingTasks()
+    public static function CheckCanseledTasks()
     {
         $rsTasks = TaskTable::getList([
             'order' => ['ID' => 'asc'],
             'filter' => [
-                '=STATUS' => TaskTable::STATUS_WAITING,
+                '=STATUS' => TaskTable::STATUS_PROCESS,
             ]
         ]);
+        $api = \Smartcat\Connector\Helper\ApiHelper::createApi();
+        $projectManager = $api->getProjectManager();
+        while ($arTask = $rsTasks->fetch()) {
+            try {
+                $project = $projectManager->projectGet($arTask['PROJECT_ID']);
+            } catch (\Exception $e) {
+                self::log($e->getMessage() , __METHOD__, __LINE__);
+                TaskTable::update($arTask['ID'], [
+                    'STATUS' => TaskTable::STATUS_FAILED,
+                    'COMMENT' => $e->getMessage()
+                ]);
+                continue;
+            }
+            if ($project){
+                if (strtolower($project->getStatus()) == 'canceled') {
+                    TaskTable::update($arTask['ID'], [
+                        'STATUS' => TaskTable::STATUS_CANCELED,
+                    ]);
+                }
+            }
+        }
     }
 
     public static function CheckDocumentStatus()
