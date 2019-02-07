@@ -21,11 +21,20 @@ $(function () {
             if (existedItems.length > 0) {
                 if (!confirm('По элементам ' + existedItems.join(', ') + ' и указанному языку уже есть задания перевода. Создать повторные задания?')) {
                     e.preventDefault();
+                    return;
                 }
             }
+            deadlineDialog.Show()
         }
     });
 
+    $(document).on('click', '#apply_button button.apply', function (e) {
+        e.preventDefault();
+        var action = $('.main-dropdown.main-grid-panel-control').data('value');
+        if (action.indexOf('smartcat_connector_translate_') !== -1) {
+            deadlineDialog.Show();
+        }
+    })
 
     if (!deadlineDialog) {
         var today = new Date();
@@ -66,8 +75,6 @@ $(function () {
 });
 
 function ShowDeadlineDialog(list, action) {
-    deadlineList = list;
-    action += '&deadline=1';
     BX.ajax({
         url: action,
         method: 'GET'
