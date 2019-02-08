@@ -220,6 +220,10 @@ class Task
                     TaskTable::update($arTask['ID'], [
                         'STATUS' => TaskTable::STATUS_CANCELED,
                     ]);
+                }else{
+                    TaskTable::update($arTask['ID'], [
+                        'DEADLINE' => $project->getDeadline() instanceof \DateTime ? DateTime::createFromTimestamp($project->getDeadline()->getTimestamp()) : $arTask['DEADLINE']
+                    ]);
                 }
             }
         }
