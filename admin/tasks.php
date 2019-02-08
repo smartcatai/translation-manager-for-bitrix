@@ -184,7 +184,7 @@ while ($arItem = $rsItems->fetch()) {
     $arRow['STATUS'] = $arStatusAll[$arItem['STATUS']];
 
     if( $arItem['DEADLINE'] && $arItem['DEADLINE']->getTimestamp() > 1 ){
-        $arRow['DEADLINE'] = date('Y-m-d\\TH:i:s.0\\Z', $arItem['DEADLINE']->getTimestamp() );
+        $arRow['DEADLINE'] = date('Y-m-d H:i', $arItem['DEADLINE']->getTimestamp() );
     }
 
     if(!empty($arItem['PROJECT_NAME'])){
