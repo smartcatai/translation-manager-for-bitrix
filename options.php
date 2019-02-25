@@ -74,8 +74,9 @@ try{
     $arInfo[] = GetMessage("SMARTCAT_CONNECTOR_ACCOUNT_NEED_SETTINGS");
     $arMessages = [];
 }
-/** @todo version should be taken from version file  */
-$arInfo[] =  GetMessage("SMARTCAT_CONNECTOR_VERSIA") . '2.0.1'; 
+
+include __DIR__.'/install/version.php';
+$arInfo[] =  GetMessage("SMARTCAT_CONNECTOR_VERSIA") .$arModuleVersion['VERSION']; 
 $arInfo[] =  GetMessage("SMARTCAT_CONNECTOR_VERSIA_SHEMY") 
                 .$schema->getCurrentVersion() . ' '
                 .($schema->needUpgrade() ? '<a href="' . $APPLICATION->GetCurPageParam('db_upgrade=y') . '">'.GetMessage("SMARTCAT_CONNECTOR_OBNOVITQ_DO") . $schema->getLastVersion() . '</a>' : '');
