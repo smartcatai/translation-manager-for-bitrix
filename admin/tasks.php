@@ -40,48 +40,24 @@ if ($arID = $lAdmin->GroupAction()) {
                 \Smartcat\Connector\TaskTable::delete($ID);
                 break;
             case "status":
-                if (array_key_exists($_REQUEST['status_to_move'], $arStatus)) {
+            case "refrash": 
+                $arTask = \Smartcat\Connector\TaskTable::getById($ID)->fetch();
 
-                    $arTask = \Smartcat\Connector\TaskTable::getById($ID)->fetch();
-                    if ($arTask && $arTask['STATUS'] !== $_REQUEST['status_to_move']) {
-                        \Smartcat\Connector\TaskTable::update($ID, [
-                            'STATUS' => $_REQUEST['status_to_move'],
-                            'COMMENT' => '',
+                if ($arTask && $arTask['STATUS'] === \Smartcat\Connector\TaskTable::STATUS_SUCCESS) {
+                    \Smartcat\Connector\TaskTable::update($ID, [
+                        'STATUS' => \Smartcat\Connector\TaskTable::STATUS_PROCESS,
+                        'COMMENT' => '',
+                    ]);
+
+                    $rsFiles = \Smartcat\Connector\TaskFileTable::getList([
+                        'filter' => [
+                            '=TASK_ID' => $ID,
+                        ]
+                    ]);
+                    while ($arFile = $rsFiles->fetch()) {
+                        \Smartcat\Connector\TaskFileTable::update($arFile['ID'], [
+                            'STATUS' => \Smartcat\Connector\TaskFileTable::STATUS_PROCESS,
                         ]);
-
-                        $arStatusReset = [
-                            \Smartcat\Connector\TaskTable::STATUS_FAILED,
-                            \Smartcat\Connector\TaskTable::STATUS_CANCELED,
-                        ];
-
-                        if ($_REQUEST['status_to_move'] == \Smartcat\Connector\TaskTable::STATUS_NEW) {
-                            $rsFiles = \Smartcat\Connector\TaskFileTable::getList([
-                                'filter' => [
-                                    '=TASK_ID' => $ID,
-                                ]
-                            ]);
-                            while ($arFile = $rsFiles->fetch()) {
-                                \Smartcat\Connector\TaskFileTable::update($arFile['ID'], [
-                                    'STATUS' => \Smartcat\Connector\TaskFileTable::STATUS_NEW,
-                                ]);
-                            }
-                        } elseif (in_array($arTask['STATUS'], $arStatusReset)
-                            && !in_array($_REQUEST['status_to_move'], $arStatusReset)
-                        ) {
-                            $rsFiles = \Smartcat\Connector\TaskFileTable::getList([
-                                'filter' => [
-                                    '=TASK_ID' => $ID,
-                                    '=STATUS' => \Smartcat\Connector\TaskFileTable::STATUS_FAILED,
-                                ]
-                            ]);
-                            while ($arFile = $rsFiles->fetch()) {
-                                \Smartcat\Connector\TaskFileTable::update($arFile['ID'], [
-                                    'STATUS' => \Smartcat\Connector\TaskFileTable::STATUS_NEW,
-                                ]);
-                            }
-                        }
-
-
                     }
                 }
                 break;
@@ -233,6 +209,13 @@ while ($arItem = $rsItems->fetch()) {
     $row->AddViewField('PROJECT_NAME', $arRow['PROJECT_NAME']);
 
     $arActions = [];
+    if($arItem['STATUS'] === \Smartcat\Connector\TaskTable::STATUS_SUCCESS){
+        $arActions[] = array(
+            "ICON" => "edit",
+            "TEXT" => GetMessage("SMARTCAT_CONNECTOR_REFRESH"),
+            "ACTION" => $lAdmin->ActionDoGroup($arRow['ID'], "status"), // "if(confirm('".GetMessage("SMARTCAT_CONNECTOR_UDALITQ_PROFILQ") . 
+        );
+    }
 
     $arActions[] = array(
         "ICON" => "delete",
