@@ -60,6 +60,7 @@ class TaskHelper
                 'filter' => [
                     '=STATUS' => TaskTable::STATUS_SUCCESS,
                     '=PROFILE_ID' => $profileID,
+                    '=ELEMENT_ID' => $ID,
                 ]
             ])->fetch();
             if(!empty($anySuccesfulTask)){
