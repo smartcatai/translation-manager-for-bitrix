@@ -135,7 +135,7 @@ foreach (\Smartcat\Connector\TaskTable::getStatusList() as $sStatusID => $sStatu
     $arStat[$sStatusName] = \Smartcat\Connector\TaskTable::getCount(array_merge($filter, ['=STATUS' => $sStatusID]));
 }
 
-$rsItems = \Smartcat\Connector\TaskTable::getList(array(
+$rsItems = \Smartcat\Connector\TaskFileTable::getList(array(
     'order' => array(strtoupper($by) => $order),
     'count_total' => true,
     'offset' => $nav->getOffset(),
@@ -151,53 +151,60 @@ $arTypes = \Smartcat\Connector\ProfileTable::getTypeList();
 
 $apiServer = \Bitrix\Main\Config\Option::get('smartcat.connector', 'api_server');
 
-while ($arItem = $rsItems->fetch()) {
+$tasks = [];
+$profiles = [];
+
+while ($arTaskFile = $rsItems->fetch()) {
+
+    if(!isset($tasks[$arTaskFile['TASK_ID']])){
+        $tasks[$arTaskFile['TASK_ID']] = \Smartcat\Connector\TaskTable::getById($arTaskFile['TASK_ID'])->fetch();
+    }
+    $arTask = $tasks[$arTaskFile['TASK_ID']];
+
+    if(!isset($profiles[$arTask['PROFILE_ID']])){
+        $profiles[$arTask['PROFILE_ID']] = \Smartcat\Connector\ProfileTable::getById($arTask['PROFILE_ID'])->fetch();
+    }
+    $arProfile = $profiles[$arTask['PROFILE_ID']];
 
     $arRow = [];
-    $arRow['ID'] = $arItem['ID'];
-    $arRow['COMMENT'] = $arItem['COMMENT'];
+    $arRow['ID'] = $arTask['ID'];
+    $arRow['COMMENT'] = $arTask['COMMENT'];
     $arRow['DEADLINE'] = '&mdash;';
-    $arRow['STATUS'] = $arStatusAll[$arItem['STATUS']];
+    $arRow['STATUS'] = $arStatusAll[$arTask['STATUS']];
 
-    if( $arItem['DEADLINE'] && $arItem['DEADLINE']->getTimestamp() > 1 ){
-        $arRow['DEADLINE'] = date('Y-m-d H:i', $arItem['DEADLINE']->getTimestamp() );
+    if( $arTask['DEADLINE'] && $arTask['DEADLINE']->getTimestamp() > 1 ){
+        $arRow['DEADLINE'] = date('Y-m-d H:i', $arTask['DEADLINE']->getTimestamp() );
     }
 
-    if(!empty($arItem['PROJECT_NAME'])){
-        $projectLink = "<a href=\"//$apiServer/projects/{$arItem['PROJECT_ID']}\" target=\"blank\" >";
-        $arRow['PROJECT_NAME'] = $projectLink . $arItem['PROJECT_NAME'] . '</a>';
+    if(!empty($arTaskFile['DOCUMENT_ID'])){
+        $docIds = explode('_',$arTaskFile['DOCUMENT_ID']);
+        $projectLink = "<a href=\"//$apiServer/editor?DocumentId={$docIds[0]}&LanguageId={$docIds[1]}\" target=\"blank\" >";
+        $arRow['PROJECT_NAME'] = $projectLink . $arTask['PROJECT_NAME'] . '</a>';
     }else{
         $arRow['PROJECT_NAME'] = '&mdash;';
     }
 
-    $arProfile = \Smartcat\Connector\ProfileTable::getById($arItem['PROFILE_ID'])->fetch();
     $sProfileLink = '/bitrix/admin/smartcat.connector_profile.php?ID=' . $arProfile['ID'] . '&lang=ru';
-    $arRow['PROFILE'] = $arProfile['NAME'] . ' [<a href="' . $sProfileLink . '" target="_blank">' . $arItem['PROFILE_ID'] . '</a>]';
+    $arRow['PROFILE'] = $arProfile['NAME'] . ' [<a href="' . $sProfileLink . '" target="_blank">' . $arTask['PROFILE_ID'] . '</a>]';
 
     $arIBlock = CIBlock::GetByID($arProfile['IBLOCK_ID'])->Fetch();
 
-    $arElement = CIBlockElement::GetByID($arItem['ELEMENT_ID'])->Fetch();
+    $arElement = CIBlockElement::GetByID($arTask['ELEMENT_ID'])->Fetch();
     $sElementLink = '/bitrix/admin/iblock_element_edit.php?IBLOCK_ID=' . $arProfile['IBLOCK_ID'] . '&type=' . $arIBlock['IBLOCK_TYPE_ID'] . '&ID=10834&lang=ru&find_section_section=0&WF=Y';
 
-    $arRow['ELEMENT'] = $arElement['NAME'] . ' [<a href="' . $sElementLink . '" target="_blank">' . $arItem['ELEMENT_ID'] . '</a>]';
+    $arRow['ELEMENT'] = $arElement['NAME'] . ' [<a href="' . $sElementLink . '" target="_blank">' . $arTask['ELEMENT_ID'] . '</a>]';
 
-    $rsFiles = \Smartcat\Connector\TaskFileTable::getList([
-        'filter' => [
-            '=TASK_ID' => $arItem['ID'],
-        ],
-    ]);
+
 
     $arLang = [];
-    while ($arFile = $rsFiles->fetch()) {
-        $sLangRow = '<a href="/bitrix/admin/smartcat.connector_content.php?lang=ru&TASK_ID=' . $arItem['ID'] . '" target="_blank">' . $arFile['LANG_FROM'] . '</a> -> ';
-        if ($arFile['STATUS'] == \Smartcat\Connector\TaskFileTable::STATUS_SUCCESS) {
-            $sLangRow .= '<a href="/bitrix/admin/smartcat.connector_content.php?lang=ru&FILE_ID=' . $arFile['ID'] . '" target="_blank">' . $arFile['LANG_TO'] . '</a>';
-        } else {
-            $sLangRow .= $arFile['LANG_TO'];
-        }
-        $arLang[] = $sLangRow;
+    $sLangRow = '<a href="/bitrix/admin/smartcat.connector_content.php?lang=ru&TASK_ID=' . $arTask['ID'] . '" target="_blank">' . $arTaskFile['LANG_FROM'] . '</a> -> ';
+    if ($arTaskFile['STATUS'] == \Smartcat\Connector\TaskFileTable::STATUS_SUCCESS) {
+        $sLangRow .= '<a href="/bitrix/admin/smartcat.connector_content.php?lang=ru&FILE_ID=' . $arTaskFile['ID'] . '" target="_blank">' . $arTaskFile['LANG_TO'] . '</a>';
+    } else {
+        $sLangRow .= $arTaskFile['LANG_TO'];
     }
-    $sVendor = explode('|',$arItem['VENDOR'])[1];
+    $arLang[] = $sLangRow;
+    $sVendor = explode('|',$arTask['VENDOR'])[1];
 
     $arRow['LANGUAGES'] = $sVendor . ':<br>' . implode("<br>", $arLang);
 
@@ -209,7 +216,7 @@ while ($arItem = $rsItems->fetch()) {
     $row->AddViewField('PROJECT_NAME', $arRow['PROJECT_NAME']);
 
     $arActions = [];
-    if($arItem['STATUS'] === \Smartcat\Connector\TaskTable::STATUS_SUCCESS){
+    if($arTask['STATUS'] === \Smartcat\Connector\TaskTable::STATUS_SUCCESS){
         $arActions[] = array(
             "ICON" => "edit",
             "TEXT" => GetMessage("SMARTCAT_CONNECTOR_REFRESH"),
