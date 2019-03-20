@@ -13,7 +13,6 @@ class IblockHelper
     const ERROR_LINKED_ELEMENT_NOT_FOUND = 1;
 
     /**
-     * �������� ������� � ��������� �������� � ���������� ID ������ �������� � ������ ������
      *
      * @param $elementID
      * @param $iblockID
