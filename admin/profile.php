@@ -370,7 +370,7 @@ if (!empty($arErrors)): ?>
         ?>
 
         <tr>
-            <th><?= GetMessage("SMARTCAT_CONNECTOR_INFOBLOK") ?></th>
+            <th style="width: 50%;" ><?= GetMessage("SMARTCAT_CONNECTOR_INFOBLOK") ?></th>
             <td>
                 <select name="IBLOCK_ID" class="js-select-iblock">
                     <option value="">[<?= GetMessage("SMARTCAT_CONNECTOR_VYBRATQ") ?></option>
