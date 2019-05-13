@@ -299,6 +299,8 @@ class smartcat_connector extends CModule
 
     public function DoInstall()
     {
+        global $DOCUMENT_ROOT, $APPLICATION;
+
         RegisterModule($this->MODULE_ID);
 
         $this->InstallAgents();
@@ -306,6 +308,8 @@ class smartcat_connector extends CModule
         $this->InstallDB();
         $this->UpgradeDB();
         $this->InstallEvents();
+
+        $APPLICATION->IncludeAdminFile(GetMessage("SMARTCAT_CONNECTOR_INSTALL_TITLE"), $DOCUMENT_ROOT."/bitrix/modules/".$this->MODULE_ID."/install/step1.php");
 
     }
 
