@@ -135,6 +135,22 @@ foreach (\Smartcat\Connector\TaskTable::getStatusList() as $sStatusID => $sStatu
     $arStat[$sStatusName] = \Smartcat\Connector\TaskTable::getCount(array_merge($filter, ['=STATUS' => $sStatusID]));
 }
 
+$rsTasks = \Smartcat\Connector\TaskTable::getList(array(
+    'order' => array(strtoupper($by) => $order),
+    'count_total' => true,
+    'offset' => $nav->getOffset(),
+    'limit' => $nav->getLimit(),
+    'filter' => $filter,
+));
+$taskIds = [];
+
+while ($arTask = $rsTasks->fetch()) {
+    array_push($taskIds, $arTask['ID']);
+}
+
+unset($filter['=PROFILE_ID']);
+$filter['@TASK_ID'] = $taskIds;
+
 $rsItems = \Smartcat\Connector\TaskFileTable::getList(array(
     'order' => array(strtoupper($by) => $order),
     'count_total' => true,
