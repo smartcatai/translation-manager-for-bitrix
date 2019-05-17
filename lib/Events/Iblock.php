@@ -247,16 +247,15 @@ class Iblock
 
                         if ($arTask) {
                             $row->aActions[] = [
-                                //'ICON' => 'copy',
                                 'TEXT' => GetMessage("SMARTCAT_CONNECTOR_PEREVOD") . $arTypes[$arProfile['TYPE']] . ' (' . implode(', ', $arProfile['LANGS']) . ')',
-                                'ONCLICK' => 'if(confirm("' . $sMessage . '")) ShowDeadlineDialog("' . $lAdmin->table_id . '", "' . $link . '")'
+                                'ONCLICK' => 'if(confirm("' . $sMessage . '")) ShowDeadlineDialog("' . $lAdmin->table_id . '", "' . $link . '")',
+                                'ACTION' => 'if(confirm("' . $sMessage . '")) ShowDeadlineDialog("' . $lAdmin->table_id . '", "' . $link . '")'
                             ];
                         } else {
                             $row->aActions[] = [
-
-                                //'ICON' => 'copy',
                                 'TEXT' => GetMessage("SMARTCAT_CONNECTOR_PEREVOD") . $arTypes[$arProfile['TYPE']] . ' (' . implode(', ', $arProfile['LANGS']) . ')',
                                 'ONCLICK' => 'ShowDeadlineDialog("' . $lAdmin->table_id . '", "' . $link . '")',
+                                'ACTION' => 'ShowDeadlineDialog("' . $lAdmin->table_id . '", "' . $link . '")',
                             ];
                         }
                     }
