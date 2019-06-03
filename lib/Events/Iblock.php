@@ -316,9 +316,10 @@ class Iblock
                             $project_names[]= $element['NAME'];
                             $task_ids[] = TaskHelper::createForElement($element['ID'], intval($_REQUEST['IBLOCK_ID']), intval($profileId));
                         }
-                    }
-                    if ($ID[0] == 'E') {
-                        $ID = substr($ID, 1);
+                    } else {
+                        if ($ID[0] == 'E') {
+                            $ID = substr($ID, 1);
+                        }
                         $arElement = \CIBlockElement::GetByID($ID)->GetNextElement(true, false)->GetFields();
                         $project_names[]= $arElement['NAME'];
                         $task_ids[] = TaskHelper::createForElement($ID, intval($_REQUEST['IBLOCK_ID']), intval($profileId));
