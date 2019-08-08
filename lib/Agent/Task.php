@@ -4,6 +4,7 @@ namespace Smartcat\Connector\Agent;
 
 use SmartCat\Client\Model\ProjectModel;
 use Smartcat\Connector\Helper\IblockHelper;
+use Smartcat\Connector\Helper\LoggerHelper;
 use Smartcat\Connector\Helper\StringHelper;
 use Smartcat\Connector\Helper\ProjectHelper;
 use Smartcat\Connector\ProfileIblockTable;
@@ -147,7 +148,7 @@ class Task
 
         if ($rsTasks->getSelectedRowsCount() === 0) {
             self::log("End CheckUploadedTasks 0");
-            retrun;
+            return;
         }
 
         while ($arTask = $rsTasks->fetch()) {
@@ -499,9 +500,7 @@ class Task
             $arOutput[] = $mess;
         }
         $mess = implode(', ', $arOutput) . PHP_EOL;
-        //echo date('d.m.Y H:i:s') . ': ' . $mess;
-        //fwrite(STDERR, date('d.m.Y H:i:s') . ': ' . $mess);
-        // file_put_contents($_SERVER['DOCUMENT_ROOT'] . '/task_log.txt', date('d.m.Y H:i:s') . ': ' . $mess . "\n", FILE_APPEND);
+        LoggerHelper::debug('agent.task', $mess);
     }
 
 }

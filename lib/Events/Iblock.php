@@ -2,6 +2,7 @@
 
 namespace Smartcat\Connector\Events;
 
+use Smartcat\Connector\Helper\LoggerHelper;
 use Smartcat\Connector\Helper\TaskHelper;
 use Smartcat\Connector\Helper\ProjectHelper;
 use Smartcat\Connector\ProfileIblockTable;
@@ -101,6 +102,7 @@ class Iblock
                     try{
                         $project = \Smartcat\Connector\Helper\ApiHelper::createProject($arProfile, $arFields['NAME']);
                     }catch(\Http\Client\Common\Exception\ClientErrorException $e){
+                        LoggerHelper::error('events.lblock', 'API Error: ' . $e->getResponse()->getBody()->getContents());
                         var_dump($e->getResponse()->getBody()->getContents()); die;
                     }
                     TaskHelper::setProject([$task_id], $project);
@@ -125,6 +127,7 @@ class Iblock
                     try{
                         $project = \Smartcat\Connector\Helper\ApiHelper::createProject($arProfile, $arFields['NAME']);
                     }catch(\Http\Client\Common\Exception\ClientErrorException $e){
+                        LoggerHelper::error('events.lblock', 'API Error: ' . $e->getResponse()->getBody()->getContents());
                         var_dump($e->getResponse()->getBody()->getContents()); die;
                     }
                     TaskHelper::setProject([$task_id], $project);
