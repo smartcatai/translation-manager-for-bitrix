@@ -66,6 +66,7 @@ class Task
                         'PROJECT_ID' => $project->getId(),
                         'PROJECT_NAME' => $project->getName(),
                     ]);
+                    self::log("Project {$project->getId()} created");
                 } catch(\Exception $e) {
                     self::errorHandler($e);
                     continue;
@@ -95,7 +96,7 @@ class Task
             }
 
             if (!empty($documents)) {
-                foreach($documents as $document){
+                foreach ($documents as $document) {
                     preg_match('/' .self::FILENAME . '(\d+)/', $document->getName(), $matches);
                     $taskId = (int)$matches[1];
                     
@@ -115,6 +116,7 @@ class Task
                                 'DOCUMENT_ID' => $document->getId(),
                                 'STATUS' => TaskFileTable::STATUS_UPLOADED,
                             ]);
+                            self::log("Document {$document->getId()} added to project");
                         }
                     }
                 }
@@ -173,12 +175,16 @@ class Task
                         'STATUS' => TaskTable::STATUS_PROCESS,
                         'DEADLINE' => $project->getDeadline() instanceof \DateTime ? DateTime::createFromTimestamp($project->getDeadline()->getTimestamp()) : $arTask['DEADLINE']
                     ]);
+
+                    self::log("Set to project id {$arTask['ID']} status 'In Progress'");
                 }
 
                 if (strtolower($project->getStatus()) == 'canceled') {
                     TaskTable::update($arTask['ID'], [
                         'STATUS' => TaskTable::STATUS_CANCELED,
                     ]);
+
+                    self::log("Set to project id {$arTask['ID']} status 'Canceled'");
                 }
             }
         }
@@ -193,7 +199,7 @@ class Task
             ]
         ]);
 
-        self::log("Check canceled tasks: {$rsTasks->getSelectedRowsCount()}");
+        self::log("Check for canceled tasks: {$rsTasks->getSelectedRowsCount()}");
 
         $api = ApiHelper::createApi();
         $projectManager = $api->getProjectManager();
@@ -214,6 +220,7 @@ class Task
                     TaskTable::update($arTask['ID'], [
                         'STATUS' => TaskTable::STATUS_CANCELED,
                     ]);
+                    self::log("Set to project id {$arTask['ID']} status 'Canceled'");
                 } else {
                     TaskTable::update($arTask['ID'], [
                         'DEADLINE' => $project->getDeadline() instanceof \DateTime ? DateTime::createFromTimestamp($project->getDeadline()->getTimestamp()) : $arTask['DEADLINE']
@@ -257,6 +264,8 @@ class Task
                         'EXPORT_TASK_ID' => $export->getId(),
                         'STATUS' => TaskFileTable::STATUS_PROCESS,
                     ]);
+
+                    self::log("Request export for document {$arTaskFile['DOCUMENT_ID']}");
                 }
             } catch (\Exception $e) {
                 self::errorHandler($e);
@@ -310,6 +319,8 @@ class Task
                 continue;
             }
 
+            self::log("Processing downloaded file for: {$arTaskFile['DOCUMENT_ID']}");
+
             if ($mimeType === 'text/html') {
                 $name = sys_get_temp_dir() . '/' . self::FILENAME . $arTaskFile['TASK_ID'] . '(' . $arTaskFile['LANG_TO'] . ').html';
                 file_put_contents( $name , $response->getBody()->getContents());
@@ -343,6 +354,8 @@ class Task
                     TaskFileTable::update($arTaskFile['ID'], [
                         'STATUS' => TaskFileTable::STATUS_SUCCESS,
                     ]);
+
+                    self::log("Archive was unpacked for: {$arTaskFile['DOCUMENT_ID']}");
                 }
             } else {
                 self::log("ARC is not IBXArchive", get_class($arc));
@@ -368,6 +381,8 @@ class Task
         $CIBlockElement = new \CIBlockElement();
     
         while ($arTaskFile = $rsTaskFiles->fetch()) {
+            self::log("Create block for: {$arTaskFile['DOCUMENT_ID']}");
+
             $name = sys_get_temp_dir() .'/' . self::FILENAME.$arTaskFile['TASK_ID'].'('.$arTaskFile['LANG_TO'].').html';
             $translateText = file_get_contents($name);
 
@@ -473,6 +488,8 @@ class Task
                                 ]);
                                 if (!$res) {
                                     self::log($CIBlockSection->LAST_ERROR, __LINE__);
+                                } else {
+                                    self::log("Block created {$arElement['IBLOCK_SECTION_ID']}");
                                 }
                             }
                             $i++;
@@ -483,6 +500,7 @@ class Task
                 TaskFileTable::update($arTaskFile['ID'], [
                     'STATUS' => TaskFileTable::STATUS_FAILED,
                 ]);
+                self::log("Unknown error");
             }
         }
     }
