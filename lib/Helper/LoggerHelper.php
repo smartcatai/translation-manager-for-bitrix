@@ -22,7 +22,7 @@ class LoggerHelper
         $data = array(
             'SEVERITY' => $severity,
             'AUDIT_TYPE_ID' => $eventId,
-            'MODULE_ID' => \smartcat_connector::MODULE_ID,
+            'MODULE_ID' => 'smartcat.connector',
             'DESCRIPTION' => $message
         );
 
