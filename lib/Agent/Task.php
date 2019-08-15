@@ -520,7 +520,13 @@ class Task
 
     private static function errorHandler(\Throwable $e) {
         if ($e instanceof \Http\Client\Exception\HttpException) {
-            $msg = "API Error: {$e->getResponse()->getStatusCode()} {$e->getResponse()->getBody()->getContents()}";
+            $body = $e->getResponse()->getBody()->getContents();
+
+            if ($e->getResponse()->getStatusCode() === 401) {
+                $body = 'Smartcat credentials are incorrect';
+            }
+
+            $msg = "API Error: {$e->getResponse()->getStatusCode()} {$body}";
         } else {
             $msg = "System Error: {$e->getCode()} {$e->getMessage()}";
         }

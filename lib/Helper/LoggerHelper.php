@@ -1,12 +1,4 @@
 <?php
-/**
- * @package    bitrix
- *
- * @author     medic84 <medic84@example.com>
- * @copyright  (c) 2019 medic84. All Rights Reserved.
- * @license    GNU General Public License version 3 or later; see LICENSE.txt
- * @link       http://medic84.example.com
- */
 
 namespace Smartcat\Connector\Helper;
 
@@ -28,6 +20,8 @@ class LoggerHelper
 
         if ($itemId) {
             $data['ITEM_ID'] = $itemId;
+        } else {
+            $data['ITEM_ID'] = '-';
         }
 
         return \CEventLog::Add($data);
