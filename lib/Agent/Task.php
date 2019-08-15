@@ -267,6 +267,13 @@ class Task
 
                     self::log("Request export for document {$arTaskFile['DOCUMENT_ID']}");
                 }
+            } catch (\Http\Client\Exception\HttpException $e) {
+                self::errorHandler($e);
+                if ($e->getResponse()->getStatusCode() === 404) {
+                    TaskFileTable::update($arTaskFile['ID'], [
+                        'STATUS' => TaskFileTable::STATUS_FAILED,
+                    ]);
+                }
             } catch (\Exception $e) {
                 self::errorHandler($e);
             }
