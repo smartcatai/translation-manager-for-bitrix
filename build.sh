@@ -1,13 +1,24 @@
 #!/bin/bash
 
-for file in `find . -path ./vendor -prune -o -type f -name "*.php"`
+DIR=`dirname "$0"`
+
+rm -rf $DIR/.last_version
+rm $DIR/smartcat.connector.zip
+
+for dirs in `find * -path $DIR -o -type d -print`
 do
-    file -bi $file
-    cp $file "$file.cp"
-    iconv -f UTF8 -t CP1251 $file > "$file.cp"
-    file -bi "$file.cp"
-    cp "$file.cp" $file
-    rm "$file.cp"
+    mkdir -p $DIR/.last_version/$dirs
 done
 
-zip -r smartcat.connector.zip ./
+for fileb in `find * -path $DIR -o -type f -print`
+do
+    cp $DIR/$fileb $DIR/.last_version/$fileb
+done
+
+for file in `find * -path vendor -prune -o -type f -name "*.php" -print`
+do
+    iconv -f UTF8 -t CP1251 $DIR/$file > $DIR/.last_version/$file
+done
+
+rm $DIR/.last_version/build.sh $DIR/.last_version/composer.*
+zip -r smartcat.connector.zip $DIR/.last_version

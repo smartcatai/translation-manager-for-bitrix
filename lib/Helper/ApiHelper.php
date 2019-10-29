@@ -2,8 +2,9 @@
 
 namespace Smartcat\Connector\Helper;
 
-use Smartcat\Connector\Helper\ProjectHelper;
 use Smartcat\Connector\TaskTable;
+use SmartCat\Client\SmartCat;
+use Bitrix\Main\Config\Option;
 
 class ApiHelper
 {
@@ -13,11 +14,11 @@ class ApiHelper
     public static function createApi()
     {
         if(self::$api === NULL){
-            $apiId = \Bitrix\Main\Config\Option::get('smartcat.connector', 'api_id');
-            $apiSecret = \Bitrix\Main\Config\Option::get('smartcat.connector', 'api_secret');
-            $apiServer = \Bitrix\Main\Config\Option::get('smartcat.connector', 'api_server');
+            $apiId = Option::get('smartcat.connector', 'api_id');
+            $apiSecret = Option::get('smartcat.connector', 'api_secret');
+            $apiServer = Option::get('smartcat.connector', 'api_server');
 
-            self::$api = new \SmartCat\Client\SmartCat($apiId, $apiSecret, $apiServer);
+            self::$api = new SmartCat($apiId, $apiSecret, $apiServer);
         }
     
         return self::$api;
@@ -25,7 +26,7 @@ class ApiHelper
 
     public static function checkAccountApi($apiId, $apiSecret, $apiServer)
     {
-        $api = new \SmartCat\Client\SmartCat($apiId, $apiSecret, $apiServer);
+        $api = new SmartCat($apiId, $apiSecret, $apiServer);
         return $api->getAccountManager()->accountGetAccountInfo();
     }
 
@@ -77,6 +78,7 @@ class ApiHelper
             if($e instanceof \Http\Client\Common\Exception\ClientErrorException ){
                 $msg .= ' ' . $e->getResponse()->getBody()->getContents();
             }
+            LoggerHelper::error('helper.apihelper', $msg);
             return [
                 'STATUS' => TaskTable::STATUS_FAILED,
                 'COMMENT' => $msg,

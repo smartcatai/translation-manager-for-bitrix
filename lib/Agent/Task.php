@@ -4,12 +4,14 @@ namespace Smartcat\Connector\Agent;
 
 use SmartCat\Client\Model\ProjectModel;
 use Smartcat\Connector\Helper\IblockHelper;
+use Smartcat\Connector\Helper\LoggerHelper;
 use Smartcat\Connector\Helper\StringHelper;
 use Smartcat\Connector\Helper\ProjectHelper;
 use Smartcat\Connector\ProfileIblockTable;
 use Smartcat\Connector\ProfileTable;
 use Smartcat\Connector\TaskFileTable;
 use Smartcat\Connector\TaskTable;
+use Smartcat\Connector\Helper\ApiHelper;
 use Bitrix\Main\Loader;
 use Bitrix\Main\Type\DateTime;
 
@@ -18,27 +20,17 @@ class Task
     const FILENAME = "Translation-";
     public static function Check()
     {
-        self::log("Start Check");
+        self::log('Start checking');
 
-        self::log("Start CheckReadyTasks");
         self::CheckReadyTasks();
-
-        self::log("Start CheckCanseledTasks");
-        self::CheckCanseledTasks();
-
-        self::log("Start CheckUploadedTasks");
+        self::CheckCanceledTasks();
         self::CheckUploadedTasks();
-
-        self::log("Start CheckDocumentStatus");
         self::CheckDocumentStatus();
-
-        self::log("Start CheckExportStatus");
         self::CheckExportStatus();
-
-        self::log("Start CheckTaskFileSuccess");
         self::CheckTaskFileSuccess();
 
-        self::log("Done");
+        self::log('End checking');
+
         return '\\' . __METHOD__ . '();';
     }
 
@@ -51,31 +43,32 @@ class Task
             ]
         ]);
 
+        self::log("Ready to upload: {$rsTasks->getSelectedRowsCount()}");
+
         if ($rsTasks->getSelectedRowsCount() === 0) {
-            self::log("End CheckReadyTasks 0");
             return;
         }
 
-        $api = \Smartcat\Connector\Helper\ApiHelper::createApi();
+        $api = ApiHelper::createApi();
         $projectManager = $api->getProjectManager();
         $projectDocuments = [];
 
         while ($arTask = $rsTasks->fetch()) {
-
             $projectId = $arTask['PROJECT_ID'];
 
-            if(empty($projectId)){
+            if (empty($projectId)) {
                 $arProfile = ProfileTable::getById($arTask['PROFILE_ID'])->fetch();
                 $arElement = \CIBlockElement::GetByID($arTask['ELEMENT_ID'])->GetNextElement(true, false)->GetFields();
-                try{
-                    $project = \Smartcat\Connector\Helper\ApiHelper::createProject($arProfile, $arElement['NAME']);
+                try {
+                    $project = ApiHelper::createProject($arProfile, $arElement['NAME']);
                     $projectId = $project->getId();
                     TaskTable::update($arTask['ID'], [
                         'PROJECT_ID' => $project->getId(),
                         'PROJECT_NAME' => $project->getName(),
                     ]);
-                }catch(\Http\Client\Common\Exception\ClientErrorException $e){
-                    self::log("SmartCat error create project: {$e->getMessage()}");
+                    self::log("Project {$project->getId()} created");
+                } catch(\Exception $e) {
+                    self::errorHandler($e);
                     continue;
                 }
             }
@@ -91,25 +84,21 @@ class Task
             $projectDocuments[$projectId][] = ProjectHelper::createDocumentFromFile($sFilePath, self::FILENAME . $arTask['ID'] . '.html');
         }
 
-        foreach($projectDocuments as $projectId => $documentModels){
-            try{
+        foreach ($projectDocuments as $projectId => $documentModels) {
+            try {
                 $documents = $projectManager->projectAddDocument([
                     'documentModel' => $documentModels,
                     'projectId' => $projectId,
                 ]);
-            }catch(\Exception $e){
-                self::log("SmartCat error add documents: {$e->getMessage()}");
+            } catch (\Exception $e) {
+                self::errorHandler($e);
                 return;
             }
 
             if (!empty($documents)) {
-                self::log("SmartCat documents work");
-                foreach($documents as $document){
+                foreach ($documents as $document) {
                     preg_match('/' .self::FILENAME . '(\d+)/', $document->getName(), $matches);
                     $taskId = (int)$matches[1];
-                    self::log("SmartCat document task id: {$taskId}");
-                    self::log("SmartCat document task id: {$matches[1]}");
-                    self::log("SmartCat document task id: {$document->getName()}");
                     
                     TaskTable::update($taskId, [
                         'STATUS' => TaskTable::STATUS_UPLOADED,
@@ -127,6 +116,7 @@ class Task
                                 'DOCUMENT_ID' => $document->getId(),
                                 'STATUS' => TaskFileTable::STATUS_UPLOADED,
                             ]);
+                            self::log("Document {$document->getId()} added to project");
                         }
                     }
                 }
@@ -142,19 +132,20 @@ class Task
                 '=STATUS' => TaskTable::STATUS_UPLOADED,
             ]
         ]);
-        $api = \Smartcat\Connector\Helper\ApiHelper::createApi();
+        $api = ApiHelper::createApi();
         $projectManager = $api->getProjectManager();
 
+        self::log("Check uploaded: {$rsTasks->getSelectedRowsCount()}");
+
         if ($rsTasks->getSelectedRowsCount() === 0) {
-            self::log("End CheckUploadedTasks 0");
-            retrun;
+            return;
         }
 
         while ($arTask = $rsTasks->fetch()) {
             try {
                 $project = $projectManager->projectGet($arTask['PROJECT_ID']);
             } catch (\Exception $e) {
-                self::log($e->getMessage() , __METHOD__, __LINE__);
+                self::errorHandler($e);
                 TaskTable::update($arTask['ID'], [
                     'STATUS' => TaskTable::STATUS_FAILED,
                     'COMMENT' => $e->getMessage()
@@ -170,31 +161,36 @@ class Task
                 }
             }
 
-            if($disasemblingSuccess){
-                try{
+            if ($disasemblingSuccess) {
+                try {
                     $projectManager->projectBuildStatistics($project->getId());
-                }catch(\Exception $e){
-                    self::log("SmartCat error Build Statistics: {$e->getMessage()}");
+                } catch (\Exception $e) {
+                    self::errorHandler($e);
                 }
             }
 
-            if ($project){
+            if ($project) {
                 if (strtolower($project->getStatus()) == 'inprogress') {
                     TaskTable::update($arTask['ID'], [
                         'STATUS' => TaskTable::STATUS_PROCESS,
                         'DEADLINE' => $project->getDeadline() instanceof \DateTime ? DateTime::createFromTimestamp($project->getDeadline()->getTimestamp()) : $arTask['DEADLINE']
                     ]);
+
+                    self::log("Set to project id {$arTask['ID']} status 'In Progress'");
                 }
+
                 if (strtolower($project->getStatus()) == 'canceled') {
                     TaskTable::update($arTask['ID'], [
                         'STATUS' => TaskTable::STATUS_CANCELED,
                     ]);
+
+                    self::log("Set to project id {$arTask['ID']} status 'Canceled'");
                 }
             }
         }
     }
 
-    public static function CheckCanseledTasks()
+    public static function CheckCanceledTasks()
     {
         $rsTasks = TaskTable::getList([
             'order' => ['ID' => 'asc'],
@@ -202,25 +198,30 @@ class Task
                 '=STATUS' => TaskTable::STATUS_PROCESS,
             ]
         ]);
-        $api = \Smartcat\Connector\Helper\ApiHelper::createApi();
+
+        self::log("Check for canceled tasks: {$rsTasks->getSelectedRowsCount()}");
+
+        $api = ApiHelper::createApi();
         $projectManager = $api->getProjectManager();
+
         while ($arTask = $rsTasks->fetch()) {
             try {
                 $project = $projectManager->projectGet($arTask['PROJECT_ID']);
             } catch (\Exception $e) {
-                self::log($e->getMessage() , __METHOD__, __LINE__);
+                self::errorHandler($e);
                 TaskTable::update($arTask['ID'], [
                     'STATUS' => TaskTable::STATUS_FAILED,
                     'COMMENT' => $e->getMessage()
                 ]);
                 continue;
             }
-            if ($project){
+            if ($project) {
                 if (strtolower($project->getStatus()) == 'canceled') {
                     TaskTable::update($arTask['ID'], [
                         'STATUS' => TaskTable::STATUS_CANCELED,
                     ]);
-                }else{
+                    self::log("Set to project id {$arTask['ID']} status 'Canceled'");
+                } else {
                     TaskTable::update($arTask['ID'], [
                         'DEADLINE' => $project->getDeadline() instanceof \DateTime ? DateTime::createFromTimestamp($project->getDeadline()->getTimestamp()) : $arTask['DEADLINE']
                     ]);
@@ -238,41 +239,49 @@ class Task
             ]
         ]);
 
-        self::log("End CheckDocumentStatus ", $rsTaskFiles->getSelectedRowsCount());
+        self::log("Check documents status: {$rsTaskFiles->getSelectedRowsCount()}");
+
         if ($rsTaskFiles->getSelectedRowsCount() === 0) {
-            self::log("End CheckDocumentStatus 0");
-            return ;
+            return;
         }
 
-        $api = \Smartcat\Connector\Helper\ApiHelper::createApi();
+        $api = ApiHelper::createApi();
         $documentManager = $api->getDocumentManager();
         $documentExportManager = $api->getDocumentExportManager();
 
         while ($arTaskFile = $rsTaskFiles->fetch()) {
-            self::log("Task", $arTaskFile['DOCUMENT_ID']);
+            try {
+                $document = $documentManager->documentGet(['documentId'=>$arTaskFile['DOCUMENT_ID']]);
 
-            $document = $documentManager->documentGet(['documentId'=>$arTaskFile['DOCUMENT_ID']]);
+                if ($document) {
+                    if ($document->getStatus() !== 'completed') {
+                        continue;
+                    }
 
-            if ($document) {
-                self::log('Current status:', $document->getStatus());
-                if ($document->getStatus() !== 'completed') {
-                    continue;
+                    $export = $documentExportManager->documentExportRequestExport(['documentIds'=>[$document->getId()]]);
+
+                    TaskFileTable::update($arTaskFile['ID'], [
+                        'EXPORT_TASK_ID' => $export->getId(),
+                        'STATUS' => TaskFileTable::STATUS_PROCESS,
+                    ]);
+
+                    self::log("Request export for document {$arTaskFile['DOCUMENT_ID']}");
                 }
-
-                $export = $documentExportManager->documentExportRequestExport(['documentIds'=>[$document->getId()]]);
-
-                TaskFileTable::update($arTaskFile['ID'], [
-                    'EXPORT_TASK_ID' => $export->getId(),
-                    'STATUS' => TaskFileTable::STATUS_PROCESS,
-                ]);
-
+            } catch (\Http\Client\Exception\HttpException $e) {
+                self::errorHandler($e);
+                if ($e->getResponse()->getStatusCode() === 404) {
+                    TaskFileTable::update($arTaskFile['ID'], [
+                        'STATUS' => TaskFileTable::STATUS_FAILED,
+                    ]);
+                }
+            } catch (\Exception $e) {
+                self::errorHandler($e);
             }
-
         }
     }
 
-    public static function CheckExportStatus(){
-    
+    public static function CheckExportStatus()
+    {
         $rsTaskFiles = TaskFileTable::getList([
             'order' => ['ID' => 'asc'],
             'filter' => [
@@ -280,39 +289,47 @@ class Task
             ]
         ]);
 
+        self::log("Check documents export status: {$rsTaskFiles->getSelectedRowsCount()}");
+
         if ($rsTaskFiles->getSelectedRowsCount() === 0) {
-            return ;
+            return;
         }
 
-        $api = \Smartcat\Connector\Helper\ApiHelper::createApi();
+        $api = ApiHelper::createApi();
         $documentExportManager = $api->getDocumentExportManager();
         $exportUnpacked = [];
 
         while ($arTaskFile = $rsTaskFiles->fetch()) {
-            if(in_array($arTaskFile['EXPORT_TASK_ID'], $exportUnpacked )){
+            if (in_array($arTaskFile['EXPORT_TASK_ID'], $exportUnpacked)) {
                 continue;
             }
+
             array_push($exportUnpacked, $arTaskFile['EXPORT_TASK_ID']);
-            try{
+
+            try {
                 $response = $documentExportManager->documentExportDownloadExportResult($arTaskFile['EXPORT_TASK_ID']);
-            }catch(\Exception $e){
-                self::log("SmartCat error Download Export {$arTaskFile['EXPORT_TASK_ID']}: {$e->getMessage()}");
+            } catch (\Exception $e) {
+                self::errorHandler($e);
                 TaskFileTable::update($arTaskFile['ID'], [
                     'STATUS' => TaskFileTable::STATUS_UPLOADED,
                 ]);
                 return;
             }
-            if(!$response){
+
+            if (!$response) {
                 return;
             }
+
             $mimeType = $response->getHeaderLine('Content-Type');
-            if($response->getStatusCode() === 204){
+
+            if ($response->getStatusCode() === 204) {
                 continue;
             }
-            self::log($response->getStatusCode(),$mimeType);
-            if($mimeType==='text/html'){
+
+            self::log("Processing downloaded file for: {$arTaskFile['DOCUMENT_ID']}");
+
+            if ($mimeType === 'text/html') {
                 $name = sys_get_temp_dir() . '/' . self::FILENAME . $arTaskFile['TASK_ID'] . '(' . $arTaskFile['LANG_TO'] . ').html';
-                self::log('File name', $name );
                 file_put_contents( $name , $response->getBody()->getContents());
                 TaskFileTable::update($arTaskFile['ID'], [
                     'STATUS' => TaskFileTable::STATUS_SUCCESS,
@@ -322,11 +339,9 @@ class Task
 
             $sFilePath = tempnam(sys_get_temp_dir(), "EXPORT-{$arTaskFile['EXPORT_TASK_ID']}-") . '.zip';
             file_put_contents($sFilePath, $response->getBody()->getContents());
-
 			$arc = \CBXArchive::GetArchive($sFilePath);
 
-			if ($arc instanceof IBXArchive)
-            {
+			if ($arc instanceof IBXArchive) {
                 global $USER;
 
                 $arc->SetOptions
@@ -340,26 +355,31 @@ class Task
 
                 $uRes = $arc->Unpack(sys_get_temp_dir());
 
-                if (!$uRes){
+                if (!$uRes) {
                     self::log($arc->GetErrors());
-                }else{
+                } else {
                     TaskFileTable::update($arTaskFile['ID'], [
                         'STATUS' => TaskFileTable::STATUS_SUCCESS,
                     ]);
+
+                    self::log("Archive was unpacked for: {$arTaskFile['DOCUMENT_ID']}");
                 }
-            }else{
-                self::log(get_class($arc));
+            } else {
+                self::log("ARC is not IBXArchive", get_class($arc));
             }
         }
     }
 
-    public static function CheckTaskFileSuccess(){
+    public static function CheckTaskFileSuccess()
+    {
         $rsTaskFiles = TaskFileTable::getList([
             'order' => ['ID' => 'asc'],
             'filter' => [
                 '=STATUS' => TaskFileTable::STATUS_SUCCESS,
             ]
         ]);
+
+        self::log("Check task file success: {$rsTaskFiles->getSelectedRowsCount()}");
 
         if ($rsTaskFiles->getSelectedRowsCount() === 0) {
             return ;
@@ -368,11 +388,11 @@ class Task
         $CIBlockElement = new \CIBlockElement();
     
         while ($arTaskFile = $rsTaskFiles->fetch()) {
+            self::log("Create block for: {$arTaskFile['DOCUMENT_ID']}");
+
             $name = sys_get_temp_dir() .'/' . self::FILENAME.$arTaskFile['TASK_ID'].'('.$arTaskFile['LANG_TO'].').html';
-            self::log('File name', $name );
             $translateText = file_get_contents($name);
 
-            self::log("Parse file content", $translateText);
             preg_match_all('/<field id="(.+?)">(.*?)<\/field>/is', $translateText, $matches);
             $arFields = [];
             $arProps = [];
@@ -386,7 +406,6 @@ class Task
                     $arFields[$sField] = StringHelper::specialcharsDecode($matches[2][$i]);
                 }
             }
-            self::log("End parse file content");
 
             $arTask = TaskTable::getList([
                 'order' => ['ID' => 'asc'],
@@ -394,7 +413,6 @@ class Task
                     '=ID' => $arTaskFile['TASK_ID'],
                 ]
             ])->fetch();
-            self::log("task ID",$arTask['ID']);
 
             $arProfileIblock = ProfileIblockTable::getList([
                 'filter' => [
@@ -402,14 +420,12 @@ class Task
                     '=LANG' => $arTaskFile['LANG_TO'],
                 ],
             ])->fetch();
-            self::log("profile iblock ID",$arProfileIblock['ID']);
 
             $arProfile = ProfileTable::getList([
                 'filter' => [
                     '=ID' => $arTask['PROFILE_ID'],
                 ],
             ])->fetch();
-            self::log("Profile ID", $arProfile['ID']);
 
             $arElement = [
                 'IBLOCK_ID' => $arProfileIblock['IBLOCK_ID'],
@@ -417,8 +433,10 @@ class Task
                 'PREVIEW_TEXT_TYPE' => 'html',
                 'DETAIL_TEXT_TYPE' => 'html',
             ];
+
             IblockHelper::copyIBlockProps($arProfile['IBLOCK_ID'], $arProfileIblock['IBLOCK_ID']);
             $elementID = 0;
+
             try {
                 $elementID = IblockHelper::copyElementToIB($arTask['ELEMENT_ID'], $arProfileIblock['IBLOCK_ID'], $arTaskFile['ELEMENT_ID']);
             } catch (\Exception $e) {
@@ -430,15 +448,16 @@ class Task
                     $bWaiting = true;
                     continue;
                 }
-                self::log('Copy Error', $e->getMessage(), $arElement);
+                self::errorHandler($e);
                 $sErrorComment = $e->getMessage();
                 $bHasErrors = true;
             }
-            self::log($elementID);
+
             foreach ($arProfile['FIELDS']['FIELDS'] as $sField) {
                 $arElement[$sField] = $arFields[$sField];
             }
             unset($arElement['IBLOCK_SECTION_ID']);
+
             if ($elementID > 0) {
                 if($arElement['ACTIVE'] === 'Y'){
                     unset($arElement['ACTIVE']);
@@ -447,11 +466,11 @@ class Task
             } else {
                 $elementID = $CIBlockElement->Add($arElement);
             }
-            self::log($elementID);
+
             if ($CIBlockElement->LAST_ERROR) {
                 self::log('IB Error', $CIBlockElement->LAST_ERROR, $arElement);
             }
-            self::log("New element ID", $elementID);
+
             if ($elementID > 0) {
                 TaskFileTable::update($arTaskFile['ID'], [
                     'TRANSLATION' => $translateText,
@@ -476,6 +495,8 @@ class Task
                                 ]);
                                 if (!$res) {
                                     self::log($CIBlockSection->LAST_ERROR, __LINE__);
+                                } else {
+                                    self::log("Block created {$arElement['IBLOCK_SECTION_ID']}");
                                 }
                             }
                             $i++;
@@ -486,6 +507,7 @@ class Task
                 TaskFileTable::update($arTaskFile['ID'], [
                     'STATUS' => TaskFileTable::STATUS_FAILED,
                 ]);
+                self::log("Unknown error");
             }
         }
     }
@@ -499,9 +521,23 @@ class Task
             $arOutput[] = $mess;
         }
         $mess = implode(', ', $arOutput) . PHP_EOL;
-        //echo date('d.m.Y H:i:s') . ': ' . $mess;
-        //fwrite(STDERR, date('d.m.Y H:i:s') . ': ' . $mess);
-        // file_put_contents($_SERVER['DOCUMENT_ROOT'] . '/task_log.txt', date('d.m.Y H:i:s') . ': ' . $mess . "\n", FILE_APPEND);
+
+        LoggerHelper::debug('agent.LOG', $mess);
     }
 
+    private static function errorHandler(\Throwable $e) {
+        if ($e instanceof \Http\Client\Exception\HttpException) {
+            $body = $e->getResponse()->getBody()->getContents();
+
+            if ($e->getResponse()->getStatusCode() === 401) {
+                $body = 'Smartcat credentials are incorrect';
+            }
+
+            $msg = "API Error: {$e->getResponse()->getStatusCode()} {$body}";
+        } else {
+            $msg = "System Error: {$e->getCode()} {$e->getMessage()}";
+        }
+
+        LoggerHelper::debug('agent.ERROR', $msg);
+    }
 }

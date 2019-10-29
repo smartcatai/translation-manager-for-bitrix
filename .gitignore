@@ -1,4 +1,5 @@
-.idea
+.idea/
 composer.lock
 smartcat.connector.zip
-vendor
+vendor/
+.last_version/
