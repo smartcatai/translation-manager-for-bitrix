@@ -124,9 +124,15 @@ class Iblock
             foreach ($arProfiles as $arProfile) {
                 if(self::$iBlockUpdated && self::$createTask){
                     $task_id = TaskHelper::createForElement($arFields['ID'], $arProfile['IBLOCK_ID'], $arProfile['ID']);
-                    try{
-                        $project = \Smartcat\Connector\Helper\ApiHelper::createProject($arProfile, $arFields['NAME']);
-                    }catch(\Http\Client\Common\Exception\ClientErrorException $e){
+                    try {
+                        if ($arProfile['PROJECT_ID']) {
+                            $project = \Smartcat\Connector\Helper\ApiHelper::getProject($arProfile['PROJECT_ID']);
+                        }
+
+                        if (!$project) {
+                            $project = \Smartcat\Connector\Helper\ApiHelper::createProject($arProfile, $arFields['NAME']);
+                        }
+                    } catch (\Http\Client\Common\Exception\ClientErrorException $e) {
                         LoggerHelper::error('events.lblock', 'API Error: ' . $e->getResponse()->getBody()->getContents());
                         var_dump($e->getResponse()->getBody()->getContents()); die;
                     }
@@ -244,7 +250,6 @@ class Iblock
                                     . '&lang=' . LANGUAGE_ID 
                                     . '&IBLOCK_ID=' . $IBLOCK_ID 
                                     . '&PROFILE_ID=' . $arProfile['ID']
-                                   // . '&PROJECT_ID=' . $arProfile['PROJECT_ID']
                                 . ($find_section ? '&find_section_section=' . $find_section : '')
                                     . '&find_el_y=' . $find_el
                                 );
