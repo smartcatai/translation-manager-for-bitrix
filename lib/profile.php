@@ -85,6 +85,12 @@ class ProfileTable extends Main\Entity\DataManager
                 'required' => true,
                 'title' => Loc::getMessage('SMARTCAT_CONNECTOR_PROFILE_ENTITY_IBLOCK_ID_FIELD'),
             ),
+            'PROJECT_ID' => array(
+                'data_type' => 'string',
+                'required' => false,
+                //'validation' => array(__CLASS__, 'validateLang'),
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_PROFILE_ENTITY_PROJECT_ID_FIELD'),
+            ),
             'LANG' => array(
                 'data_type' => 'string',
                 'required' => true,

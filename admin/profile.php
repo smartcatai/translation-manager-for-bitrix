@@ -226,6 +226,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()) {
     $arProfile['FIELDS'] = $_REQUEST['FIELDS'];
     $arProfile['WORKFLOW'] = implode(',',$workflow);
     $arProfile['VENDOR'] = $_REQUEST['VENDOR'];
+    $arProfile['PROJECT_ID'] = $_REQUEST['PROJECT_ID'];
 
     $langIsSelected = array_reduce($_REQUEST['IBLOCKS'], function($langIsSelected, $item){
         return $langIsSelected || !empty($item['LANG']); 
@@ -446,6 +447,12 @@ if (!empty($arErrors)): ?>
                             <?= $label; ?>
                         </label><br><br>
                     <? endforeach; ?>
+            </td>
+        </tr>
+
+        <tr>
+            <td><?= GetMessage("SMARTCAT_CONNECTOR_PROJECT_ID") ?></td>
+            <td><input type="text" name="PROJECT_ID" value="<?= $arProfile['PROJECT_ID']; ?>">
             </td>
         </tr>
 

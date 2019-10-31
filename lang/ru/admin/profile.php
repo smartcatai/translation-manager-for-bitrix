@@ -22,6 +22,7 @@ $MESS["SMARTCAT_CONNECTOR_AKTIVNOSTQ"] = "Активность";
 $MESS["SMARTCAT_CONNECTOR_AZYK"] = "Язык";
 $MESS["SMARTCAT_CONNECTOR_PARAMETRY_PEREVODA"] = "Параметры перевода";
 $MESS["SMARTCAT_CONNECTOR_TIP_PEREVODA"] = "Этапы рабочего процесса";
+$MESS["SMARTCAT_CONNECTOR_PROJECT_ID"] = "ID проекта";
 $MESS["SMARTCAT_CONNECTOR_PUBLIKOVATQ_PEREVOD"] = "Автоматически публиковать переводы";
 $MESS["SMARTCAT_CONNECTOR_AVTOMATICESKI_PEREVO"] = "Автоматически переводить новые материалы";
 $MESS["SMARTCAT_CONNECTOR_KAKIE_POLA_PEREVODIT"] = "Какие поля переводить?";

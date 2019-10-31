@@ -243,8 +243,9 @@ class Iblock
                                 . "&" . \CUtil::AddSlashes('&type=' . urlencode($_REQUEST['type']) 
                                     . '&lang=' . LANGUAGE_ID 
                                     . '&IBLOCK_ID=' . $IBLOCK_ID 
-                                    . '&PROFILE_ID=' . $arProfile['ID'] 
-                                    . ($find_section ? '&find_section_section=' . $find_section : '') 
+                                    . '&PROFILE_ID=' . $arProfile['ID']
+                                   // . '&PROJECT_ID=' . $arProfile['PROJECT_ID']
+                                . ($find_section ? '&find_section_section=' . $find_section : '')
                                     . '&find_el_y=' . $find_el
                                 );
 
