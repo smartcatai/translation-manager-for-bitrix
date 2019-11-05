@@ -30,6 +30,7 @@ class TaskTable extends Main\Entity\DataManager
     const STATUS_FAILED = 'F';
     const STATUS_SUCCESS = 'S';
     const STATUS_CANCELED = 'C';
+    const STATUS_DONE = 'D';
 
     public static function getStatusList()
     {
@@ -41,6 +42,7 @@ class TaskTable extends Main\Entity\DataManager
             self::STATUS_FAILED => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_STATUS_FAILED'),
             self::STATUS_SUCCESS => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_STATUS_SUCCESS'),
             self::STATUS_CANCELED => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_STATUS_CANCELED'),
+            self::STATUS_DONE => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_STATUS_DONE'),
         ];
     }
 
