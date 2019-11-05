@@ -2,17 +2,15 @@
 
 namespace Smartcat\Connector\Agent;
 
-use SmartCat\Client\Model\ProjectModel;
 use Smartcat\Connector\Helper\IblockHelper;
 use Smartcat\Connector\Helper\LoggerHelper;
 use Smartcat\Connector\Helper\StringHelper;
 use Smartcat\Connector\Helper\ProjectHelper;
 use Smartcat\Connector\ProfileIblockTable;
-use Smartcat\Connector\ProfileTable;
+use Smartcat\Connector\Repository\ProfileRepository;
 use Smartcat\Connector\TaskFileTable;
 use Smartcat\Connector\TaskTable;
 use Smartcat\Connector\Helper\ApiHelper;
-use Bitrix\Main\Loader;
 use Bitrix\Main\Type\DateTime;
 
 class Task
@@ -57,7 +55,7 @@ class Task
             $projectId = $arTask['PROJECT_ID'];
 
             if (empty($projectId)) {
-                $arProfile = ProfileTable::getById($arTask['PROFILE_ID'])->fetch();
+                $arProfile = ProfileRepository::getOneById($arTask['PROFILE_ID']);
                 $arElement = \CIBlockElement::GetByID($arTask['ELEMENT_ID'])->GetNextElement(true, false)->GetFields();
                 try {
                     $project = ApiHelper::createProject($arProfile, $arElement['NAME']);
@@ -421,11 +419,7 @@ class Task
                 ],
             ])->fetch();
 
-            $arProfile = ProfileTable::getList([
-                'filter' => [
-                    '=ID' => $arTask['PROFILE_ID'],
-                ],
-            ])->fetch();
+            $arProfile = ProfileRepository::getOneById($arTask['PROFILE_ID']);
 
             $arElement = [
                 'IBLOCK_ID' => $arProfileIblock['IBLOCK_ID'],

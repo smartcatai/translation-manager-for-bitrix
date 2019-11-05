@@ -4,9 +4,9 @@ namespace Smartcat\Connector\Events;
 
 use Smartcat\Connector\Helper\LoggerHelper;
 use Smartcat\Connector\Helper\TaskHelper;
-use Smartcat\Connector\Helper\ProjectHelper;
+use Smartcat\Connector\Tables\ProfileTable;
+use Smartcat\Connector\Repository\ProfileRepository;
 use Smartcat\Connector\ProfileIblockTable;
-use Smartcat\Connector\ProfileTable;
 use Smartcat\Connector\TaskTable;
 use Bitrix\Main\Loader;
 use Bitrix\Main\Localization\Loc;
@@ -20,66 +20,59 @@ class Iblock
     protected static $createTask = false;
     const ACTION_NAME = 'smartcat_connector_translate';
 
+    /**
+     * @param $arFields
+     */
     public static function onBeforeIBlockElementAdd(&$arFields)
     {
         self::$iBlockAdd = true;
+
         $obElement = \CIBlockElement::GetByID($arFields['ID'])->GetNextElement(true, false);
-        if(!$obElement){
+
+        if (!$obElement) {
             self::$createTask = true;
             return;
         }
-        $arElement = $obElement->GetFields();
-        $arProfiles = ProfileTable::getList([
-            'filter' => [
-                '=IBLOCK_ID' => intval($arFields['IBLOCK_ID']),
-                '=ACTIVE' => 'Y',
-                '=AUTO_ORDER' => 'Y',
-            ],
-        ])->fetchAll();
-        foreach ($arProfiles as $arProfile) {
-            foreach($arProfile['FIELDS'] as $fieldList){
-                foreach($fieldList as $field){
-                    if(!isset($arFields[$field])){
-                        continue;
-                    }
-                    if($arFields[$field] === $arElement[$field]){
-                        continue;
-                    }
-                    self::$createTask = true;
-                    break;
-                }
-                if(self::$createTask){
-                    break;
-                }
-            }
-        }
+
+        self::enumProfiles($obElement, $arFields);
     }
 
+    /**
+     * @param $arFields
+     */
     public static function onBeforeIBlockElementUpdate(&$arFields)
     {
         self::$iBlockUpdated = true;
+
         $obElement = \CIBlockElement::GetByID($arFields['ID'])->GetNextElement(true, false);
+        self::enumProfiles($obElement, $arFields);
+    }
+
+    /**
+     * @param $obElement \_CIBElement
+     * @param $arFields array
+     */
+    protected static function enumProfiles($obElement, $arFields)
+    {
         $arElement = $obElement->GetFields();
-        $arProfiles = ProfileTable::getList([
-            'filter' => [
-                '=IBLOCK_ID' => intval($arFields['IBLOCK_ID']),
-                '=ACTIVE' => 'Y',
-                '=AUTO_ORDER' => 'Y',
-            ],
-        ])->fetchAll();
+        $arProfiles = ProfileRepository::getAllByIblockId($arFields['IBLOCK_ID']);
+
         foreach ($arProfiles as $arProfile) {
-            foreach($arProfile['FIELDS'] as $fieldList){
-                foreach($fieldList as $field){
-                    if(!isset($arFields[$field])){
+            foreach ($arProfile['FIELDS'] as $fieldList) {
+                foreach ($fieldList as $field) {
+                    if (!isset($arFields[$field])) {
                         continue;
                     }
-                    if($arFields[$field] === $arElement[$field]){
+
+                    if ($arFields[$field] === $arElement[$field]) {
                         continue;
                     }
+
                     self::$createTask = true;
                     break;
                 }
-                if(self::$createTask){
+
+                if (self::$createTask) {
                     break;
                 }
             }
@@ -89,15 +82,10 @@ class Iblock
     public static function OnAfterIBlockElementAdd(&$arFields)
     {
         if ($arFields['ID'] > 0) {
-            $arProfiles = ProfileTable::getList([
-                'filter' => [
-                    '=IBLOCK_ID' => intval($arFields['IBLOCK_ID']),
-                    '=ACTIVE' => 'Y',
-                    '=AUTO_ORDER' => 'Y',
-                ],
-            ])->fetchAll();
+            $arProfiles = ProfileRepository::getAllByIblockId($arFields['IBLOCK_ID']);
+
             foreach ($arProfiles as $arProfile) {
-                if(self::$iBlockAdd && self::$createTask){
+                if (self::$iBlockAdd && self::$createTask) {
                     $task_id = TaskHelper::createForElement($arFields['ID'], $arProfile['IBLOCK_ID'], $arProfile['ID']);
                     try{
                         $project = \Smartcat\Connector\Helper\ApiHelper::createProject($arProfile, $arFields['NAME']);
@@ -114,13 +102,8 @@ class Iblock
     public static function OnAfterIBlockElementUpdate(&$arFields)
     {
         if ($arFields['ID'] > 0) {
-            $arProfiles = ProfileTable::getList([
-                'filter' => [
-                    '=IBLOCK_ID' => intval($arFields['IBLOCK_ID']),
-                    '=ACTIVE' => 'Y',
-                    '=AUTO_ORDER' => 'Y',
-                ],
-            ])->fetchAll();
+            $arProfiles = ProfileRepository::getAllByIblockId($arFields['IBLOCK_ID']);
+
             foreach ($arProfiles as $arProfile) {
                 if(self::$iBlockUpdated && self::$createTask){
                     $task_id = TaskHelper::createForElement($arFields['ID'], $arProfile['IBLOCK_ID'], $arProfile['ID']);
@@ -178,14 +161,7 @@ class Iblock
         if ($find_el == 'Y') $find_section = '';
 
         if ($bListPage && Loader::includeModule('iblock') && Loader::includeModule('smartcat.connector')) {
-            $iblockID = intval($_REQUEST['IBLOCK_ID']);
-
-            $arProfiles = ProfileTable::getList([
-                'filter' => [
-                    '=IBLOCK_ID' => $iblockID,
-                    '=ACTIVE' => 'Y',
-                ],
-            ])->fetchAll();
+            $arProfiles = ProfileRepository::getAllByIblockId(intval($_REQUEST['IBLOCK_ID']));
 
             foreach ($arProfiles as &$arProfile) {
                 $arProfile['LANGS'] = [];
@@ -250,7 +226,7 @@ class Iblock
                                     . '&lang=' . LANGUAGE_ID 
                                     . '&IBLOCK_ID=' . $IBLOCK_ID 
                                     . '&PROFILE_ID=' . $arProfile['ID']
-                                . ($find_section ? '&find_section_section=' . $find_section : '')
+                                    . ($find_section ? '&find_section_section=' . $find_section : '')
                                     . '&find_el_y=' . $find_el
                                 );
 
@@ -313,7 +289,7 @@ class Iblock
             if (!is_array($_REQUEST['ID'])) $_REQUEST['ID'] = [$_REQUEST['ID']];
 
             if ($action == self::ACTION_NAME || $_REQUEST['action_button'] == self::ACTION_NAME) {
-                $arProfile = \Smartcat\Connector\ProfileTable::getById(intval($profileId))->fetch();
+                $arProfile = ProfileRepository::getOneById($profileId);
                 $task_ids = [];
                 $project_names = [];
 
