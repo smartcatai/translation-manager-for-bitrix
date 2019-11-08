@@ -341,8 +341,14 @@ class Iblock
                     }
                 }
 
-                if( !empty($project_names) && !empty($task_ids) ){
-                    $project = \Smartcat\Connector\Helper\ApiHelper::createProject($arProfile, implode(', ',$project_names));
+                if( !empty($project_names) && !empty($task_ids) ) {
+                    if ($arProfile['PROJECT_ID']) {
+                        $project = \Smartcat\Connector\Helper\ApiHelper::getProject($arProfile['PROJECT_ID']);
+                    }
+
+                    if (!$project) {
+                        $project = \Smartcat\Connector\Helper\ApiHelper::createProject($arProfile, implode(', ',$project_names));
+                    }
                     TaskHelper::setProject($task_ids, $project);
                 }
             }
