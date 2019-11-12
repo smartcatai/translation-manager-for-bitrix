@@ -64,6 +64,20 @@ class ApiHelper
         );
     }
 
+    public static function getProject($projectId)
+    {
+        try {
+            $project = self::createApi()
+                ->getProjectManager()
+                ->projectGet($projectId);
+        } catch (\Exception $e) {
+            LoggerHelper::error('helper.apihelper', $e->getMessage());
+            return null;
+        }
+
+        return $project;
+    }
+
     public static function createProject($arProfile, $name)
     {
         $project = NULL;
