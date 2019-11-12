@@ -208,11 +208,20 @@ if (!empty($taskIds)) {
         $arIBlock = CIBlock::GetByID($arProfile['IBLOCK_ID'])->Fetch();
 
         $arElement = CIBlockElement::GetByID($arTask['ELEMENT_ID'])->Fetch();
-        $sElementLink = '/bitrix/admin/iblock_element_edit.php?IBLOCK_ID=' . $arProfile['IBLOCK_ID'] . '&type=' . $arIBlock['IBLOCK_TYPE_ID'] . '&ID=10834&lang=ru&find_section_section=0&WF=Y';
+        $sElementLink = '/bitrix/admin/iblock_element_edit.php?IBLOCK_ID=' . $arElement['IBLOCK_ID'] . '&type=' . $arElement['IBLOCK_TYPE_ID'] . '&ID=' . $arElement['ID'];
 
         $arRow['ELEMENT'] = $arElement['NAME'] . ' [<a href="' . $sElementLink . '" target="_blank">' . $arTask['ELEMENT_ID'] . '</a>]';
 
-
+        if ($arTaskFile['ELEMENT_ID']) {
+            $arElement = CIBlockElement::GetByID($arTaskFile['ELEMENT_ID'])->Fetch();
+            $arRow['STATUS'] = sprintf(
+                    '<a href="/bitrix/admin/iblock_element_edit.php?IBLOCK_ID=%d&type=%s&ID=%d" target="_blank">%s</a>',
+                    $arElement['IBLOCK_ID'],
+                    $arElement['IBLOCK_TYPE_ID'],
+                    $arElement['ID'],
+                    \Smartcat\Connector\TaskTable::getStatusList()[$arTaskFile['STATUS']]
+            );
+        }
 
         $arLang = [];
         $sLangRow = '<a href="/bitrix/admin/smartcat.connector_content.php?lang=ru&TASK_ID=' . $arTask['ID'] . '" target="_blank">' . $arTaskFile['LANG_FROM'] . '</a> -> ';
@@ -232,6 +241,7 @@ if (!empty($taskIds)) {
         $row->AddViewField('LANGUAGES', $arRow['LANGUAGES']);
         $row->AddViewField('PROFILE', $arRow['PROFILE']);
         $row->AddViewField('PROJECT_NAME', $arRow['PROJECT_NAME']);
+        $row->AddViewField('STATUS', $arRow['STATUS']);
 
         $arActions = [];
         if($arTask['STATUS'] === \Smartcat\Connector\TaskTable::STATUS_SUCCESS){
