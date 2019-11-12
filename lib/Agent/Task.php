@@ -22,6 +22,16 @@ class Task
     {
         self::log('Start checking');
 
+        $schema = new \Smartcat\Connector\Schema(dirname(__FILE__) . '/../../install/db/mysql');
+
+        if ($schema->needUpgrade()) {
+            LoggerHelper::error('agent.ERROR', 'Database schema need to upgrade');
+
+            self::log('End checking');
+
+            return '\\' . __METHOD__ . '();';
+        }
+
         self::CheckReadyTasks();
         self::CheckCanceledTasks();
         self::CheckUploadedTasks();
@@ -161,9 +171,12 @@ class Task
                 }
             }
 
-            if ($disasemblingSuccess) {
+            if ($disasemblingSuccess && $arTask['STATS_BUILDED'] === 'N') {
                 try {
                     $projectManager->projectBuildStatistics($project->getId());
+                    TaskTable::update($arTask['ID'], [
+                        'STATS_BUILDED' => 'Y'
+                    ]);
                 } catch (\Exception $e) {
                     self::errorHandler($e);
                 }

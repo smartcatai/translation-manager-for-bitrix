@@ -142,6 +142,11 @@ class TaskTable extends Main\Entity\DataManager
                 'validation' => array(__CLASS__, 'validateVendor'),
                 'title' => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_TYPE_FIELD'),
             ),
+            'STATS_BUILDED' => array(
+                'data_type' => 'string',
+                'title' => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_STATS_BUILDED_FIELD'),
+                'default_value' => 'N',
+            ),
         );
     }
 
