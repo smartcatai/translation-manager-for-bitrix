@@ -2,6 +2,7 @@
 
 namespace Smartcat\Connector\Agent;
 
+use CModule;
 use SmartCat\Client\Model\ProjectModel;
 use Smartcat\Connector\Helper\IblockHelper;
 use Smartcat\Connector\Helper\LoggerHelper;
@@ -220,6 +221,27 @@ class Task
         while ($arTask = $rsTasks->fetch()) {
             try {
                 $project = $projectManager->projectGet($arTask['PROJECT_ID']);
+                // Check if failed documents deleted from Smartcat
+                $rsTaskFiles = TaskFileTable::getList([
+                    'order' => ['ID' => 'asc'],
+                    'filter' => [
+                        '=STATUS' => TaskFileTable::STATUS_FAILED,
+                        '=TASK_ID' => $arTask["ID"]
+                    ]
+                ]);
+                $projectDocuments = $project->getDocuments();
+                $projectDocumentIds = [];
+                foreach ($projectDocuments as $projectDocument) {
+                    array_push($projectDocumentIds, $projectDocument->getId());
+                }
+                while ($arTaskFile = $rsTaskFiles->fetch()) {
+                    if (!in_array($arTaskFile["DOCUMENT_ID"], $projectDocumentIds)) {
+                        TaskTable::update($arTask['ID'], [
+                            'STATUS' => TaskTable::STATUS_FAILED,
+                            'COMMENT' => 'Not found'
+                        ]);
+                    }
+                }
             } catch (\Exception $e) {
                 self::errorHandler($e);
                 TaskTable::update($arTask['ID'], [
@@ -397,6 +419,9 @@ class Task
         if ($rsTaskFiles->getSelectedRowsCount() === 0) {
             return ;
         }
+
+        if(!CModule::IncludeModule('iblock'))
+            return;
 
         $CIBlockElement = new \CIBlockElement();
     

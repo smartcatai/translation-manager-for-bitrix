@@ -103,6 +103,8 @@ $lAdmin->setNavigation($nav, GetMessage("SMARTCAT_CONNECTOR_PROFILI"));
 $arTypes = \Smartcat\Connector\ProfileTable::getTypeList();
 
 while ($arItem = $rsItems->fetch()) {
+    if(!CModule::IncludeModule('iblock'))
+        return;
 
     $arIblockFrom = CIBlock::GetByID($arItem['IBLOCK_ID'])->Fetch();
     $arRow = [];
