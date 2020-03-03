@@ -287,6 +287,7 @@ class Iblock
     public static function OnBeforePrologHandler()
     {
         \CUtil::InitJSCore(['jquery']);
+        \CJSCore::Init(['window']);
         \Bitrix\Main\Page\Asset::getInstance()->addJs('/bitrix/js/smartcat.connector/smartcat.connector.js');
 
         $strCurPage = $GLOBALS['APPLICATION']->GetCurPage();

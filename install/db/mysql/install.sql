@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS `b_smartcat_connector_profile` (
   `PUBLISH` enum('Y','N') NOT NULL DEFAULT 'N',
   `AUTO_ORDER` enum('Y','N') NOT NULL DEFAULT 'N',
   `IBLOCK_ID` int(11) NOT NULL,
+  `PROJECT_ID` varchar(250),
   `LANG` varchar(5) NOT NULL,
   `FIELDS` text,
   `WORKFLOW` varchar(100) NOT NULL,
@@ -46,6 +47,7 @@ CREATE TABLE IF NOT EXISTS `b_smartcat_connector_task` (
   `CURRENCY` varchar(5) DEFAULT NULL,
   `VENDOR` varchar(100) NOT NULL,
   `DEADLINE` datetime DEFAULT NULL,
+  `STATS_BUILDED` enum('Y','N') NOT NULL DEFAULT 'N',
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 

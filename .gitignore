@@ -2,4 +2,5 @@
 composer.lock
 smartcat.connector.zip
 vendor/
-.last_version/
+.last_version
+.last_version.zip
