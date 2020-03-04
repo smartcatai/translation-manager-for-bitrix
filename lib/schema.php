@@ -25,7 +25,7 @@ class Schema
      * @param string $baseVersion initial version
      * @throws \Exception
      */
-    public function __construct($dataDir, $alterPattern = 'alter-*.sql', $baseVersion = '2.0.0')
+    public function __construct($dataDir, $alterPattern = 'alter-*.sql', $baseVersion = '2.0.6')
     {
 
         if (!file_exists($dataDir) || !is_dir($dataDir)) {
