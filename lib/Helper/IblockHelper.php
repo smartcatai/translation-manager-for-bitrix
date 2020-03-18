@@ -318,7 +318,12 @@ class IblockHelper
                 unset($arSection['PICTURE']);
             }
         }
-
+        if ($arSection['DETAIL_PICTURE'] > 0) {
+            $arSection['DETAIL_PICTURE'] = \CFile::MakeFileArray($arSection['DETAIL_PICTURE']);
+            if (!file_exists($arSection['DETAIL_PICTURE']['tmp_name'])) {
+                unset($arSection['DETAIL_PICTURE']);
+            }
+        }
 
         $CIBlockSection = new \CIBlockSection();
 

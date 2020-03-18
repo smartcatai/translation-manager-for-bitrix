@@ -249,7 +249,7 @@ class Iblock
                         global $APPLICATION;
                         $link = \CUtil::AddSlashes($APPLICATION->GetCurPage()) 
                                 . "?ID=" . \CUtil::AddSlashes($row->id) 
-                                . "&action_button=" . self::ACTION_NAME
+                                . "&action_button=" . self::ACTION_NAME . '_' . $arProfile['ID']
                                 . "&lang=" . LANGUAGE_ID 
                                 . "&" . bitrix_sessid_get() 
                                 . "&" . \CUtil::AddSlashes('&type=' . urlencode($_REQUEST['type']) 
