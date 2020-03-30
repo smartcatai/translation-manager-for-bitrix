@@ -2,6 +2,7 @@
 
 namespace Smartcat\Connector\Helper;
 
+use SmartCat\Client\Model\ProjectChangesModel;
 use Smartcat\Connector\TaskTable;
 use SmartCat\Client\SmartCat;
 use Bitrix\Main\Config\Option;
@@ -87,6 +88,31 @@ class ApiHelper
             $project = self::createApi()
                 ->getProjectManager()
                 ->projectCreateProject(ProjectHelper::createProject($params));
+        } catch (\Exception $e) {
+            $msg = $e->getMessage();
+            if($e instanceof \Http\Client\Common\Exception\ClientErrorException ){
+                $msg .= ' ' . $e->getResponse()->getBody()->getContents();
+            }
+            LoggerHelper::error('helper.apihelper', $msg);
+            return [
+                'STATUS' => TaskTable::STATUS_FAILED,
+                'COMMENT' => $msg,
+            ];
+        }
+        return $project;
+    }
+
+    public static function updateProjectExternalTag($projectId)
+    {
+        $existingProject = self::getProject($projectId);
+        $projectUpdateModel = (new ProjectChangesModel())
+            ->setName($existingProject->getName())
+            ->setExternalTag('source:Bitrix');
+
+        try {
+            $project = self::createApi()
+                ->getProjectManager()
+                ->projectUpdateProject($projectId, $projectUpdateModel);
         } catch (\Exception $e) {
             $msg = $e->getMessage();
             if($e instanceof \Http\Client\Common\Exception\ClientErrorException ){

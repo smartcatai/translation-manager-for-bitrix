@@ -82,6 +82,16 @@ class Task
                     self::errorHandler($e);
                     continue;
                 }
+            } else {
+                try {
+                    $project = ApiHelper::getProject($projectId);
+                    if (!empty($project) && $project->getExternalTag() !== 'source:Bitrix') {
+                        $project = ApiHelper::updateProjectExternalTag($projectId);
+                    }
+                } catch(\Exception $e) {
+                    self::errorHandler($e);
+                    continue;
+                }
             }
 
             if(!array_key_exists($projectId,$projectDocuments)){
