@@ -114,7 +114,7 @@ $arHeader = array(
 
 $lAdmin->AddHeaders($arHeader);
 
-$nav = new \Bitrix\Main\UI\AdminPageNavigation("nav-taks");
+$nav = new \Bitrix\Main\UI\AdminPageNavigation("nav-tasks");
 
 $filter = [];
 
@@ -140,7 +140,6 @@ $rsTasks = \Smartcat\Connector\TaskTable::getList(array(
     'order' => array(strtoupper($by) => $order),
     'count_total' => true,
     'offset' => $nav->getOffset(),
-    'limit' => $nav->getLimit(),
     'filter' => $filter,
 ));
 $taskIds = [];
