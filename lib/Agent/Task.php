@@ -3,7 +3,11 @@
 namespace Smartcat\Connector\Agent;
 
 use CModule;
+use SmartCat\Client\Model\BilingualFileImportSettingsModel;
+use SmartCat\Client\Model\CreateDocumentPropertyWithFilesModel;
+use SmartCat\Client\Model\DocumentModel;
 use SmartCat\Client\Model\ProjectModel;
+use SmartCat\Client\Model\UploadDocumentPropertiesModel;
 use Smartcat\Connector\Helper\IblockHelper;
 use Smartcat\Connector\Helper\LoggerHelper;
 use Smartcat\Connector\Helper\StringHelper;
@@ -62,87 +66,132 @@ class Task
 
         $api = ApiHelper::createApi();
         $projectManager = $api->getProjectManager();
+        $documentManager = $api->getDocumentManager();
         $projectDocuments = [];
 
-        while ($arTask = $rsTasks->fetch()) {
-            $projectId = $arTask['PROJECT_ID'];
+        if (CModule::IncludeModule("iblock")) {
+            while ($arTask = $rsTasks->fetch()) {
+                $projectId = $arTask['PROJECT_ID'];
 
-            if (empty($projectId)) {
-                $arProfile = ProfileTable::getById($arTask['PROFILE_ID'])->fetch();
-                $arElement = \CIBlockElement::GetByID($arTask['ELEMENT_ID'])->GetNextElement(true, false)->GetFields();
-                try {
-                    $project = ApiHelper::createProject($arProfile, $arElement['NAME']);
-                    $projectId = $project->getId();
-                    TaskTable::update($arTask['ID'], [
-                        'PROJECT_ID' => $project->getId(),
-                        'PROJECT_NAME' => $project->getName(),
-                    ]);
-                    self::log("Project {$project->getId()} created");
-                } catch(\Exception $e) {
-                    self::errorHandler($e);
-                    continue;
-                }
-            } else {
-                try {
-                    $project = ApiHelper::getProject($projectId);
-                    if (!empty($project) && $project->getExternalTag() !== 'source:Bitrix') {
-                        $project = ApiHelper::updateProjectExternalTag($projectId);
+                if (empty($projectId)) {
+                    $arProfile = ProfileTable::getById($arTask['PROFILE_ID'])->fetch();
+                    $arElement = \CIBlockElement::GetByID($arTask['ELEMENT_ID'])->GetNextElement(true, false)->GetFields();
+                    try {
+                        $project = ApiHelper::createProject($arProfile, $arElement['NAME']);
+                        $projectId = $project->getId();
+                        TaskTable::update($arTask['ID'], [
+                            'PROJECT_ID' => $project->getId(),
+                            'PROJECT_NAME' => $project->getName(),
+                        ]);
+                        self::log("Project {$project->getId()} created");
+                    } catch(\Exception $e) {
+                        self::errorHandler($e);
+                        continue;
                     }
-                } catch(\Exception $e) {
-                    self::errorHandler($e);
-                    continue;
+                } else {
+                    try {
+                        $project = ApiHelper::getProject($projectId);
+                        if (!empty($project) && $project->getExternalTag() !== 'source:Bitrix') {
+                            $project = ApiHelper::updateProjectExternalTag($projectId);
+                        }
+                    } catch(\Exception $e) {
+                        self::errorHandler($e);
+                        continue;
+                    }
                 }
+
+                if(!array_key_exists($projectId,$projectDocuments)){
+                    $projectDocuments[$projectId] = [];
+                }
+
+                $sFilePath = tempnam(sys_get_temp_dir(), 'TRANSLATE-');
+
+                file_put_contents($sFilePath, '<html><head></head><body>' . $arTask['CONTENT'] . '</body></html>');
+
+                $projectDocuments[$projectId][] = ProjectHelper::createDocumentFromFile($sFilePath, self::FILENAME . $arTask['ID'] . '.html');
             }
-
-            if(!array_key_exists($projectId,$projectDocuments)){
-                $projectDocuments[$projectId] = [];
-            }
-
-            $sFilePath = tempnam(sys_get_temp_dir(), 'TRANSLATE-');
-
-            file_put_contents($sFilePath, '<html><head></head><body>' . $arTask['CONTENT'] . '</body></html>');
-
-            $projectDocuments[$projectId][] = ProjectHelper::createDocumentFromFile($sFilePath, self::FILENAME . $arTask['ID'] . '.html');
         }
 
         foreach ($projectDocuments as $projectId => $documentModels) {
             try {
-                $documents = $projectManager->projectAddDocument([
-                    'documentModel' => $documentModels,
-                    'projectId' => $projectId,
-                ]);
+                $documentsForUpdate = [];
+                $documentsForCreate = [];
+
+                $project = ApiHelper::getProject($projectId);
+                $scprojectDocuments = $project->getDocuments();
+                foreach ($documentModels as $key => $documentModel) {
+                    $foundId = '';
+
+                    foreach ($scprojectDocuments as $scprojectDocument) {
+                        if ($scprojectDocument->getName() === substr($documentModel->getFile()['fileName'], 0, -5)) {
+                            $foundId = $scprojectDocument->getId();
+                            break;
+                        }
+                    }
+
+                    if ($foundId !== '') {
+                        $forUpdate = [
+                            'documentId' => $foundId,
+                            'uploadedFile' => $documentModel->getFile(),
+                        ];
+                        array_push($documentsForUpdate, $forUpdate);
+                    } else {
+                        array_push($documentsForCreate, $documentModel);
+                    }
+                }
+
+                $chunkSize = 20;
+                $chunksCount = ceil(count($documentsForCreate) / $chunkSize);
+
+                for ($i = 0; $i < $chunksCount; $i++) {
+                    $documentsChunk = array_slice($documentsForCreate, $chunkSize * $i, $chunkSize);
+                    if (!empty($documentsChunk)) {
+                        $documentsCreated = $projectManager->projectAddDocument([
+                            'documentModel' => $documentsChunk,
+                            'projectId' => $projectId,
+                        ]);
+                        self::UpdateUploadedDocumentsStatuses($documentsCreated);
+                    }
+                }
+
+                foreach ($documentsForUpdate as $documentForUpdate) {
+                    $updatedDocument = $documentManager->documentUpdate($documentForUpdate);
+                    self::UpdateUploadedDocumentsStatuses($updatedDocument);
+                }
             } catch (\Exception $e) {
                 self::errorHandler($e);
                 return;
             }
+        }
+    }
 
-            if (!empty($documents)) {
-                foreach ($documents as $document) {
-                    preg_match('/' .self::FILENAME . '(\d+)/', $document->getName(), $matches);
-                    $taskId = (int)$matches[1];
-                    
-                    TaskTable::update($taskId, [
-                        'STATUS' => TaskTable::STATUS_UPLOADED,
+    public static function UpdateUploadedDocumentsStatuses($documents)
+    {
+        foreach ($documents as $document) {
+            preg_match('/' .self::FILENAME . '(\d+)/', $document->getName(), $matches);
+            $taskId = (int)$matches[1];
+
+            TaskTable::update($taskId, [
+                'STATUS' => TaskTable::STATUS_UPLOADED,
+            ]);
+            $rsTaskFiles = TaskFileTable::getList([
+                'order' => ['ID' => 'asc'],
+                'filter' => [
+                    '=TASK_ID' => $taskId,
+                ]
+            ]);
+
+            while ($arTaskFile = $rsTaskFiles->fetch()) {
+                if($document->getTargetLanguage() === $arTaskFile['LANG_TO']){
+                    TaskFileTable::update($arTaskFile['ID'], [
+                        'DOCUMENT_ID' => $document->getId(),
+                        'STATUS' => TaskFileTable::STATUS_UPLOADED,
                     ]);
-                    $rsTaskFiles = TaskFileTable::getList([
-                        'order' => ['ID' => 'asc'],
-                        'filter' => [
-                            '=TASK_ID' => $taskId,
-                        ]
-                    ]);
-                    
-                    while ($arTaskFile = $rsTaskFiles->fetch()) {
-                        if($document->getTargetLanguage() === $arTaskFile['LANG_TO']){
-                            TaskFileTable::update($arTaskFile['ID'], [
-                                'DOCUMENT_ID' => $document->getId(),
-                                'STATUS' => TaskFileTable::STATUS_UPLOADED,
-                            ]);
-                            self::log("Document {$document->getId()} added to project");
-                        }
-                    }
+                    self::log("Document {$document->getId()} added to project");
                 }
             }
         }
+        self::log("Document chunk processed");
     }
 
     public static function CheckUploadedTasks()
