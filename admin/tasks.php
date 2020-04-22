@@ -254,7 +254,7 @@ if (!empty($taskIds)) {
         $arActions[] = array(
             "ICON" => "delete",
             "TEXT" => GetMessage("SMARTCAT_CONNECTOR_UDALITQ"),
-            "ACTION" => "if(confirm('".GetMessage("SMARTCAT_CONNECTOR_UDALITQ_PROFILQ") . $lAdmin->ActionDoGroup($arRow['ID'], "delete")
+            "ACTION" => "if(confirm('".GetMessage("SMARTCAT_CONNECTOR_UDALITQ_PEREVOD") . $lAdmin->ActionDoGroup($arRow['ID'], "delete")
         );
 
         $row->AddActions($arActions);
