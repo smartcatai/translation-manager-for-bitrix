@@ -39,5 +39,7 @@ $MESS["SMARTCAT_CONNECTOR_VENDOR"] = "Вендор";
 $MESS["SMARTCAT_CONNECTOR_WITHOUT_VENDOR"] = "Без вендора";
 $MESS["SMARTCAT_CONNECTOR_FIELD_ERROR"] = 'Не выбрано "Какие поля переводить?"';
 $MESS["SMARTCAT_CONNECTOR_LANGS_ERROR"] = 'Не выбрано "На какие языки переводить?"';
+$MESS["SMARTCAT_CONNECTOR_PROFILE_LANGUAGE_PAIR_ERROR_PROFILE"] = 'Проверьте настройки профиля!<br>Языковые настройки профиля (';
+$MESS["SMARTCAT_CONNECTOR_PROFILE_LANGUAGE_PAIR_ERROR_PROJECT"] = ') не соответствуют настройкам проекта в Smartcat (';
 
 ?>

@@ -14,12 +14,12 @@ $sModuleId = basename($sModuleDir);
 \Bitrix\Main\Loader::includeModule($sModuleId);
 \Bitrix\Main\Loader::includeModule('iblock');
 
-try{
+try {
     $acc_info = \Smartcat\Connector\Helper\ApiHelper::getAccount();
-}catch(\Exception $e){
+} catch (\Exception $e) {
     require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_after.php");
     $msgError = GetMessage("SMARTCAT_CONNECTOR_ACCOUNT_ERROR_SERVER");
-    if($e instanceof \Http\Client\Common\Exception\ClientErrorException){
+    if ($e instanceof \Http\Client\Common\Exception\ClientErrorException) {
         $msgError = GetMessage("SMARTCAT_CONNECTOR_ACCOUNT_ERROR_API");
     }
     $msgError .= '<br>' . GetMessage("SMARTCAT_CONNECTOR_ACCOUNT_ERROR_EXPLAIN");
@@ -79,8 +79,6 @@ $arErrors = [];
 $ID = intval($_REQUEST['ID']);
 
 if ($ID > 0) {
-
-
     $arProfile = \Smartcat\Connector\ProfileTable::getById($ID)->fetch();
     $APPLICATION->SetTitle($arProfile['NAME']);
 
@@ -98,27 +96,12 @@ if ($ID > 0) {
         if (!is_array($arProfile['FIELDS']['PROPS'])) {
             $arProfile['FIELDS']['PROPS'] = [];
         }
-
     } else {
         require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_after.php");
         CAdminMessage::ShowMessage(GetMessage("SMARTCAT_CONNECTOR_PROFILQ_NE_NAYDEN"));
         require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/epilog_admin.php");
     }
-
 } else {
-
-    /*if ($_REQUEST['IBLOCK_ID'] > 0) {
-        $arProfile = \Smartcat\Connector\ProfileTable::getList([
-            'filter' => [
-                '=IBLOCK_ID' => intval($_REQUEST['IBLOCK_ID']),
-            ],
-        ])->fetch();
-        if ($arProfile) {
-            LocalRedirect($APPLICATION->GetCurPageParam('ID=' . $arProfile['ID'] . '&IBLOCK_ID=' . intval($_REQUEST['IBLOCK_ID']), ['ID', 'IBLOCK_ID']));
-        }
-    }*/
-
-
     $arProfile = [
         'FIELDS' => [
             'FIELDS' => [],
@@ -147,8 +130,6 @@ if (empty($arProfile['LANG'])) $arProfile['LANG'] = reset(array_keys($arLanguage
 $arLanguagesTo = [];
 
 if (!empty($arProfile['LANG'])) {
-
-
     $langs = \Smartcat\Connector\Helper\ApiHelper::getLanguages();
     asort($langs);
 
@@ -166,9 +147,7 @@ if (!empty($arProfile['LANG'])) {
     if (empty($arLanguagesTo)) {
         $arErrors[] = GetMessage("SMARTCAT_CONNECTOR_NET_DOSTUPNYH_AZYKOV");
     }
-
 }
-
 
 if ($arProfile['IBLOCK_ID'] > 0) {
     $rsProps = CIBlockProperty::GetList(['NAME' => 'asc'], [
@@ -177,10 +156,10 @@ if ($arProfile['IBLOCK_ID'] > 0) {
     ]);
 
     while ($arProp = $rsProps->Fetch()) {
-        if(!empty($arProp['USER_TYPE'])){
+        if (!empty($arProp['USER_TYPE'])) {
             continue;
         }
-        
+
         $arPropsToTranslate[$arProp['CODE']] = $arProp['NAME'];
     }
 }
@@ -189,9 +168,6 @@ $arProfile['NAME'] = isset($_REQUEST['NAME']) && !empty($_REQUEST['NAME']) ? $_R
 $arProfile['WORKFLOW'] = isset($arProfile['WORKFLOW']) ? $arProfile['WORKFLOW'] : ApiHelper::DEFAULT_WORKFLOW_STAGE;
 
 if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()) {
-
-    //echo '<pre>' . print_r($_POST, true) . '</pre>';
-
     $CIBlock = new CIBlock();
     $CIBlockType = new CIBlockType();
     $CIBlockElement = new CIBlockElement();
@@ -202,20 +178,20 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()) {
         $arErrors[] = GetMessage("SMARTCAT_CONNECTOR_NE_UDALOSQ_NAYTI_INF");
     }
 
-    if(empty($arErrors) && empty($_REQUEST['FIELDS'])){
+    if (empty($arErrors) && empty($_REQUEST['FIELDS'])) {
         $arErrors[] = GetMessage("SMARTCAT_CONNECTOR_FIELD_ERROR");
     }
     $workflow = [];
-    if($_REQUEST['WORKFLOW']){
+    if ($_REQUEST['WORKFLOW']) {
         $workflow = $_REQUEST['WORKFLOW'];
-        foreach($workflow as $id=>$stage){
-            if(!isset($arWorflowStages[$stage])){
+        foreach ($workflow as $id => $stage) {
+            if (!isset($arWorflowStages[$stage])) {
                 array_splice($workflow, $id, 1);
             }
         }
     }
-    if(!in_array(ApiHelper::DEFAULT_WORKFLOW_STAGE,$workflow)){
-        array_unshift($workflow,ApiHelper::DEFAULT_WORKFLOW_STAGE);
+    if (!in_array(ApiHelper::DEFAULT_WORKFLOW_STAGE, $workflow)) {
+        array_unshift($workflow, ApiHelper::DEFAULT_WORKFLOW_STAGE);
     }
 
     $arProfile['ACTIVE'] = (isset($_REQUEST['ACTIVE']) && $_REQUEST['ACTIVE'] == 'Y');
@@ -224,15 +200,15 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()) {
     $arProfile['IBLOCK_ID'] = intval($_REQUEST['IBLOCK_ID']);
     $arProfile['LANG'] = trim($_REQUEST['LANG']);
     $arProfile['FIELDS'] = $_REQUEST['FIELDS'];
-    $arProfile['WORKFLOW'] = implode(',',$workflow);
+    $arProfile['WORKFLOW'] = implode(',', $workflow);
     $arProfile['VENDOR'] = $_REQUEST['VENDOR'];
     $arProfile['PROJECT_ID'] = $_REQUEST['PROJECT_ID'];
 
-    $langIsSelected = array_reduce($_REQUEST['IBLOCKS'], function($langIsSelected, $item){
-        return $langIsSelected || !empty($item['LANG']); 
+    $langIsSelected = array_reduce($_REQUEST['IBLOCKS'], function ($langIsSelected, $item) {
+        return $langIsSelected || !empty($item['LANG']);
     }, false);
 
-    if(!$langIsSelected){
+    if (!$langIsSelected) {
         $arErrors[] = GetMessage("SMARTCAT_CONNECTOR_LANGS_ERROR");
     }
 
@@ -261,11 +237,15 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()) {
                 continue;
             }
 
-            if ($arIblockData['LANG'] == $arProfile['LANG']) continue;
+            if ($arIblockData['LANG'] == $arProfile['LANG']) {
+                continue;
+            }
 
             unset($arIblockData['REMOVE']);
 
-            if (empty($arIblockData['LANG'])) continue;
+            if (empty($arIblockData['LANG'])) {
+                continue;
+            }
 
             if (empty($arIblockData['IBLOCK_ID'])) {
                 try {
@@ -275,7 +255,6 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()) {
                     continue;
                 }
                 \Smartcat\Connector\Helper\IblockHelper::copyIBlockProps($arProfile['IBLOCK_ID'], $arIblockData['IBLOCK_ID']);
-
             } else {
                 $arTargetIBlock = CIBlock::GetByID($arIblockData['IBLOCK_ID'])->Fetch();
                 if (!$arTargetIBlock) {
@@ -283,7 +262,6 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()) {
                     continue;
                 }
             }
-
 
             $arProfileIblockFields = $arIblockData;
             $arProfileIblockFields['PROFILE_ID'] = $arProfile['ID'];
@@ -298,12 +276,35 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()) {
                 echo '<pre>' . print_r($res->getErrorMessages(), true) . '</pre>';
                 die();
             }
-
-
         }
 
-    }
+        if (!empty(trim($arProfile['PROJECT_ID']))) {
+            // Задан ID проекта, необходимо проверить правильность языковых пар в проекте и в профиле
+            $project = ApiHelper::getProject($arProfile['PROJECT_ID']);
+            $projectSourceLanguage = $project->getSourceLanguage();
+            $projectTargetLanguages = $project->getTargetLanguages();
+            $profileSourceLanguage = $arProfile['LANG'];
+            $profileTargetLanguages = [];
+            foreach ($_REQUEST['IBLOCKS'] as $iblock) {
+                if (empty($iblock['LANG']) || $iblock['REMOVE'] === 'Y') {
+                    continue;
+                }
+                $profileTargetLanguages[] = $iblock['LANG'];
+            }
+            asort($projectTargetLanguages);
+            asort($profileTargetLanguages);
+            $profileTranslationDirection = $profileSourceLanguage . ' => ' . join( ", ", $profileTargetLanguages );
+            $projectTranslationDirection = $projectSourceLanguage . ' => ' . join( ", ", $projectTargetLanguages );
 
+            if ( $profileTranslationDirection !== $projectTranslationDirection ) {
+                $arErrors[] = GetMessage("SMARTCAT_CONNECTOR_PROFILE_LANGUAGE_PAIR_ERROR_PROFILE")
+                    . $profileTranslationDirection
+                    . GetMessage("SMARTCAT_CONNECTOR_PROFILE_LANGUAGE_PAIR_ERROR_PROJECT")
+                    . $projectTranslationDirection
+                    . ').';
+            }
+        }
+    }
 
     if (empty($arErrors)) {
         if ($_REQUEST['apply']) {
@@ -311,11 +312,6 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()) {
         } else {
             LocalRedirect('smartcat.connector_profiles.php');
         }
-        /*} else {
-            echo '<pre>' . print_r($arProfile, true) . '</pre>';
-            echo '<pre>' . print_r($arIblockData, true) . '</pre>';
-            echo '<pre>' . print_r($arErrors, true) . '</pre>';
-            die();*/
     }
 }
 
@@ -332,7 +328,6 @@ $aMenu = array(
 
 $context = new CAdminContextMenu($aMenu);
 $context->Show();
-
 
 $aTabs = array(
     array(
@@ -371,7 +366,7 @@ if (!empty($arErrors)): ?>
         ?>
 
         <tr>
-            <th style="width: 50%;" ><?= GetMessage("SMARTCAT_CONNECTOR_INFOBLOK") ?></th>
+            <th style="width: 50%;"><?= GetMessage("SMARTCAT_CONNECTOR_INFOBLOK") ?></th>
             <td>
                 <select name="IBLOCK_ID" class="js-select-iblock">
                     <option value="">[<?= GetMessage("SMARTCAT_CONNECTOR_VYBRATQ") ?></option>
@@ -393,7 +388,7 @@ if (!empty($arErrors)): ?>
 
         <tr>
             <td><?= GetMessage("SMARTCAT_CONNECTOR_NAZVANIE") ?></td>
-            <td><input type="text" name="NAME" value="<?=$arProfile['NAME']?>">
+            <td><input type="text" name="NAME" value="<?= $arProfile['NAME'] ?>">
             </td>
         </tr>
 
@@ -427,7 +422,7 @@ if (!empty($arErrors)): ?>
             <td><?= GetMessage("SMARTCAT_CONNECTOR_VENDOR") ?></td>
             <td>
                 <select name="VENDOR" class="js-select-lang">
-                    <? foreach ($arVendors as $id=> $name): ?>
+                    <? foreach ($arVendors as $id => $name): ?>
                         <? $vendorFull = $id . '|' . $name; ?>
                         <option value="<?= $vendorFull; ?>" <?= ($arProfile['VENDOR'] === $vendorFull ? 'selected' : ''); ?> >
                             <?= $name; ?>
@@ -440,13 +435,14 @@ if (!empty($arErrors)): ?>
         <tr>
             <td><?= GetMessage("SMARTCAT_CONNECTOR_TIP_PEREVODA") ?></td>
             <td>
-                    <? foreach ($arWorflowStages as $stage=>$label): ?>
-                        <label>
-                            <input type="checkbox" name="WORKFLOW[]" value="<?= $stage; ?>" <?= (strpos($arProfile['WORKFLOW'],$stage) !== false ? 'checked' : ''); ?>
+                <? foreach ($arWorflowStages as $stage => $label): ?>
+                    <label>
+                        <input type="checkbox" name="WORKFLOW[]"
+                               value="<?= $stage; ?>" <?= (strpos($arProfile['WORKFLOW'], $stage) !== false ? 'checked' : ''); ?>
                             <?= $stage === ApiHelper::DEFAULT_WORKFLOW_STAGE ? 'disabled' : ''; ?>>
-                            <?= $label; ?>
-                        </label><br><br>
-                    <? endforeach; ?>
+                        <?= $label; ?>
+                    </label><br><br>
+                <? endforeach; ?>
             </td>
         </tr>
 
