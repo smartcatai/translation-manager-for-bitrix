@@ -574,9 +574,6 @@ class Task
                     'STATUS' => TaskFileTable::STATUS_DONE,
                     'ELEMENT_ID' => $elementID,
                 ]);
-                TaskTable::update($arTask['ID'], [
-                    'STATUS' => TaskFileTable::STATUS_SUCCESS,
-                ]);
                 \CIBlockElement::SetPropertyValuesEx($elementID, $arElement['IBLOCK_ID'], $arProps);
                 if (!empty($arSections)) {
                     $CIBlockSection = new \CIBlockSection();
