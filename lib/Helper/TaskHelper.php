@@ -177,7 +177,7 @@ class TaskHelper
             }
         }
 
-        $sContent = str_replace('&nbsp;', '', $sContent); // smartcat.connector bug
+        // $sContent = str_replace('&nbsp;', '', $sContent); // smartcat.connector bug
         return $sContent;
     }
 }
