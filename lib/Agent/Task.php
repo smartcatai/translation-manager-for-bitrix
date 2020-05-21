@@ -202,56 +202,87 @@ class Task
             return;
         }
 
+        $projects = [];
+
         while ($arTask = $rsTasks->fetch()) {
+            if (!isset($projects[$arTask['PROJECT_ID']])) {
+                $projects[$arTask['PROJECT_ID']] = [];
+            }
+            array_push($projects[$arTask['PROJECT_ID']], $arTask);
+        }
+
+        foreach($projects as $key => $project) {
+            $taskIds = [];
+            foreach ($project as $task) {
+                array_push($taskIds, $task['ID']);
+            }
+
             try {
-                $project = $projectManager->projectGet($arTask['PROJECT_ID']);
+                $scProject = $projectManager->projectGet($key);
             } catch (\Exception $e) {
                 self::errorHandler($e);
-                TaskTable::update($arTask['ID'], [
-                    'STATUS' => TaskTable::STATUS_FAILED,
-                    'COMMENT' => $e->getMessage()
-                ]);
+                if ($e instanceof \Http\Client\Exception\HttpException) {
+                    if ($e->getResponse()->getStatusCode() === 404) {
+                        // 404, проект не существует в Smartcat, пометить все таски данного проекта как FAILED
+                        self::log("Project with ID {$key} not found in Smartcat, setting all tasks for this project as FAILED.");
+                        $result = TaskTable::updateMulti($taskIds, [
+                            'STATUS' => TaskTable::STATUS_FAILED,
+                            'COMMENT' => "Project not found"
+                        ]);
+                    }
+                }
                 continue;
             }
 
-            $disasemblingSuccess = true;
-            foreach($project->getDocuments() as $document){
-                if($document->getDocumentDisassemblingStatus() != 'success'){
-                    $disasemblingSuccess = false;
-                    break;
-                }
+            if (strtolower($scProject->getStatus()) == 'canceled') {
+                TaskTable::updateMulti($taskIds, [
+                    'STATUS' => TaskTable::STATUS_CANCELED,
+                    'COMMENT' => ''
+                ]);
+                $projectsString = join(', ', $taskIds);
+
+                self::log("Set to project id {$projectsString} status 'Canceled'");
+                continue;
             }
 
-            if ($disasemblingSuccess && $arTask['STATS_BUILDED'] === 'N') {
-                try {
-                    $projectManager->projectBuildStatistics($project->getId());
-                    TaskTable::update($arTask['ID'], [
-                        'STATS_BUILDED' => 'Y'
-                    ]);
-                } catch (\Exception $e) {
-                    self::errorHandler($e);
-                }
-            }
+            $scProjectDocuments = $scProject->getDocuments();
 
-            if ($project) {
-                if (strtolower($project->getStatus()) == 'inprogress') {
-                    TaskTable::update($arTask['ID'], [
+            foreach ($project as $task) {
+                $taskFiles = TaskFileTable::getList([
+                    'filter' => [
+                        '=TASK_ID' => $task['ID']
+                    ]
+                ])->fetchAll();
+                
+                $inProcessCount = 0;
+                foreach ($taskFiles as $taskFile) {
+                    $documentId = $taskFile['DOCUMENT_ID'];
+
+                    $scDocument = null;
+                    foreach ($scProjectDocuments as $scProjectDocument) {
+                        if ($scProjectDocument->getId() === $documentId) {
+                            $scDocument = $scProjectDocument;
+                        }
+                    }
+
+                    if (!empty($scDocument)) {
+                        $scStatus = $scDocument->getStatus();
+                        if (strtolower($scStatus) == 'inprogress') {
+                            $inProcessCount++;
+                        }
+                    }
+                }
+
+                if ($inProcessCount > 0) {
+                    TaskTable::update($task['ID'], [
                         'STATUS' => TaskTable::STATUS_PROCESS,
-                        'DEADLINE' => $project->getDeadline() instanceof \DateTime ? DateTime::createFromTimestamp($project->getDeadline()->getTimestamp()) : $arTask['DEADLINE']
+                        'COMMENT' => '',
+                        'DEADLINE' => $scProject->getDeadline() instanceof \DateTime ? DateTime::createFromTimestamp($scProject->getDeadline()->getTimestamp()) : $task['DEADLINE']
                     ]);
-
-                    self::log("Set to project id {$arTask['ID']} status 'In Progress'");
-                }
-
-                if (strtolower($project->getStatus()) == 'canceled') {
-                    TaskTable::update($arTask['ID'], [
-                        'STATUS' => TaskTable::STATUS_CANCELED,
-                    ]);
-
-                    self::log("Set to project id {$arTask['ID']} status 'Canceled'");
                 }
             }
         }
+        return;
     }
 
     public static function CheckCanceledTasks()
