@@ -62,6 +62,27 @@ if ($arID = $lAdmin->GroupAction()) {
                     }
                 }
                 break;
+            case "resync":
+                $arTask = \Smartcat\Connector\TaskTable::getById($ID)->fetch();
+
+                if ($arTask && $arTask['STATUS'] === \Smartcat\Connector\TaskTable::STATUS_FAILED) {
+                    \Smartcat\Connector\TaskTable::update($ID, [
+                        'STATUS' => \Smartcat\Connector\TaskTable::STATUS_UPLOADED,
+                        'COMMENT' => '',
+                    ]);
+
+                    $rsFiles = \Smartcat\Connector\TaskFileTable::getList([
+                        'filter' => [
+                            '=TASK_ID' => $ID,
+                        ]
+                    ]);
+                    while ($arFile = $rsFiles->fetch()) {
+                        \Smartcat\Connector\TaskFileTable::update($arFile['ID'], [
+                            'STATUS' => \Smartcat\Connector\TaskFileTable::STATUS_UPLOADED,
+                        ]);
+                    }
+                }
+                break;
         }
     }
 }
@@ -248,6 +269,14 @@ if (!empty($taskIds)) {
                 "ICON" => "edit",
                 "TEXT" => GetMessage("SMARTCAT_CONNECTOR_REFRESH"),
                 "ACTION" => $lAdmin->ActionDoGroup($arRow['ID'], "status"), // "if(confirm('".GetMessage("SMARTCAT_CONNECTOR_UDALITQ_PROFILQ") . 
+            );
+        }
+
+        if($arTask['STATUS'] === \Smartcat\Connector\TaskTable::STATUS_FAILED){
+            $arActions[] = array(
+                // "ICON" => "checked",
+                "TEXT" => GetMessage("SMARTCAT_CONNECTOR_RESYNC"),
+                "ACTION" => $lAdmin->ActionDoGroup($arRow['ID'], "resync"), // "if(confirm('".GetMessage("SMARTCAT_CONNECTOR_UDALITQ_PROFILQ") . 
             );
         }
 

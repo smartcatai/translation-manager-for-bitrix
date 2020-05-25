@@ -18,4 +18,5 @@ $MESS["SMARTCAT_CONNECTOR_VSE"] = "Все";
 $MESS["SMARTCAT_CONNECTOR_NAYTI"] = "Найти";
 $MESS["SMARTCAT_CONNECTOR_OTMENITQ"] = "Отменить";
 $MESS["SMARTCAT_CONNECTOR_REFRESH"] = "Обновить перевод";
+$MESS["SMARTCAT_CONNECTOR_RESYNC"] = "Синхронизировать статус";
 ?>
