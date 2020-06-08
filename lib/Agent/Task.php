@@ -287,59 +287,86 @@ class Task
 
     public static function CheckCanceledTasks()
     {
-        $rsTasks = TaskTable::getList([
-            'order' => ['ID' => 'asc'],
+        $api = ApiHelper::createApi();
+        $projectManager = $api->getProjectManager();
+
+        $projectsList = TaskTable::getList([
+            'select' => ['PROJECT_ID'],
             'filter' => [
                 '=STATUS' => TaskTable::STATUS_PROCESS,
             ]
         ]);
 
-        self::log("Check for canceled tasks: {$rsTasks->getSelectedRowsCount()}");
+        $projectIds = [];
+        foreach ($projectsList as $item) {
+            array_push($projectIds, $item['PROJECT_ID']);
+        }
+        $projectIds = array_unique($projectIds);
 
-        $api = ApiHelper::createApi();
-        $projectManager = $api->getProjectManager();
+        foreach ($projectIds as $projectId) {
+            $projectTasks = TaskTable::getList([
+                'order' => ['ID' => 'asc'],
+                'filter' => [
+                    '=STATUS' => TaskTable::STATUS_PROCESS,
+                    '=PROJECT_ID' => $projectId
+                ]
+            ])->fetchAll();
 
-        while ($arTask = $rsTasks->fetch()) {
+            $projectTaskIds = [];
+            foreach ($projectTasks as $item) {
+                array_push($projectTaskIds, $item['ID']);
+            }
+            $projectTaskIds = array_unique($projectTaskIds);
+    
             try {
-                $project = $projectManager->projectGet($arTask['PROJECT_ID']);
-                // Check if failed documents deleted from Smartcat
-                $rsTaskFiles = TaskFileTable::getList([
-                    'order' => ['ID' => 'asc'],
-                    'filter' => [
-                        '=STATUS' => TaskFileTable::STATUS_FAILED,
-                        '=TASK_ID' => $arTask["ID"]
-                    ]
-                ]);
+                $project = $projectManager->projectGet($projectId);
                 $projectDocuments = $project->getDocuments();
                 $projectDocumentIds = [];
                 foreach ($projectDocuments as $projectDocument) {
                     array_push($projectDocumentIds, $projectDocument->getId());
                 }
-                while ($arTaskFile = $rsTaskFiles->fetch()) {
-                    if (!in_array($arTaskFile["DOCUMENT_ID"], $projectDocumentIds)) {
-                        TaskTable::update($arTask['ID'], [
-                            'STATUS' => TaskTable::STATUS_FAILED,
-                            'COMMENT' => 'Not found'
-                        ]);
-                    }
-                }
             } catch (\Exception $e) {
                 self::errorHandler($e);
-                TaskTable::update($arTask['ID'], [
+                TaskTable::updateMulti($projectTaskIds, [
                     'STATUS' => TaskTable::STATUS_FAILED,
                     'COMMENT' => $e->getMessage()
                 ]);
                 continue;
             }
+
             if ($project) {
                 if (strtolower($project->getStatus()) == 'canceled') {
-                    TaskTable::update($arTask['ID'], [
+                    TaskTable::updateMulti($projectTaskIds, [
                         'STATUS' => TaskTable::STATUS_CANCELED,
                     ]);
-                    self::log("Set to project id {$arTask['ID']} status 'Canceled'");
+                    self::log("Set all tasks of project {$projectId} status to 'Canceled'");
+                    continue;
                 } else {
-                    TaskTable::update($arTask['ID'], [
+                    TaskTable::updateMulti($projectTaskIds, [
                         'DEADLINE' => $project->getDeadline() instanceof \DateTime ? DateTime::createFromTimestamp($project->getDeadline()->getTimestamp()) : $arTask['DEADLINE']
+                    ]);
+                }
+
+                $projectTaskFiles = TaskFileTable::getList([
+                    'order' => ['ID' => 'asc'],
+                    'filter' => [
+                        '=STATUS' => TaskFileTable::STATUS_FAILED,
+                        '=TASK_ID' => $projectTaskIds
+                    ]
+                ])->fetchAll();
+
+                $nonexistentProjectDocumentTasks = [];
+                foreach ($projectTaskFiles as $projectTaskFile) {
+                    if (!in_array($projectTaskFile["DOCUMENT_ID"], $projectDocumentIds)) {
+                        array_push($nonexistentProjectDocumentTasks, $projectTaskFile['TASK_ID']);
+                    }
+                }
+                $nonexistentProjectDocumentTasks = array_unique($nonexistentProjectDocumentTasks);
+
+                if (!empty($nonexistentProjectDocumentTasks)) {
+                    TaskTable::updateMulti($nonexistentProjectDocumentTasks, [
+                        'STATUS' => TaskTable::STATUS_FAILED,
+                        'COMMENT' => 'Not found'
                     ]);
                 }
             }
