@@ -41,5 +41,6 @@ $MESS["SMARTCAT_CONNECTOR_FIELD_ERROR"] = 'Не выбрано "Какие по�
 $MESS["SMARTCAT_CONNECTOR_LANGS_ERROR"] = 'Не выбрано "На какие языки переводить?"';
 $MESS["SMARTCAT_CONNECTOR_PROFILE_LANGUAGE_PAIR_ERROR_PROFILE"] = 'Проверьте настройки профиля!<br>Языковые настройки профиля (';
 $MESS["SMARTCAT_CONNECTOR_PROFILE_LANGUAGE_PAIR_ERROR_PROJECT"] = ') не соответствуют настройкам проекта в Smartcat (';
+$MESS["SMARTCAT_CONNECTOR_PROFILE_CHECK_PROJECT_ID"] = 'Проверьте правильность введенного ID проекта, мы не смогли найти проект с указанным ID в Smartcat';
 
 ?>

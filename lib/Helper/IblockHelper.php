@@ -151,20 +151,16 @@ class IblockHelper
         }
 
 
-        if ($arElement['DETAIL_PICTURE'] > 0) {
-            $arElement['DETAIL_PICTURE'] = \CFile::MakeFileArray($arElement['DETAIL_PICTURE']);
-            if (!file_exists($arElement['DETAIL_PICTURE']['tmp_name'])) {
-                unset($arElement['DETAIL_PICTURE']);
+        foreach ($arElement as $elKey => $elValue) {
+            if (strpos($elKey, 'PICTURE') !== false) {
+                if ($arElement[$elKey] > 0) {
+                    $arElement[$elKey] = \CFile::MakeFileArray($arElement[$elKey]);
+                    if (!file_exists($arElement[$elKey]['tmp_name'])) {
+                        unset($arElement[$elKey]);
+                    }
+                }
             }
         }
-
-        if ($arElement['PREVIEW_PICTURE'] > 0) {
-            $arElement['PREVIEW_PICTURE'] = \CFile::MakeFileArray($arElement['PREVIEW_PICTURE']);
-            if (!file_exists($arElement['PREVIEW_PICTURE']['tmp_name'])) {
-                unset($arElement['PREVIEW_PICTURE']);
-            }
-        }
-
 
         $CIBLockElement = new \CIBlockElement();
 
@@ -312,16 +308,14 @@ class IblockHelper
         unset($arSection['TMP_ID']);
         unset($arSection['EXTERNAL_ID']);
 
-        if ($arSection['PICTURE'] > 0) {
-            $arSection['PICTURE'] = \CFile::MakeFileArray($arSection['PICTURE']);
-            if (!file_exists($arSection['PICTURE']['tmp_name'])) {
-                unset($arSection['PICTURE']);
-            }
-        }
-        if ($arSection['DETAIL_PICTURE'] > 0) {
-            $arSection['DETAIL_PICTURE'] = \CFile::MakeFileArray($arSection['DETAIL_PICTURE']);
-            if (!file_exists($arSection['DETAIL_PICTURE']['tmp_name'])) {
-                unset($arSection['DETAIL_PICTURE']);
+        foreach ($arSection as $arKey => $arValue) {
+            if (strpos($arKey, 'PICTURE') !== false) {
+                if ($arSection[$arKey] > 0) {
+                    $arSection[$arKey] = \CFile::MakeFileArray($arSection[$arKey]);
+                    if (!file_exists($arSection[$arKey]['tmp_name'])) {
+                        unset($arSection[$arKey]);
+                    }
+                }
             }
         }
 
@@ -388,9 +382,8 @@ class IblockHelper
         unset($arTargetIBlock['TMP_ID']);
         unset($arTargetIBlock['EXTERNAL_ID']);
         $arTargetIBlock['IBLOCK_TYPE_ID'] = $arTargetType['ID'];
-        $arTargetIBlock['CODE'] .= '_' . $lang;
+        $arTargetIBlock['CODE'] = (!empty(trim($arTargetIBlock['CODE'])) ? $arTargetIBlock['CODE'] : self::translit_sef($arTargetIBlock['NAME'])) . '_' . $lang;
         $arTargetIBlock['NAME'] .= ' (' . strtoupper($lang) . ')';
-
 
         $arExisting = \CIBlock::GetList([], ['CODE' => $arTargetIBlock['CODE']])->Fetch();
         if ($arExisting) {
@@ -455,9 +448,26 @@ class IblockHelper
                 }
             }
         }
-
-
     }
 
-
+    public static function translit_sef($value)
+    {
+        $converter = array(
+            'а' => 'a',    'б' => 'b',    'в' => 'v',    'г' => 'g',    'д' => 'd',
+            'е' => 'e',    'ё' => 'e',    'ж' => 'zh',   'з' => 'z',    'и' => 'i',
+            'й' => 'y',    'к' => 'k',    'л' => 'l',    'м' => 'm',    'н' => 'n',
+            'о' => 'o',    'п' => 'p',    'р' => 'r',    'с' => 's',    'т' => 't',
+            'у' => 'u',    'ф' => 'f',    'х' => 'h',    'ц' => 'c',    'ч' => 'ch',
+            'ш' => 'sh',   'щ' => 'sch',  'ь' => '',     'ы' => 'y',    'ъ' => '',
+            'э' => 'e',    'ю' => 'yu',   'я' => 'ya',
+        );
+    
+        $value = mb_strtolower($value);
+        $value = strtr($value, $converter);
+        $value = mb_ereg_replace('[^-0-9a-z]', '_', $value);
+        $value = mb_ereg_replace('[_]+', '_', $value);
+        $value = trim($value, '_');	
+    
+        return $value;
+    }
 }

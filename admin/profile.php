@@ -281,27 +281,31 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()) {
         if (!empty(trim($arProfile['PROJECT_ID']))) {
             // Задан ID проекта, необходимо проверить правильность языковых пар в проекте и в профиле
             $project = ApiHelper::getProject($arProfile['PROJECT_ID']);
-            $projectSourceLanguage = $project->getSourceLanguage();
-            $projectTargetLanguages = $project->getTargetLanguages();
-            $profileSourceLanguage = $arProfile['LANG'];
-            $profileTargetLanguages = [];
-            foreach ($_REQUEST['IBLOCKS'] as $iblock) {
-                if (empty($iblock['LANG']) || $iblock['REMOVE'] === 'Y') {
-                    continue;
+            if (!empty($project)) {
+                $projectSourceLanguage = $project->getSourceLanguage();
+                $projectTargetLanguages = $project->getTargetLanguages();
+                $profileSourceLanguage = $arProfile['LANG'];
+                $profileTargetLanguages = [];
+                foreach ($_REQUEST['IBLOCKS'] as $iblock) {
+                    if (empty($iblock['LANG']) || $iblock['REMOVE'] === 'Y') {
+                        continue;
+                    }
+                    $profileTargetLanguages[] = $iblock['LANG'];
                 }
-                $profileTargetLanguages[] = $iblock['LANG'];
-            }
-            asort($projectTargetLanguages);
-            asort($profileTargetLanguages);
-            $profileTranslationDirection = $profileSourceLanguage . ' => ' . join( ", ", $profileTargetLanguages );
-            $projectTranslationDirection = $projectSourceLanguage . ' => ' . join( ", ", $projectTargetLanguages );
-
-            if ( $profileTranslationDirection !== $projectTranslationDirection ) {
-                $arErrors[] = GetMessage("SMARTCAT_CONNECTOR_PROFILE_LANGUAGE_PAIR_ERROR_PROFILE")
-                    . $profileTranslationDirection
-                    . GetMessage("SMARTCAT_CONNECTOR_PROFILE_LANGUAGE_PAIR_ERROR_PROJECT")
-                    . $projectTranslationDirection
-                    . ').';
+                asort($projectTargetLanguages);
+                asort($profileTargetLanguages);
+                $profileTranslationDirection = $profileSourceLanguage . ' => ' . join( ", ", $profileTargetLanguages );
+                $projectTranslationDirection = $projectSourceLanguage . ' => ' . join( ", ", $projectTargetLanguages );
+    
+                if ( $profileTranslationDirection !== $projectTranslationDirection ) {
+                    $arErrors[] = GetMessage("SMARTCAT_CONNECTOR_PROFILE_LANGUAGE_PAIR_ERROR_PROFILE")
+                        . $profileTranslationDirection
+                        . GetMessage("SMARTCAT_CONNECTOR_PROFILE_LANGUAGE_PAIR_ERROR_PROJECT")
+                        . $projectTranslationDirection
+                        . ').';
+                }
+            } else {
+                $arErrors[] = GetMessage("SMARTCAT_CONNECTOR_PROFILE_CHECK_PROJECT_ID");
             }
         }
     }
