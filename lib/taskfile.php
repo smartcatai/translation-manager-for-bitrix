@@ -37,6 +37,18 @@ class TaskFileTable extends Main\Entity\DataManager
     const STATUS_SUCCESS = 'S';
     const STATUS_DONE = 'D';
 
+    public static function getStatusList()
+    {
+        return [
+            self::STATUS_NEW => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_STATUS_NEW'),
+            self::STATUS_UPLOADED => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_STATUS_UPLOADED'),
+            self::STATUS_PROCESS => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_STATUS_PROCESS'),
+            self::STATUS_FAILED => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_STATUS_FAILED'),
+            self::STATUS_SUCCESS => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_STATUS_SUCCESS'),
+            self::STATUS_DONE => Loc::getMessage('SMARTCAT_CONNECTOR_TASK_ENTITY_STATUS_DONE'),
+        ];
+    }
+
     /**
      * Returns DB table name for entity.
      *

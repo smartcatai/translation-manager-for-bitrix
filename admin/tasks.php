@@ -12,7 +12,7 @@ $APPLICATION->SetTitle(GetMessage("SMARTCAT_CONNECTOR_ZAKAZY"));
 
 
 $arStatus = \Smartcat\Connector\TaskTable::getAccessibleStatusList();
-$arStatusAll = \Smartcat\Connector\TaskTable::getStatusList();
+$arStatusAll = \Smartcat\Connector\TaskFileTable::getStatusList();
 
 $arProfiles = \Smartcat\Connector\ProfileTable::getList([
     'order' => ['NAME' => 'asc'],
@@ -65,7 +65,7 @@ if ($arID = $lAdmin->GroupAction()) {
             case "resync":
                 $arTask = \Smartcat\Connector\TaskTable::getById($ID)->fetch();
 
-                if ($arTask && $arTask['STATUS'] === \Smartcat\Connector\TaskTable::STATUS_FAILED) {
+                if ($arTask && ($arTask['STATUS'] === \Smartcat\Connector\TaskTable::STATUS_FAILED || $arTask['STATUS'] === \Smartcat\Connector\TaskTable::STATUS_DONE || $arTask['STATUS'] === \Smartcat\Connector\TaskTable::STATUS_PROCESS)) {
                     \Smartcat\Connector\TaskTable::update($ID, [
                         'STATUS' => \Smartcat\Connector\TaskTable::STATUS_UPLOADED,
                         'COMMENT' => '',
@@ -140,21 +140,12 @@ $nav = new \Bitrix\Main\UI\AdminPageNavigation("nav-tasks");
 $filter = [];
 
 if ($_REQUEST['set_filter']) {
-
-    if ($find_status) {
-        $filter['=STATUS'] = $find_status;
-    }
-
-    if ($find_profile) {
+    if ($find_profile && intval($find_profile) !== -1) {
         $filter['=PROFILE_ID'] = $find_profile;
+    } else {
+        unset($filter['=PROFILE_ID']);
     }
 
-}
-
-$arStat = [];
-
-foreach (\Smartcat\Connector\TaskTable::getStatusList() as $sStatusID => $sStatusName) {
-    $arStat[$sStatusName] = \Smartcat\Connector\TaskTable::getCount(array_merge($filter, ['=STATUS' => $sStatusID]));
 }
 
 $rsTasks = \Smartcat\Connector\TaskTable::getList(array(
@@ -169,10 +160,18 @@ while ($arTask = $rsTasks->fetch()) {
     array_push($taskIds, $arTask['ID']);
 }
 
+$arStat = [];
+
 unset($filter['=PROFILE_ID']);
 if (!empty($taskIds)) {
     $filter['@TASK_ID'] = $taskIds;
-
+    if ($find_status) {
+        $filter['=STATUS'] = $find_status;
+    }
+    foreach (\Smartcat\Connector\TaskFileTable::getStatusList() as $sStatusID => $sStatusName) {
+        $arStat[$sStatusName] = \Smartcat\Connector\TaskFileTable::getCount(array_merge($filter, ['=STATUS' => $sStatusID]));
+    }
+    
     $rsItems = \Smartcat\Connector\TaskFileTable::getList(array(
         'order' => array(strtoupper($by) => $order),
         'count_total' => true,
@@ -239,7 +238,7 @@ if (!empty($taskIds)) {
                     $arElement['IBLOCK_ID'],
                     $arElement['IBLOCK_TYPE_ID'],
                     $arElement['ID'],
-                    \Smartcat\Connector\TaskTable::getStatusList()[$arTaskFile['STATUS']]
+                    \Smartcat\Connector\TaskFileTable::getStatusList()[$arTaskFile['STATUS']]
             );
         }
 
@@ -264,7 +263,7 @@ if (!empty($taskIds)) {
         $row->AddViewField('STATUS', $arRow['STATUS']);
 
         $arActions = [];
-        if($arTask['STATUS'] === \Smartcat\Connector\TaskTable::STATUS_SUCCESS){
+        if ($arTask['STATUS'] === \Smartcat\Connector\TaskTable::STATUS_SUCCESS){
             $arActions[] = array(
                 "ICON" => "edit",
                 "TEXT" => GetMessage("SMARTCAT_CONNECTOR_REFRESH"),
@@ -272,7 +271,7 @@ if (!empty($taskIds)) {
             );
         }
 
-        if($arTask['STATUS'] === \Smartcat\Connector\TaskTable::STATUS_FAILED){
+        if ($arTask['STATUS'] === \Smartcat\Connector\TaskTable::STATUS_FAILED || $arTask['STATUS'] === \Smartcat\Connector\TaskTable::STATUS_DONE || $arTask['STATUS'] === \Smartcat\Connector\TaskTable::STATUS_PROCESS){
             $arActions[] = array(
                 // "ICON" => "checked",
                 "TEXT" => GetMessage("SMARTCAT_CONNECTOR_RESYNC"),
@@ -293,6 +292,7 @@ if (!empty($taskIds)) {
 
 $arActions = array(
     "delete" => GetMessage("MAIN_ADMIN_LIST_DELETE"),
+    "resync" => GetMessage("SMARTCAT_CONNECTOR_RESYNC"),
 );
 $arParams = array();
 
@@ -343,7 +343,7 @@ require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_a
         <td><?=GetMessage("SMARTCAT_CONNECTOR_PROFILQ")?></td>
         <td>
             <select name="find_profile" id="find_profile">
-                <option value=""><?=GetMessage("SMARTCAT_CONNECTOR_VSE")?></option>
+                <option value="-1"><?=GetMessage("SMARTCAT_CONNECTOR_VSE")?></option>
                 <? foreach ($arProfiles as $arProfile): ?>
                     <option
                             value="<?= $arProfile['ID']; ?>" <?= ($arProfile['ID'] == $find_profile ? 'selected' : ''); ?>>
@@ -359,7 +359,7 @@ require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_a
         <td>
             <select name="find_status" id="find_status">
                 <option value=""><?=GetMessage("SMARTCAT_CONNECTOR_VSE")?></option>
-                <? foreach (\Smartcat\Connector\TaskTable::getStatusList() as $sCode => $sStatus): ?>
+                <? foreach (\Smartcat\Connector\TaskFileTable::getStatusList() as $sCode => $sStatus): ?>
                     <option value="<?= $sCode; ?>" <?= ($sCode == $find_status ? 'selected' : ''); ?>>
                         <?= $sStatus; ?>
                     </option>
