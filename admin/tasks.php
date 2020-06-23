@@ -65,7 +65,7 @@ if ($arID = $lAdmin->GroupAction()) {
             case "resync":
                 $arTask = \Smartcat\Connector\TaskTable::getById($ID)->fetch();
 
-                if ($arTask && ($arTask['STATUS'] === \Smartcat\Connector\TaskTable::STATUS_FAILED || $arTask['STATUS'] === \Smartcat\Connector\TaskTable::STATUS_DONE || $arTask['STATUS'] === \Smartcat\Connector\TaskTable::STATUS_PROCESS)) {
+                if ($arTask && !($arTask['STATUS'] === \Smartcat\Connector\TaskTable::STATUS_NEW || $arTask['STATUS'] === \Smartcat\Connector\TaskTable::STATUS_READY_UPLOAD || $arTask['STATUS'] === \Smartcat\Connector\TaskTable::STATUS_UPLOADED)) {
                     \Smartcat\Connector\TaskTable::update($ID, [
                         'STATUS' => \Smartcat\Connector\TaskTable::STATUS_UPLOADED,
                         'COMMENT' => '',
@@ -267,15 +267,15 @@ if (!empty($taskIds)) {
             $arActions[] = array(
                 "ICON" => "edit",
                 "TEXT" => GetMessage("SMARTCAT_CONNECTOR_REFRESH"),
-                "ACTION" => $lAdmin->ActionDoGroup($arRow['ID'], "status"), // "if(confirm('".GetMessage("SMARTCAT_CONNECTOR_UDALITQ_PROFILQ") . 
+                "ACTION" => $lAdmin->ActionDoGroup($arRow['ID'], "status"),
             );
         }
 
-        if ($arTask['STATUS'] === \Smartcat\Connector\TaskTable::STATUS_FAILED || $arTask['STATUS'] === \Smartcat\Connector\TaskTable::STATUS_DONE || $arTask['STATUS'] === \Smartcat\Connector\TaskTable::STATUS_PROCESS){
+        if (!($arTask['STATUS'] === \Smartcat\Connector\TaskTable::STATUS_NEW || $arTask['STATUS'] === \Smartcat\Connector\TaskTable::STATUS_READY_UPLOAD || $arTask['STATUS'] === \Smartcat\Connector\TaskTable::STATUS_UPLOADED)){
             $arActions[] = array(
                 // "ICON" => "checked",
                 "TEXT" => GetMessage("SMARTCAT_CONNECTOR_RESYNC"),
-                "ACTION" => $lAdmin->ActionDoGroup($arRow['ID'], "resync"), // "if(confirm('".GetMessage("SMARTCAT_CONNECTOR_UDALITQ_PROFILQ") . 
+                "ACTION" => $lAdmin->ActionDoGroup($arRow['ID'], "resync"),
             );
         }
 
