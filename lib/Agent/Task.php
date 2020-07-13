@@ -513,6 +513,19 @@ class Task
         }
     }
 
+    public static function DOMinnerHTML($element)
+    {
+        $innerHTML = "";
+        $children = $element->childNodes;
+        foreach ($children as $child)
+        {
+            $tmp_dom = new \DOMDocument();
+            $tmp_dom->appendChild($tmp_dom->importNode($child, true));
+            $innerHTML.=trim($tmp_dom->saveHTML());
+        }
+        return $innerHTML;
+    }
+
     public static function CheckTaskFileSuccess()
     {
         $rsTaskFiles = TaskFileTable::getList([
@@ -539,17 +552,36 @@ class Task
             $name = sys_get_temp_dir() .'/' . self::FILENAME.$arTaskFile['TASK_ID'].'('.$arTaskFile['LANG_TO'].').html';
             $translateText = file_get_contents($name);
 
-            preg_match_all('/<field id="(.+?)">(.*?)<\/field>/is', $translateText, $matches);
+            $domDocument = new \DOMDocument();
+            $utfText = mb_convert_encoding($translateText, 'HTML-ENTITIES', "UTF-8");
+            $domDocument->loadHTML($utfText);
+            $domElements = $domDocument->getElementsByTagName('field');
             $arFields = [];
             $arProps = [];
             $arSections = [];
-            foreach ($matches[1] as $i => $sField) {
-                if (substr($sField, 0, 4) == 'PROP') {
-                    $arProps[substr($sField, 5)] = html_entity_decode($matches[2][$i]);
-                } elseif (substr($sField, 0, 17) == 'IBLOCK_SECTION_ID') {
-                    $arSections[] = $matches[2][$i];
+
+            foreach ($domElements as $domElement) {
+                $fieldId = $domElement->getAttribute('id');
+                if (substr($fieldId, 0, 4) == 'PROP') {
+                    $hasMultipleAttribute = $domElement->hasAttribute('multiple');
+                    if ($hasMultipleAttribute) {
+                        $tmpProps = [];
+                        for ($i = 0; $i < $domElement->childNodes->length; $i++) {
+                            $subField = $domElement->childNodes->item($i);
+                            $tmpItem = [];
+                            foreach ($subField->childNodes as $childNode) {
+                                $tmpItem[strtoupper($childNode->tagName)] = StringHelper::specialcharsDecode(self::DOMinnerHTML($childNode));
+                            }
+                            array_push($tmpProps, $tmpItem);
+                        }
+                        $arProps[substr($fieldId, 5)] = $tmpProps;
+                        continue;
+                    }
+                    $arProps[substr($fieldId, 5)] = html_entity_decode(self::DOMinnerHTML($domElement));
+                } elseif (substr($fieldId, 0, 17) == 'IBLOCK_SECTION_ID') {
+                    $arSections[] = html_entity_decode(self::DOMinnerHTML($domElement));
                 } else {
-                    $arFields[$sField] = StringHelper::specialcharsDecode($matches[2][$i]);
+                    $arFields[$fieldId] = StringHelper::specialcharsDecode(self::DOMinnerHTML($domElement));
                 }
             }
 

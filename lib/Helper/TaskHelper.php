@@ -2,7 +2,6 @@
 
 namespace Smartcat\Connector\Helper;
 
-
 use Bitrix\Main\Loader;
 use Smartcat\Connector\ProfileIblockTable;
 use Smartcat\Connector\ProfileTable;
@@ -12,7 +11,6 @@ use Bitrix\Main\Type\DateTime;
 
 class TaskHelper
 {
-
     public static function setProject($task_ids, $project)
     {
         $rsTasks = TaskTable::getList([
@@ -74,7 +72,6 @@ class TaskHelper
                     $targetElementId = $anySuccesfulTaskFile['ELEMENT_ID'];
                 }
             }
-
         }
 
         $rsProfiles = ProfileTable::getList([
@@ -132,7 +129,6 @@ class TaskHelper
                     }
                 }
             }
-
         }
         return $taskID;
     }
@@ -144,14 +140,13 @@ class TaskHelper
         $sContent = '';
 
         $obElement = \CIBlockElement::GetByID($elementID)->GetNextElement(true, false);
-
+        $ob = \CIBlockElement::GetByID($elementID);
         if ($obElement) {
 
             $arElement = $obElement->GetFields();
             $arProps = $obElement->GetProperties();
 
             foreach ($arFields['FIELDS'] as $sFieldCode) {
-
                 if ($sFieldCode == 'IBLOCK_SECTION_ID') {
                     if ($arElement['IBLOCK_SECTION_ID'] > 0) {
                         $rsSections = \CIBlockSection::GetNavChain($arElement['IBLOCK_ID'], $arElement['IBLOCK_SECTION_ID'], ['ID', 'NAME']);
@@ -161,19 +156,42 @@ class TaskHelper
                             $sContent .= '<field id="' . $sFieldCode . '_' . $i . '">' . $arSection['NAME'] . '</field>' . PHP_EOL;
                             $i++;
                         }
-
                     }
                     continue;
                 }
 
-
                 $sContent .= '<field id="' . $sFieldCode . '">' . $arElement[$sFieldCode] . '</field>' . PHP_EOL;
             }
 
-            foreach ($arFields['PROPS'] as $sPropCode) {
-                $arProp = $arProps[$sPropCode];
-                $sPropValue = $arProp['MULTIPLE'] == 'Y' ? implode('##', $arProp['VALUE']) : $arProp['VALUE'];
-                $sContent .= '<field id="PROP_' . $sPropCode . '">' . $sPropValue . '</field>' . PHP_EOL;
+            if (!empty($arFields['PROPS'])) {
+                foreach ($arFields['PROPS'] as $sPropCode) {
+                    $arProp = $arProps[$sPropCode];
+                    if ($arProp['MULTIPLE'] == 'Y') {
+                        if (!empty($arProp['VALUE']) || !empty($arProp['DESCRIPTION'])) {
+                            $sContent .= '<field id="PROP_' . $sPropCode . '" multiple>' . PHP_EOL;
+                            foreach ($arProp['VALUE'] as $propKey => $propValue) {
+                                $sContent .= '<subfield>' . PHP_EOL;
+                                $sContent .= '<value>' . $propValue . '</value>' . PHP_EOL;
+                                if (!empty($arProp['DESCRIPTION'][$propKey])) {
+                                    $sContent .= '<description>' . $arProp['DESCRIPTION'][$propKey] . '</description>' . PHP_EOL;
+                                }
+                                $sContent .= '</subfield>' . PHP_EOL;
+                            }
+                            $sContent .= '</field>' . PHP_EOL;
+                        }
+//                        $sPropValue = implode('##', $arProp['VALUE']);
+                    } else {
+                        if (!empty($arProp['VALUE'])) {
+                            if (is_array($arProp['VALUE'])) {
+                                $sPropValue = $arProp['VALUE']['TEXT'];
+                                $sContent .= '<field id="PROP_' . $sPropCode . '" type="' . $arProp['VALUE']['TYPE'] . '">' . $sPropValue . '</field>' . PHP_EOL;
+                            } else {
+                                $sPropValue = $arProp['VALUE'];
+                                $sContent .= '<field id="PROP_' . $sPropCode . '">' . $sPropValue . '</field>' . PHP_EOL;
+                            }
+                        }
+                    }
+                }
             }
         }
 

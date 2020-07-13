@@ -1,7 +1,13 @@
 <?php
 require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_before.php");
 
+use \Bitrix\Main\Loader;
+use \Http\Client\Common\Exception\ClientErrorException;
 use \Smartcat\Connector\Helper\ApiHelper;
+use Smartcat\Connector\Helper\IblockHelper;
+use \Smartcat\Connector\Helper\LangHelper;
+use Smartcat\Connector\ProfileIblockTable;
+use \Smartcat\Connector\ProfileTable;
 
 IncludeModuleLangFile(__FILE__);
 global $APPLICATION;
@@ -11,15 +17,15 @@ CJSCore::Init(['jquery']);
 $sModuleDir = dirname(dirname(__FILE__));
 $sModuleId = basename($sModuleDir);
 
-\Bitrix\Main\Loader::includeModule($sModuleId);
-\Bitrix\Main\Loader::includeModule('iblock');
+Loader::includeModule($sModuleId);
+Loader::includeModule('iblock');
 
 try {
-    $acc_info = \Smartcat\Connector\Helper\ApiHelper::getAccount();
+    $acc_info = ApiHelper::getAccount();
 } catch (\Exception $e) {
     require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_after.php");
     $msgError = GetMessage("SMARTCAT_CONNECTOR_ACCOUNT_ERROR_SERVER");
-    if ($e instanceof \Http\Client\Common\Exception\ClientErrorException) {
+    if ($e instanceof ClientErrorException) {
         $msgError = GetMessage("SMARTCAT_CONNECTOR_ACCOUNT_ERROR_API");
     }
     $msgError .= '<br>' . GetMessage("SMARTCAT_CONNECTOR_ACCOUNT_ERROR_EXPLAIN");
@@ -30,11 +36,13 @@ try {
 /**
  *  Language code
  */
-$arLanguages = \Smartcat\Connector\Helper\LangHelper::getLanguages();
+$arLanguages = LangHelper::getLanguages();
 
 $arLanguagesFrom = [];
 
-$rsSiteLangs = CLanguage::GetList(($by = 'id'), ($sort = 'asc'));
+$by = 'id';
+$sort = 'asc';
+$rsSiteLangs = CLanguage::GetList($by, $sort);
 while ($arLang = $rsSiteLangs->Fetch()) {
     if (array_key_exists($arLang['LANGUAGE_ID'], $arLanguages)) {
         $arLanguagesFrom[$arLang['LANGUAGE_ID']] = $arLanguages[$arLang['LANGUAGE_ID']];
@@ -69,9 +77,9 @@ while ($arType = $rsTypes->Fetch()) {
     while ($arIblock = $rsIblocks->Fetch()) {
         $arIblockTree[$arType['ID']]['IBLOCK'][$arIblock['ID']] = $arIblock['NAME'];
     }
-    if (empty($arIblockTree[$arType['ID']]['IBLOCK'])) {
-
-    }
+//    if (empty($arIblockTree[$arType['ID']]['IBLOCK'])) {
+//
+//    }
 }
 
 $arErrors = [];
@@ -79,11 +87,11 @@ $arErrors = [];
 $ID = intval($_REQUEST['ID']);
 
 if ($ID > 0) {
-    $arProfile = \Smartcat\Connector\ProfileTable::getById($ID)->fetch();
+    $arProfile = ProfileTable::getById($ID)->fetch();
     $APPLICATION->SetTitle($arProfile['NAME']);
 
     if ($arProfile) {
-        $arProfileIblock = \Smartcat\Connector\ProfileIblockTable::getList([
+        $arProfileIblock = ProfileIblockTable::getList([
             'filter' => [
                 'PROFILE_ID' => $arProfile['ID'],
             ],
@@ -125,12 +133,15 @@ if (!empty($_REQUEST['LANG']) && array_key_exists($_REQUEST['LANG'], $arLanguage
     $arProfile['LANG'] = $_REQUEST['LANG'];
 }
 
-if (empty($arProfile['LANG'])) $arProfile['LANG'] = reset(array_keys($arLanguagesFrom));
+if (empty($arProfile['LANG'])) {
+    $arLanguagesFromKeys = array_keys($arLanguagesFrom);
+    $arProfile['LANG'] = reset($arLanguagesFromKeys);
+}
 
 $arLanguagesTo = [];
 
 if (!empty($arProfile['LANG'])) {
-    $langs = \Smartcat\Connector\Helper\ApiHelper::getLanguages();
+    $langs = ApiHelper::getLanguages();
     asort($langs);
 
     $arLang = [];
@@ -156,11 +167,11 @@ if ($arProfile['IBLOCK_ID'] > 0) {
     ]);
 
     while ($arProp = $rsProps->Fetch()) {
-        if (!empty($arProp['USER_TYPE'])) {
-            continue;
-        }
+//        if (!empty($arProp['USER_TYPE'])) {
+//            continue;
+//        }
 
-        $arPropsToTranslate[$arProp['CODE']] = $arProp['NAME'];
+        $arPropsToTranslate[$arProp['CODE']] = $arProp['NAME'].' ['.$arProp['CODE'].']'; // TODO: отображение кода для дебага
     }
 }
 
@@ -214,14 +225,14 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()) {
 
     if (empty($arErrors)) {
         if ($ID > 0) {
-            $result = \Smartcat\Connector\ProfileTable::update($ID, $arProfile);
+            $result = ProfileTable::update($ID, $arProfile);
             if ($result->isSuccess()) {
                 $arProfile['ID'] = $ID;
             } else {
                 $arErrors[] = GetMessage("SMARTCAT_CONNECTOR_NE_UDALOSQ_OBNOVITQ") . implode('<br>', $result->getErrorMessages());
             }
         } else {
-            $result = \Smartcat\Connector\ProfileTable::add($arProfile);
+            $result = ProfileTable::add($arProfile);
             if ($result->isSuccess()) {
                 $arProfile['ID'] = $result->getId();
             } else {
@@ -233,7 +244,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()) {
             $isNew = ($sIBlockID[0] == 'n');
 
             if (!$isNew && $arIblockData['REMOVE'] == 'Y') {
-                \Smartcat\Connector\ProfileIblockTable::delete($sIBlockID);
+                ProfileIblockTable::delete($sIBlockID);
                 continue;
             }
 
@@ -249,12 +260,12 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()) {
 
             if (empty($arIblockData['IBLOCK_ID'])) {
                 try {
-                    $arIblockData['IBLOCK_ID'] = \Smartcat\Connector\Helper\IblockHelper::createIBForLang($arProfile['IBLOCK_ID'], $arIblockData['LANG']);
+                    $arIblockData['IBLOCK_ID'] = IblockHelper::createIBForLang($arProfile['IBLOCK_ID'], $arIblockData['LANG']);
                 } catch (\Exception $e) {
                     $arErrors[] = $e->getMessage();
                     continue;
                 }
-                \Smartcat\Connector\Helper\IblockHelper::copyIBlockProps($arProfile['IBLOCK_ID'], $arIblockData['IBLOCK_ID']);
+                IblockHelper::copyIBlockProps($arProfile['IBLOCK_ID'], $arIblockData['IBLOCK_ID']);
             } else {
                 $arTargetIBlock = CIBlock::GetByID($arIblockData['IBLOCK_ID'])->Fetch();
                 if (!$arTargetIBlock) {
@@ -267,9 +278,9 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()) {
             $arProfileIblockFields['PROFILE_ID'] = $arProfile['ID'];
 
             if ($isNew) {
-                $res = \Smartcat\Connector\ProfileIblockTable::add($arProfileIblockFields);
+                $res = ProfileIblockTable::add($arProfileIblockFields);
             } else {
-                $res = \Smartcat\Connector\ProfileIblockTable::update($sIBlockID, $arProfileIblockFields);
+                $res = ProfileIblockTable::update($sIBlockID, $arProfileIblockFields);
             }
 
             if (!$res->isSuccess()) {
@@ -294,10 +305,10 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && check_bitrix_sessid()) {
                 }
                 asort($projectTargetLanguages);
                 asort($profileTargetLanguages);
-                $profileTranslationDirection = $profileSourceLanguage . ' => ' . join( ", ", $profileTargetLanguages );
-                $projectTranslationDirection = $projectSourceLanguage . ' => ' . join( ", ", $projectTargetLanguages );
-    
-                if ( $profileTranslationDirection !== $projectTranslationDirection ) {
+                $profileTranslationDirection = $profileSourceLanguage . ' => ' . join(", ", $profileTargetLanguages);
+                $projectTranslationDirection = $projectSourceLanguage . ' => ' . join(", ", $projectTargetLanguages);
+
+                if ($profileTranslationDirection !== $projectTranslationDirection) {
                     $arErrors[] = GetMessage("SMARTCAT_CONNECTOR_PROFILE_LANGUAGE_PAIR_ERROR_PROFILE")
                         . $profileTranslationDirection
                         . GetMessage("SMARTCAT_CONNECTOR_PROFILE_LANGUAGE_PAIR_ERROR_PROJECT")

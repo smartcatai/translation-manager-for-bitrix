@@ -24,7 +24,7 @@ class Iblock
     {
         self::$iBlockAdd = true;
         $obElement = \CIBlockElement::GetByID($arFields['ID'])->GetNextElement(true, false);
-        if(!$obElement){
+        if (!$obElement) {
             self::$createTask = true;
             return;
         }
@@ -37,18 +37,18 @@ class Iblock
             ],
         ])->fetchAll();
         foreach ($arProfiles as $arProfile) {
-            foreach($arProfile['FIELDS'] as $fieldList){
-                foreach($fieldList as $field){
-                    if(!isset($arFields[$field])){
+            foreach ($arProfile['FIELDS'] as $fieldList) {
+                foreach ($fieldList as $field) {
+                    if (!isset($arFields[$field])) {
                         continue;
                     }
-                    if($arFields[$field] === $arElement[$field]){
+                    if ($arFields[$field] === $arElement[$field]) {
                         continue;
                     }
                     self::$createTask = true;
                     break;
                 }
-                if(self::$createTask){
+                if (self::$createTask) {
                     break;
                 }
             }
@@ -68,18 +68,18 @@ class Iblock
             ],
         ])->fetchAll();
         foreach ($arProfiles as $arProfile) {
-            foreach($arProfile['FIELDS'] as $fieldList){
-                foreach($fieldList as $field){
-                    if(!isset($arFields[$field])){
+            foreach ($arProfile['FIELDS'] as $fieldList) {
+                foreach ($fieldList as $field) {
+                    if (!isset($arFields[$field])) {
                         continue;
                     }
-                    if($arFields[$field] === $arElement[$field]){
+                    if ($arFields[$field] === $arElement[$field]) {
                         continue;
                     }
                     self::$createTask = true;
                     break;
                 }
-                if(self::$createTask){
+                if (self::$createTask) {
                     break;
                 }
             }
@@ -97,7 +97,7 @@ class Iblock
                 ],
             ])->fetchAll();
             foreach ($arProfiles as $arProfile) {
-                if(self::$iBlockAdd && self::$createTask){
+                if (self::$iBlockAdd && self::$createTask) {
                     $task_id = TaskHelper::createForElement($arFields['ID'], $arProfile['IBLOCK_ID'], $arProfile['ID']);
                     try {
                         if ($arProfile['PROJECT_ID']) {
@@ -107,9 +107,10 @@ class Iblock
                         if (!$project) {
                             $project = \Smartcat\Connector\Helper\ApiHelper::createProject($arProfile, $arFields['NAME']);
                         }
-                    }catch(\Http\Client\Common\Exception\ClientErrorException $e){
+                    } catch (\Http\Client\Common\Exception\ClientErrorException $e) {
                         LoggerHelper::error('events.lblock', 'API Error: ' . $e->getResponse()->getBody()->getContents());
-                        var_dump($e->getResponse()->getBody()->getContents()); die;
+                        var_dump($e->getResponse()->getBody()->getContents());
+                        die;
                     }
                     TaskHelper::setProject([$task_id], $project);
                 }
@@ -128,7 +129,7 @@ class Iblock
                 ],
             ])->fetchAll();
             foreach ($arProfiles as $arProfile) {
-                if(self::$iBlockUpdated && self::$createTask){
+                if (self::$iBlockUpdated && self::$createTask) {
                     $task_id = TaskHelper::createForElement($arFields['ID'], $arProfile['IBLOCK_ID'], $arProfile['ID']);
                     try {
                         if ($arProfile['PROJECT_ID']) {
@@ -140,7 +141,8 @@ class Iblock
                         }
                     } catch (\Http\Client\Common\Exception\ClientErrorException $e) {
                         LoggerHelper::error('events.lblock', 'API Error: ' . $e->getResponse()->getBody()->getContents());
-                        var_dump($e->getResponse()->getBody()->getContents()); die;
+                        var_dump($e->getResponse()->getBody()->getContents());
+                        die;
                     }
                     TaskHelper::setProject([$task_id], $project);
                 }
@@ -159,9 +161,7 @@ class Iblock
         while ($arTask = $rsTasks->fetch()) {
             TaskTable::delete($arTask['ID']);
         }
-
     }
-
 
     /**
      * @param \CAdminList $list
@@ -236,10 +236,8 @@ class Iblock
             \Bitrix\Main\Page\Asset::getInstance()->addString($sString);
 
             if ($arProfiles) {
-
                 foreach ($list->aRows as $id => $row) {
                     foreach ($arProfiles as $arProfile) {
-
                         $list->arActions[self::ACTION_NAME . '_' . $arProfile['ID']] = GetMessage("SMARTCAT_CONNECTOR_PEREVOD") . $arTypes[$arProfile['TYPE']] . ' (' . implode(', ', $arProfile['LANGS']) . ')';
 
                         $sMessage = Loc::getMessage('SMARTCAT_CONNECTOR_PROFILE_TASK_EXIST', [
@@ -247,18 +245,18 @@ class Iblock
                         ]);
 
                         global $APPLICATION;
-                        $link = \CUtil::AddSlashes($APPLICATION->GetCurPage()) 
-                                . "?ID=" . \CUtil::AddSlashes($row->id) 
-                                . "&action_button=" . self::ACTION_NAME . '_' . $arProfile['ID']
-                                . "&lang=" . LANGUAGE_ID 
-                                . "&" . bitrix_sessid_get() 
-                                . "&" . \CUtil::AddSlashes('&type=' . urlencode($_REQUEST['type']) 
-                                    . '&lang=' . LANGUAGE_ID 
-                                    . '&IBLOCK_ID=' . $IBLOCK_ID 
-                                    . '&PROFILE_ID=' . $arProfile['ID']
+                        $link = \CUtil::AddSlashes($APPLICATION->GetCurPage())
+                            . "?ID=" . \CUtil::AddSlashes($row->id)
+                            . "&action_button=" . self::ACTION_NAME . '_' . $arProfile['ID']
+                            . "&lang=" . LANGUAGE_ID
+                            . "&" . bitrix_sessid_get()
+                            . "&" . \CUtil::AddSlashes('&type=' . urlencode($_REQUEST['type'])
+                                . '&lang=' . LANGUAGE_ID
+                                . '&IBLOCK_ID=' . $IBLOCK_ID
+                                . '&PROFILE_ID=' . $arProfile['ID']
                                 . ($find_section ? '&find_section_section=' . $find_section : '')
-                                    . '&find_el_y=' . $find_el
-                                );
+                                . '&find_el_y=' . $find_el
+                            );
 
                         if ($arTask) {
                             $row->aActions[] = [
@@ -275,7 +273,6 @@ class Iblock
                         }
                     }
                 }
-
             }
         }
         if ($_REQUEST['action_button'] == self::ACTION_NAME) {
@@ -294,23 +291,23 @@ class Iblock
         $bListPage = ($strCurPage == '/bitrix/admin/iblock_element_admin.php' ||
             $strCurPage == '/bitrix/admin/iblock_list_admin.php'
         );
-    
+
         $action = '';
         $requestAction = '';
         $profileId = isset($_REQUEST['PROFILE_ID']) ? $_REQUEST['PROFILE_ID'] : '';
 
-        if(is_array($_REQUEST['action'])){
-            foreach($_REQUEST['action'] as $actionName){
+        if (is_array($_REQUEST['action'])) {
+            foreach ($_REQUEST['action'] as $actionName) {
                 if (strpos($actionName, self::ACTION_NAME) !== false) {
                     $requestAction = $actionName;
                     break;
                 }
             }
-        }elseif(strpos($_REQUEST['action'], self::ACTION_NAME) !== false){
+        } elseif (strpos($_REQUEST['action'], self::ACTION_NAME) !== false) {
             $requestAction = $_REQUEST['action'];
         }
 
-        if (!empty($requestAction) ) {
+        if (!empty($requestAction)) {
             $profileId = intval(str_replace(self::ACTION_NAME . '_', '', $requestAction));
         }
 
@@ -327,9 +324,9 @@ class Iblock
                 foreach ($_REQUEST['ID'] as $ID) {
                     if ($ID[0] == 'S') {
                         $ID = substr($ID, 1);
-                        $res = \CIBlockElement::GetList(["SORT"=>"ASC",], ['IBLOCK_ID'=>$_REQUEST['IBLOCK_ID'],'IBLOCK_SECTION_ID' => $ID]);
-                        while($element = $res->GetNext(true, false)){
-                            $project_names[]= $element['NAME'];
+                        $res = \CIBlockElement::GetList(["SORT" => "ASC",], ['IBLOCK_ID' => $_REQUEST['IBLOCK_ID'], 'IBLOCK_SECTION_ID' => $ID]);
+                        while ($element = $res->GetNext(true, false)) {
+                            $project_names[] = $element['NAME'];
                             $task_ids[] = TaskHelper::createForElement($element['ID'], intval($_REQUEST['IBLOCK_ID']), intval($profileId));
                         }
                     } else {
@@ -337,24 +334,22 @@ class Iblock
                             $ID = substr($ID, 1);
                         }
                         $arElement = \CIBlockElement::GetByID($ID)->GetNextElement(true, false)->GetFields();
-                        $project_names[]= $arElement['NAME'];
+                        $project_names[] = $arElement['NAME'];
                         $task_ids[] = TaskHelper::createForElement($ID, intval($_REQUEST['IBLOCK_ID']), intval($profileId));
                     }
                 }
 
-                if( !empty($project_names) && !empty($task_ids) ) {
+                if (!empty($project_names) && !empty($task_ids)) {
                     if ($arProfile['PROJECT_ID']) {
                         $project = \Smartcat\Connector\Helper\ApiHelper::getProject($arProfile['PROJECT_ID']);
                     }
 
                     if (!$project) {
-                        $project = \Smartcat\Connector\Helper\ApiHelper::createProject($arProfile, implode(', ',$project_names));
+                        $project = \Smartcat\Connector\Helper\ApiHelper::createProject($arProfile, implode(', ', $project_names));
                     }
                     TaskHelper::setProject($task_ids, $project);
                 }
             }
         }
-
     }
-
 }

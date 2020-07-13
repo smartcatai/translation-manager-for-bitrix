@@ -34,12 +34,12 @@ class ProjectHelper
         }
 
         $vendorId = NULL;
-        if(strstr($arProfile[VENDOR], '|', true)!=='0'){
-            $vendorId = [strstr($arProfile[VENDOR], '|', true)];
+        if (strstr($arProfile['VENDOR'], '|', true) !== '0') {
+            $vendorId = [strstr($arProfile['VENDOR'], '|', true)];
         }
 
-        return Array(
-            'name' => mb_substr(str_replace(['*','|','\\',':','"','<','>','?','/'], ' ', $name),0,70),
+        return array(
+            'name' => mb_substr(str_replace(['*', '|', '\\', ':', '"', '<', '>', '?', '/'], ' ', $name), 0, 70),
             'desc' => 'Content from bitrix module',
             'source_lang' => $arProfile['LANG'],
             'target_langs' => $arLangs,
@@ -66,7 +66,7 @@ class ProjectHelper
             ->setAssignToVendor(false)
             ->setExternalTag($params['external_tag'])
             ->setIsForTesting($params['test'])
-            ->attacheFile(fopen($arFile['path']),$arFile['name']);
+            ->attacheFile(fopen($arFile['path'], 'r'), $arFile['name']);
 
         return $project;
     }
@@ -86,7 +86,7 @@ class ProjectHelper
             ->setExternalTag($params['external_tag'])
             ->setIsForTesting($params['test']);
 
-        if(!empty($params['vendorId'])){
+        if (!empty($params['vendorId'])) {
             $project
                 ->setAssignToVendor(true)
                 ->setVendorAccountIds($params['vendorId']);

@@ -14,14 +14,14 @@ class ApiHelper
 
     public static function createApi()
     {
-        if(self::$api === NULL){
+        if (self::$api === NULL) {
             $apiId = Option::get('smartcat.connector', 'api_id');
             $apiSecret = Option::get('smartcat.connector', 'api_secret');
             $apiServer = Option::get('smartcat.connector', 'api_server');
 
             self::$api = new SmartCat($apiId, $apiSecret, $apiServer);
         }
-    
+
         return self::$api;
     }
 
@@ -58,10 +58,10 @@ class ApiHelper
 
     public static function getWorkflowStages()
     {
-        return Array(
-            "translation"=>GetMessage("SMARTCAT_CONNECTOR_STAGE_TRANSLATION"),
-            "editing"=>GetMessage("SMARTCAT_CONNECTOR_STAGE_EDITING"),
-            "proofreading"=>GetMessage("SMARTCAT_CONNECTOR_STAGE_PROOFREADING"),
+        return array(
+            "translation" => GetMessage("SMARTCAT_CONNECTOR_STAGE_TRANSLATION"),
+            "editing" => GetMessage("SMARTCAT_CONNECTOR_STAGE_EDITING"),
+            "proofreading" => GetMessage("SMARTCAT_CONNECTOR_STAGE_PROOFREADING"),
         );
     }
 
@@ -84,13 +84,14 @@ class ApiHelper
         $project = NULL;
         $params = ProjectHelper::prepareProjectParams($arProfile, $name);
 
-        try{
-            $project = self::createApi()
-                ->getProjectManager()
-                ->projectCreateProject(ProjectHelper::createProject($params));
+        try {
+            $projectModel = ProjectHelper::createProject($params);
+            $api = self::createApi();
+            $projectManager = $api->getProjectManager();
+            $project = $projectManager->projectCreateProject($projectModel);
         } catch (\Exception $e) {
             $msg = $e->getMessage();
-            if($e instanceof \Http\Client\Common\Exception\ClientErrorException ){
+            if ($e instanceof \Http\Client\Common\Exception\ClientErrorException) {
                 $msg .= ' ' . $e->getResponse()->getBody()->getContents();
             }
             LoggerHelper::error('helper.apihelper', $msg);
@@ -115,7 +116,7 @@ class ApiHelper
                 ->projectUpdateProject($projectId, $projectUpdateModel);
         } catch (\Exception $e) {
             $msg = $e->getMessage();
-            if($e instanceof \Http\Client\Common\Exception\ClientErrorException ){
+            if ($e instanceof \Http\Client\Common\Exception\ClientErrorException) {
                 $msg .= ' ' . $e->getResponse()->getBody()->getContents();
             }
             LoggerHelper::error('helper.apihelper', $msg);
@@ -126,5 +127,4 @@ class ApiHelper
         }
         return $project;
     }
-
 }
