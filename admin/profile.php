@@ -167,11 +167,9 @@ if ($arProfile['IBLOCK_ID'] > 0) {
     ]);
 
     while ($arProp = $rsProps->Fetch()) {
-//        if (!empty($arProp['USER_TYPE'])) {
-//            continue;
-//        }
-
-        $arPropsToTranslate[$arProp['CODE']] = $arProp['NAME'].' ['.$arProp['CODE'].']'; // TODO: отображение кода для дебага
+        if (!empty($arProp['CODE'])) {
+            $arPropsToTranslate[$arProp['CODE']] = $arProp['NAME'];
+        }
     }
 }
 
