@@ -20,18 +20,19 @@ class TaskHelper
             ]
         ]);
         while ($arTask = $rsTasks->fetch()) {
-            if(is_object($project)){
+            if (is_object($project)) {
                 $data_for_update = [
                     'PROJECT_ID' => $project->getId(),
                     'PROJECT_NAME' => $project->getName(),
                 ];
-            }else{
+            } else {
                 //work if project not created on smartcat server
                 $data_for_update = $project;
             }
-            TaskTable::update($arTask['ID'],$data_for_update);
+            TaskTable::update($arTask['ID'], $data_for_update);
         }
     }
+
     public static function createForElement($ID, $IBLOCK_ID = null, $profileID = null, $deadline = null)
     {
 
@@ -61,14 +62,14 @@ class TaskHelper
                     '=ELEMENT_ID' => $ID,
                 ]
             ])->fetch();
-            if(!empty($anySuccesfulTask)){
-                $anySuccesfulTaskFile =  TaskFileTable::getList([
+            if (!empty($anySuccesfulTask)) {
+                $anySuccesfulTaskFile = TaskFileTable::getList([
                     'order' => ['ID' => 'asc'],
                     'filter' => [
                         '=TASK_ID' => $anySuccesfulTask['ID'],
                     ]
                 ])->fetch();
-                if(!empty($anySuccesfulTaskFile)){
+                if (!empty($anySuccesfulTaskFile)) {
                     $targetElementId = $anySuccesfulTaskFile['ELEMENT_ID'];
                 }
             }
@@ -87,7 +88,7 @@ class TaskHelper
                 'CONTENT' => self::prepareElementContent($ID, $arProfile['FIELDS']),
             ];
 
-            if($deadline){
+            if ($deadline) {
                 $arTask['DEADLINE'] = DateTime::createFromTimestamp($deadline);
             }
 
@@ -96,7 +97,7 @@ class TaskHelper
             $result = TaskTable::add($arTask);
             if ($result->isSuccess()) {
                 $taskID = $result->getId();
-            }else{
+            } else {
                 echo '<pre>' . print_r($result->getErrorMessages(), true) . '</pre>';
             }
 
@@ -117,7 +118,7 @@ class TaskHelper
                         'LANG_TO' => $arIBlock['LANG'],
                     ];
 
-                    if($targetElementId > 0){
+                    if ($targetElementId > 0) {
                         $arTaskFile['ELEMENT_ID'] = $targetElementId;
                     }
 
@@ -167,13 +168,19 @@ class TaskHelper
                 foreach ($arFields['PROPS'] as $sPropCode) {
                     $arProp = $arProps[$sPropCode];
                     if ($arProp['MULTIPLE'] == 'Y') {
-                        if (!empty($arProp['VALUE']) || !empty($arProp['DESCRIPTION'])) {
+                        if (!empty($arProp['VALUE'])) {
                             $sContent .= '<field id="PROP_' . $sPropCode . '" multiple>' . PHP_EOL;
                             foreach ($arProp['VALUE'] as $propKey => $propValue) {
                                 $sContent .= '<subfield>' . PHP_EOL;
-                                $sContent .= '<value>' . $propValue . '</value>' . PHP_EOL;
-                                if (!empty($arProp['DESCRIPTION'][$propKey])) {
-                                    $sContent .= '<description>' . $arProp['DESCRIPTION'][$propKey] . '</description>' . PHP_EOL;
+                                if (is_array($propValue)) {
+                                    foreach ($propValue as $key => $value) {
+                                        $sContent .= '<' . $key . '>' . $value . '</' . $key . '>' . PHP_EOL;
+                                    }
+                                } else {
+                                    $sContent .= '<value>' . $propValue . '</value>' . PHP_EOL;
+                                    if (!empty($arProp['DESCRIPTION'][$propKey])) {
+                                        $sContent .= '<description>' . $arProp['DESCRIPTION'][$propKey] . '</description>' . PHP_EOL;
+                                    }
                                 }
                                 $sContent .= '</subfield>' . PHP_EOL;
                             }
@@ -184,7 +191,7 @@ class TaskHelper
                         if (!empty($arProp['VALUE'])) {
                             if (is_array($arProp['VALUE'])) {
                                 $sPropValue = $arProp['VALUE']['TEXT'];
-                                $sContent .= '<field id="PROP_' . $sPropCode . '" type="' . $arProp['VALUE']['TYPE'] . '">' . $sPropValue . '</field>' . PHP_EOL;
+                                $sContent .= '<field id="PROP_' . $sPropCode . '" type="' . $arProp['VALUE']['TYPE'] . '">' . htmlspecialchars_decode($sPropValue) . '</field>' . PHP_EOL;
                             } else {
                                 $sPropValue = $arProp['VALUE'];
                                 $sContent .= '<field id="PROP_' . $sPropCode . '">' . $sPropValue . '</field>' . PHP_EOL;
