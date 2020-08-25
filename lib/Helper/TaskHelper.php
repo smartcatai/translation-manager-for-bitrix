@@ -171,7 +171,7 @@ class TaskHelper
                         if (!empty($arProp['VALUE'])) {
                             $sContent .= '<field id="PROP_' . $sPropCode . '" multiple>' . PHP_EOL;
                             foreach ($arProp['VALUE'] as $propKey => $propValue) {
-                                $sContent .= '<subfield>' . PHP_EOL;
+                                $sContent .= '<subfield' . (!empty($arProp['USER_TYPE']) && $arProp['USER_TYPE'] === 'SET' ? ' type="set"' : '')  . '>' . PHP_EOL;
                                 if (is_array($propValue)) {
                                     foreach ($propValue as $key => $value) {
                                         $sContent .= '<' . $key . '>' . $value . '</' . $key . '>' . PHP_EOL;

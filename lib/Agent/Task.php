@@ -568,9 +568,17 @@ class Task
                         $tmpProps = [];
                         for ($i = 0; $i < $domElement->childNodes->length; $i++) {
                             $subField = $domElement->childNodes->item($i);
+                            $subFieldType = $subField->hasAttribute('type') ? $subField->getAttribute('type') : null;
                             $tmpItem = [];
                             foreach ($subField->childNodes as $childNode) {
-                                $tmpItem[strtoupper($childNode->tagName)] = StringHelper::specialcharsDecode(self::DOMinnerHTML($childNode));
+                                if (strtoupper($subFieldType) === 'SET') {
+                                    if (!isset($tmpItem['VALUE'])) {
+                                        $tmpItem['VALUE'] = [];
+                                    }
+                                    $tmpItem['VALUE'][strtoupper($childNode->tagName)] = StringHelper::specialcharsDecode(self::DOMinnerHTML($childNode));
+                                } else {
+                                    $tmpItem[strtoupper($childNode->tagName)] = StringHelper::specialcharsDecode(self::DOMinnerHTML($childNode));
+                                }
                             }
                             array_push($tmpProps, $tmpItem);
                         }
