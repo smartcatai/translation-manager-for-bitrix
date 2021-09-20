@@ -72,7 +72,7 @@ class Task
 
         foreach ($projectIds as $projectId) {
             self::log("Processing Project: {$projectId}");
-            // проверяем externalTag и меняем если нужно
+            // ��������� externalTag � ������ ���� �����
             try {
                 $project = ApiHelper::getProject($projectId);
                 if (!empty($project) && $project->getExternalTag() !== 'source:Bitrix') {
@@ -113,11 +113,18 @@ class Task
                     foreach ($batchTasks as $arTask) {
                         $documentFilename = self::FILENAME . $arTask['ID'];
                         self::log("Processing document " . $documentFilename);
-                        $sFilePath = tempnam(sys_get_temp_dir(), 'TRANSLATE-');
+                        $dirPath = __DIR__ . "/tmp_files";
+                        if (!is_dir($dirPath)) {
+                            mkdir($dirPath);
+                        }
+                        $sFilePath = tempnam(__DIR__ . "/tmp_files", 'TRANSLATE-');
+                        self::log("Store file path: $sFilePath");
                         file_put_contents($sFilePath, '<html><head></head><body>' . $arTask['CONTENT'] . '</body></html>');
                         $document = ProjectHelper::createDocumentFromFile($sFilePath, $documentFilename . '.html');
                         self::log("File for document " . $documentFilename . " created");
-
+                        if (file_exists($sFilePath)) {
+                            unlink($sFilePath);
+                        }
                         $foundId = '';
                         foreach ($scProjectDocuments as $scProjectDocument) {
                             if ($scProjectDocument->getName() === $documentFilename) {
@@ -223,7 +230,7 @@ class Task
                 self::errorHandler($e);
                 if ($e instanceof \Http\Client\Exception\HttpException) {
                     if ($e->getResponse()->getStatusCode() === 404) {
-                        // 404, проект не существует в Smartcat, пометить все таски данного проекта как FAILED
+                        // 404, ������ �� ���������� � Smartcat, �������� ��� ����� ������� ������� ��� FAILED
                         self::log("Project with ID {$key} not found in Smartcat, setting all tasks for this project as FAILED.");
                         $result = TaskTable::updateMulti($taskIds, [
                             'STATUS' => TaskTable::STATUS_FAILED,
@@ -253,7 +260,7 @@ class Task
                         '=TASK_ID' => $task['ID']
                     ]
                 ])->fetchAll();
-                
+
                 $inProcessCount = 0;
                 foreach ($taskFiles as $taskFile) {
                     $documentId = $taskFile['DOCUMENT_ID'];
@@ -317,7 +324,7 @@ class Task
                 array_push($projectTaskIds, $item['ID']);
             }
             $projectTaskIds = array_unique($projectTaskIds);
-    
+
             try {
                 $project = $projectManager->projectGet($projectId);
                 $projectDocuments = $project->getDocuments();
@@ -482,19 +489,19 @@ class Task
 
             $sFilePath = tempnam(sys_get_temp_dir(), "EXPORT-{$arTaskFile['EXPORT_TASK_ID']}-") . '.zip';
             file_put_contents($sFilePath, $response->getBody()->getContents());
-			$arc = \CBXArchive::GetArchive($sFilePath);
+            $arc = \CBXArchive::GetArchive($sFilePath);
 
-			if ($arc instanceof IBXArchive) {
+            if ($arc instanceof IBXArchive) {
                 global $USER;
 
                 $arc->SetOptions
-                    (
+                (
                     array(
                         "REMOVE_PATH"		=> $sFilePath,
                         "UNPACK_REPLACE"	=> true,
                         "CHECK_PERMISSIONS" => false,
-                        )
-                    );
+                    )
+                );
 
                 $uRes = $arc->Unpack(sys_get_temp_dir());
 
@@ -545,7 +552,7 @@ class Task
             return;
 
         $CIBlockElement = new \CIBlockElement();
-    
+
         while ($arTaskFile = $rsTaskFiles->fetch()) {
             self::log("Create block for: {$arTaskFile['DOCUMENT_ID']}");
 
@@ -568,17 +575,9 @@ class Task
                         $tmpProps = [];
                         for ($i = 0; $i < $domElement->childNodes->length; $i++) {
                             $subField = $domElement->childNodes->item($i);
-                            $subFieldType = $subField->hasAttribute('type') ? $subField->getAttribute('type') : null;
                             $tmpItem = [];
                             foreach ($subField->childNodes as $childNode) {
-                                if (strtoupper($subFieldType) === 'SET') {
-                                    if (!isset($tmpItem['VALUE'])) {
-                                        $tmpItem['VALUE'] = [];
-                                    }
-                                    $tmpItem['VALUE'][strtoupper($childNode->tagName)] = StringHelper::specialcharsDecode(self::DOMinnerHTML($childNode));
-                                } else {
-                                    $tmpItem[strtoupper($childNode->tagName)] = StringHelper::specialcharsDecode(self::DOMinnerHTML($childNode));
-                                }
+                                $tmpItem[strtoupper($childNode->tagName)] = StringHelper::specialcharsDecode(self::DOMinnerHTML($childNode));
                             }
                             array_push($tmpProps, $tmpItem);
                         }
